@@ -17,13 +17,18 @@ const { getFirestore } = require('firebase-admin/firestore');
 const { getAuth } = require('firebase-admin/auth');
 let serviceAccount;
 try {
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT && process.env.FIREBASE_SERVICE_ACCOUNT.trim() !== '') {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   } else {
     serviceAccount = require('./firebase-serviceAccount.json');
   }
 } catch (error) {
-  console.error("Error loading Firebase Service Account. Ensure FIREBASE_SERVICE_ACCOUNT env var or firebase-serviceAccount.json exists.", error.message);
+  console.error("Error parsing FIREBASE_SERVICE_ACCOUNT env var, falling back to local file...", error.message);
+  try {
+    serviceAccount = require('./firebase-serviceAccount.json');
+  } catch (err) {
+    console.error("Failed to load local service account file.", err.message);
+  }
 }
 
 initializeApp({
