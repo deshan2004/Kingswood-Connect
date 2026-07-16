@@ -38,7 +38,10 @@ const MobileScanner = () => {
       { 
         fps: 10, 
         qrbox: { width: 250, height: 250 },
-        supportedScanTypes: [0] // Optional: focus on QR codes or standard barcodes depending on your ID format
+        supportedScanTypes: [0], // Optional: focus on QR codes or standard barcodes depending on your ID format
+        videoConstraints: {
+          facingMode: "environment"
+        }
       },
       false
     );
