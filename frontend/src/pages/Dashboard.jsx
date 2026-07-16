@@ -3,7 +3,7 @@ import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Users, UserCheck, UserX, Clock, Activity, TrendingUp, QrCode } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const StatCard = ({ title, value, icon: Icon, color, trend }) => (
   <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex items-start justify-between relative overflow-hidden group hover:shadow-xl transition-all duration-300 hover:-translate-y-1">

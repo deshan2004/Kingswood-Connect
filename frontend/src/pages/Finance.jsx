@@ -3,7 +3,7 @@ import axios from 'axios';
 import { CreditCard, Receipt, Wallet, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const Finance = () => {
   const [studentId, setStudentId] = useState('');

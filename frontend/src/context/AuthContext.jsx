@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
       if (firebaseUser) {
         try {
           // Fetch custom user data/role from backend
-          const res = await axios.get(`http://localhost:5000/api/auth/me/${firebaseUser.uid}`);
+          const res = await axios.get(`${import.meta.env.VITE_API_URL || '/api'}/auth/me/${firebaseUser.uid}`);
           setUser({ ...firebaseUser, ...res.data });
         } catch (error) {
           console.error("Failed to fetch user role", error);
