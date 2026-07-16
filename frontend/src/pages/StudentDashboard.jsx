@@ -17,6 +17,8 @@ const StudentDashboard = () => {
         .then(res => setData(res.data))
         .catch(console.error)
         .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, [user]);
 
