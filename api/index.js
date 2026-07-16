@@ -327,4 +327,11 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
 });
 
 // Export the Express API for Vercel Serverless Function
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server is running locally on port ${PORT}`);
+  });
+}
+
 module.exports = app;
