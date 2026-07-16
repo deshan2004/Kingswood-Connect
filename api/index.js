@@ -11,37 +11,6 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Socket.IO Setup
-const http = require('http');
-const { Server } = require('socket.io');
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*", // Adjust in production
-    methods: ["GET", "POST"]
-  }
-});
-
-io.on('connection', (socket) => {
-  console.log('A client connected:', socket.id);
-
-  socket.on('join-session', (sessionId) => {
-    socket.join(sessionId);
-    console.log(`Socket ${socket.id} joined session ${sessionId}`);
-  });
-
-  socket.on('scan-result', (data) => {
-    const { sessionId, studentId } = data;
-    console.log(`Scan result for session ${sessionId}: ${studentId}`);
-    // Emit to everyone in the room (which should just be the desktop client)
-    io.to(sessionId).emit('scan-received', studentId);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
-  });
-});
-
 // Firebase Admin Initialization
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
@@ -70,8 +39,8 @@ const generateId = (prefix) => `${prefix}-${Math.floor(10000 + Math.random() * 9
 // --- API Routes ---
 
 // Health check
-app.get('/', (req, res) => {
-  res.send('Kingswood Connect API is running with Firebase!');
+app.get('/api', (req, res) => {
+  res.send('Kingswood Connect API is running with Firebase on Vercel!');
 });
 
 // 1. Register a new student
@@ -306,7 +275,6 @@ app.post('/api/auth/signup', async (req, res) => {
   }
 });
 
-// Remove old hardcoded login since frontend will handle login directly via Firebase Client SDK
 // 8. Get Current User Role (called after client login)
 app.get('/api/auth/me/:uid', async (req, res) => {
   try {
@@ -358,6 +326,5 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Export the Express API for Vercel Serverless Function
+module.exports = app;

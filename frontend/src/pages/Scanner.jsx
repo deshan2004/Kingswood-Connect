@@ -4,6 +4,8 @@ import axios from 'axios';
 import { QrCode, AlertCircle, CheckCircle2, XOctagon, Smartphone, X } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { QRCodeSVG } from 'qrcode.react';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -26,20 +28,25 @@ const Scanner = () => {
     const newSessionId = Math.random().toString(36).substring(2, 15);
     setSessionId(newSessionId);
 
-    // Connect to Socket.IO
-    const socket = io(API_URL.replace('/api', ''));
+    // Listen to Firestore for scan results in this session
+    const sessionRef = doc(db, 'scan_sessions', newSessionId);
     
-    socket.on('connect', () => {
-      socket.emit('join-session', newSessionId);
-    });
+    // Initialize session document
+    setDoc(sessionRef, { createdAt: new Date().toISOString() }).catch(console.error);
 
-    socket.on('scan-received', (studentId) => {
-      if (processScanRef.current) {
-        processScanRef.current(studentId);
+    const unsubscribe = onSnapshot(sessionRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        if (data.studentId && data.scannedAt && (!processScanRef.lastScannedAt || data.scannedAt > processScanRef.lastScannedAt)) {
+          processScanRef.lastScannedAt = data.scannedAt;
+          if (processScanRef.current) {
+            processScanRef.current(data.studentId);
+          }
+        }
       }
     });
 
-    return () => socket.close();
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {

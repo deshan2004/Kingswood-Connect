@@ -1,35 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import { io } from 'socket.io-client';
+import { doc, updateDoc, setDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { CheckCircle2, QrCode, Smartphone } from 'lucide-react';
-
-const API_URL = 'http://localhost:5000'; // Or your backend URL
 
 const MobileScanner = () => {
   const { sessionId } = useParams();
-  const [socket, setSocket] = useState(null);
   const [scanStatus, setScanStatus] = useState('Waiting for scan...');
   const [lastScanned, setLastScanned] = useState(null);
-  const [isConnected, setIsConnected] = useState(false);
-
-  useEffect(() => {
-    // Initialize Socket Connection
-    const newSocket = io(API_URL);
-    setSocket(newSocket);
-
-    newSocket.on('connect', () => {
-      setIsConnected(true);
-      console.log('Connected to socket server');
-    });
-
-    newSocket.on('disconnect', () => {
-      setIsConnected(false);
-      console.log('Disconnected from socket server');
-    });
-
-    return () => newSocket.close();
-  }, []);
 
   useEffect(() => {
     // Initialize Scanner without UI
@@ -38,18 +17,25 @@ const MobileScanner = () => {
       
       const config = { fps: 10, qrbox: { width: 250, height: 250 } };
       
-      const onScanSuccess = (decodedText) => {
-        if (socket && isConnected) {
-          setScanStatus('Sending...');
-          socket.emit('scan-result', { sessionId, studentId: decodedText });
+      const onScanSuccess = async (decodedText) => {
+        setScanStatus('Sending...');
+        try {
+          const sessionRef = doc(db, 'scan_sessions', sessionId);
+          // Try to update the session. If it doesn't exist, this might fail, but Scanner.jsx creates it.
+          // Using setDoc with merge to be safe
+          await setDoc(sessionRef, {
+            studentId: decodedText,
+            scannedAt: new Date().toISOString()
+          }, { merge: true });
           
           setLastScanned(decodedText);
           setScanStatus('Sent successfully!');
-          
-          setTimeout(() => setScanStatus('Waiting for next scan...'), 2000);
-        } else {
-          setScanStatus('Error: Not connected to server.');
+        } catch (error) {
+          console.error("Error updating scan session:", error);
+          setScanStatus('Error: Could not connect to session.');
         }
+        
+        setTimeout(() => setScanStatus('Waiting for next scan...'), 2000);
       };
 
       html5QrCode.start(
@@ -65,7 +51,7 @@ const MobileScanner = () => {
         html5QrCode.stop().then(() => html5QrCode.clear()).catch(console.error);
       };
     });
-  }, [socket, sessionId, isConnected]);
+  }, [sessionId]);
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 flex flex-col">
@@ -74,8 +60,8 @@ const MobileScanner = () => {
           <Smartphone className="text-indigo-600" size={28} />
           <h1 className="text-xl font-bold text-slate-800">Mobile Scanner</h1>
         </div>
-        <div className={`px-3 py-1 rounded-full text-xs font-bold ${isConnected ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
-          {isConnected ? 'Connected' : 'Disconnected'}
+        <div className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+          Ready
         </div>
       </div>
 
