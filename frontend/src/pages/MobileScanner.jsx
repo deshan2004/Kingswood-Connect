@@ -32,48 +32,39 @@ const MobileScanner = () => {
   }, []);
 
   useEffect(() => {
-    // Initialize Scanner
-    const scanner = new Html5QrcodeScanner(
-      "mobile-reader",
-      { 
-        fps: 10, 
-        qrbox: { width: 250, height: 250 },
-        supportedScanTypes: [0], // Optional: focus on QR codes or standard barcodes depending on your ID format
-        videoConstraints: {
-          facingMode: "environment"
+    // Initialize Scanner without UI
+    import('html5-qrcode').then(({ Html5Qrcode }) => {
+      const html5QrCode = new Html5Qrcode("mobile-reader");
+      
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+      
+      const onScanSuccess = (decodedText) => {
+        if (socket && isConnected) {
+          setScanStatus('Sending...');
+          socket.emit('scan-result', { sessionId, studentId: decodedText });
+          
+          setLastScanned(decodedText);
+          setScanStatus('Sent successfully!');
+          
+          setTimeout(() => setScanStatus('Waiting for next scan...'), 2000);
+        } else {
+          setScanStatus('Error: Not connected to server.');
         }
-      },
-      false
-    );
+      };
 
-    const onScanSuccess = (decodedText) => {
-      if (socket && isConnected) {
-        setScanStatus('Sending...');
-        // Send scan result to desktop session
-        socket.emit('scan-result', {
-          sessionId,
-          studentId: decodedText
-        });
-        
-        setLastScanned(decodedText);
-        setScanStatus('Sent successfully!');
-        
-        // Reset status message after a short delay
-        setTimeout(() => setScanStatus('Waiting for next scan...'), 2000);
-      } else {
-        setScanStatus('Error: Not connected to server.');
-      }
-    };
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        onScanSuccess
+      ).catch(err => {
+        console.error("Error starting scanner", err);
+        setScanStatus("Error starting camera. Please check permissions.");
+      });
 
-    const onScanFailure = (error) => {
-      // Ignore routine scan failures while seeking
-    };
-
-    scanner.render(onScanSuccess, onScanFailure);
-
-    return () => {
-      scanner.clear().catch(error => console.error("Failed to clear scanner", error));
-    };
+      return () => {
+        html5QrCode.stop().then(() => html5QrCode.clear()).catch(console.error);
+      };
+    });
   }, [socket, sessionId, isConnected]);
 
   return (
