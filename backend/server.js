@@ -46,7 +46,16 @@ io.on('connection', (socket) => {
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const { getAuth } = require('firebase-admin/auth');
-const serviceAccount = require('./firebase-serviceAccount.json');
+let serviceAccount;
+try {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  } else {
+    serviceAccount = require('./firebase-serviceAccount.json');
+  }
+} catch (error) {
+  console.error("Error loading Firebase Service Account. Ensure FIREBASE_SERVICE_ACCOUNT env var or firebase-serviceAccount.json exists.", error.message);
+}
 
 initializeApp({
   credential: cert(serviceAccount)
@@ -308,7 +317,17 @@ app.get('/api/auth/me/:uid', async (req, res) => {
       return res.status(404).json({ error: 'User not found in database' });
     }
     
-    res.json(userDoc.data());
+    let userData = userDoc.data();
+    
+    // Fetch additional student details (like grade and qrCodeUrl)
+    if (userData.role === 'student' && userData.studentId) {
+      const studentDoc = await db.collection('students').doc(userData.studentId).get();
+      if (studentDoc.exists) {
+        userData = { ...userData, ...studentDoc.data() };
+      }
+    }
+    
+    res.json(userData);
   } catch (error) {
     console.error('Fetch user error:', error);
     res.status(500).json({ error: 'Failed to fetch user data' });
