@@ -43,7 +43,9 @@ export const AuthProvider = ({ children }) => {
           },
           (error) => {
              console.error("Error listening to user document:", error);
-             setUser({ ...firebaseUser, role: 'student' });
+             const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
+             const fallbackRole = (email.includes('admin') || email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
+             setUser({ ...firebaseUser, role: fallbackRole });
              setLoading(false);
           }
         );
