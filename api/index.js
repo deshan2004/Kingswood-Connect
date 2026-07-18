@@ -143,6 +143,34 @@ app.get('/api/students', async (req, res) => {
   }
 });
 
+// 2.5 Update a student
+app.put('/api/students/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, grade, contact, enrolledClasses } = req.body;
+
+    const studentRef = db.collection('students').doc(id);
+    const doc = await studentRef.get();
+    
+    if (!doc.exists) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    await studentRef.update({
+      name,
+      grade,
+      contact,
+      enrolledClasses: enrolledClasses || [],
+      updatedAt: new Date().toISOString()
+    });
+
+    res.json({ message: 'Student updated successfully' });
+  } catch (error) {
+    console.error('Error updating student:', error);
+    res.status(500).json({ error: 'Failed to update student' });
+  }
+});
+
 // 3. Scan QR code and mark attendance
 async function processAttendanceScan(studentId, classId) {
   if (!studentId) throw new Error('Student ID is required');

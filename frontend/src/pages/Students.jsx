@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X } from 'lucide-react';
+import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X, Edit2 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -18,6 +18,14 @@ const Students = () => {
   const [enrolledClasses, setEnrolledClasses] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
+
+  // Edit State
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editGrade, setEditGrade] = useState('');
+  const [editContact, setEditContact] = useState('');
+  const [editEnrolledClasses, setEditEnrolledClasses] = useState([]);
+  const [updating, setUpdating] = useState(false);
 
   const showToast = (type, message) => {
     setToast({ type, message });
@@ -121,6 +129,35 @@ const Students = () => {
       setEnrolledClasses(enrolledClasses.filter(id => id !== classId));
     } else {
       setEnrolledClasses([...enrolledClasses, classId]);
+    }
+  };
+
+  const openEditModal = (student) => {
+    setEditingStudent(student);
+    setEditName(student.name);
+    setEditGrade(student.grade || '');
+    setEditContact(student.contact || '');
+    setEditEnrolledClasses(student.enrolledClasses || []);
+  };
+
+  const handleUpdateStudent = async (e) => {
+    e.preventDefault();
+    setUpdating(true);
+    try {
+      await axios.put(`${API_URL}/students/${editingStudent.studentId}`, {
+        name: editName,
+        grade: editGrade,
+        contact: editContact,
+        enrolledClasses: editEnrolledClasses
+      });
+      showToast('success', 'Student updated successfully!');
+      setEditingStudent(null);
+      fetchData(); // Refresh list
+    } catch (error) {
+      console.error('Update error:', error);
+      showToast('error', 'Failed to update student');
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -303,6 +340,13 @@ const Students = () => {
                         </td>
                         <td className="py-4 px-6 text-right flex items-center justify-end gap-1">
                           <button 
+                            onClick={() => openEditModal(student)}
+                            title="Edit Student"
+                            className="text-blue-500 hover:text-blue-700 transition-colors p-2 hover:bg-blue-50 rounded-lg cursor-pointer"
+                          >
+                            <Edit2 size={20} />
+                          </button>
+                          <button 
                             onClick={() => sendWhatsApp(student, student.qrCodeUrl)}
                             title="Send via WhatsApp"
                             className="text-emerald-500 hover:text-emerald-700 transition-colors p-2 hover:bg-emerald-50 rounded-lg cursor-pointer"
@@ -335,6 +379,112 @@ const Students = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Student Modal */}
+      {editingStudent && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+              <h3 className="text-lg font-black text-slate-800">Edit Student</h3>
+              <button 
+                onClick={() => setEditingStudent(null)}
+                className="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-100 p-2 rounded-xl transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <form onSubmit={handleUpdateStudent} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    required
+                    className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 transition-all"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Grade/Class</label>
+                    <input
+                      type="text"
+                      value={editGrade}
+                      onChange={(e) => setEditGrade(e.target.value)}
+                      required
+                      className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Contact</label>
+                    <input
+                      type="text"
+                      value={editContact}
+                      onChange={(e) => setEditContact(e.target.value)}
+                      required
+                      className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Enrolled Classes</label>
+                  <div className="bg-slate-50 rounded-xl p-4 max-h-48 overflow-y-auto border border-slate-100">
+                    {classesList.length > 0 ? (
+                      <div className="space-y-3">
+                        {classesList.map(c => (
+                          <label key={c.classId} className="flex items-center gap-3 cursor-pointer group">
+                            <div className="relative flex items-center justify-center">
+                              <input 
+                                type="checkbox"
+                                checked={editEnrolledClasses.includes(c.classId)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setEditEnrolledClasses([...editEnrolledClasses, c.classId]);
+                                  } else {
+                                    setEditEnrolledClasses(editEnrolledClasses.filter(id => id !== c.classId));
+                                  }
+                                }}
+                                className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-md checked:bg-blue-600 checked:border-blue-600 transition-colors"
+                              />
+                              <CheckCircle2 size={14} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
+                            </div>
+                            <span className="text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors">
+                              {c.name}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm font-medium text-slate-500 text-center py-4">No classes available.</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="pt-4 flex justify-end gap-3">
+                  <button 
+                    type="button"
+                    onClick={() => setEditingStudent(null)}
+                    className="px-5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={updating}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95 disabled:opacity-70 flex items-center gap-2"
+                  >
+                    {updating ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
