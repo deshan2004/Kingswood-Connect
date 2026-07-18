@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { onAuthStateChanged, signOut, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -21,8 +22,6 @@ export const AuthProvider = ({ children }) => {
           
           try {
             // Fallback 1: Try fetching directly from Firestore if backend is down
-            const { doc, getDoc } = await import('firebase/firestore');
-            const { db } = await import('../config/firebase');
             const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
             
             if (userDoc.exists()) {
@@ -40,7 +39,8 @@ export const AuthProvider = ({ children }) => {
             let role = idTokenResult.claims.role;
             if (!role) {
               // If manually created in Firebase console without claims, guess from email
-              if (firebaseUser.email && firebaseUser.email.toLowerCase().includes('admin')) {
+              const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
+              if (email.includes('admin') || email === 'deshandhakshitha16@gmail.com') {
                 role = 'admin';
               } else {
                 role = 'student';
