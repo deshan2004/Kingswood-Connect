@@ -256,6 +256,7 @@ const Schedule = () => {
         </div>
       )}
     </div>
+    </div>
   );
 };
 
