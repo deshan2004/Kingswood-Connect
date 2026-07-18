@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X, Edit2 } from 'lucide-react';
+import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X, Edit2, Filter } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -29,6 +29,10 @@ const Students = () => {
 
   // Modals
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+
+  // Filters
+  const [filterClass, setFilterClass] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const showToast = (type, message) => {
     setToast({ type, message });
@@ -166,6 +170,27 @@ const Students = () => {
     }
   };
 
+  const filteredStudents = students.filter(student => {
+    // Filter by class
+    if (filterClass !== 'all') {
+      if (!student.enrolledClasses || !student.enrolledClasses.includes(filterClass)) {
+        return false;
+      }
+    }
+    
+    // Filter by search query
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      const matchesSearch = 
+        (student.name && student.name.toLowerCase().includes(query)) ||
+        (student.studentId && student.studentId.toLowerCase().includes(query)) ||
+        (student.contact && student.contact.includes(query));
+      if (!matchesSearch) return false;
+    }
+    
+    return true;
+  });
+
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-12 relative">
       
@@ -201,21 +226,44 @@ const Students = () => {
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden h-full flex flex-col">
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-          <div className="relative w-full max-w-sm">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                  <Search size={18} />
-                </span>
-                <input 
-                  type="text" 
-                  placeholder="Search students..." 
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors font-medium text-slate-800"
-                />
-              </div>
-              <div className="text-sm font-bold text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-                {students.length} Total
+        <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="relative w-full sm:w-64">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                <Search size={18} />
+              </span>
+              <input 
+                type="text" 
+                placeholder="Search students..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors font-medium text-slate-800"
+              />
+            </div>
+            
+            <div className="relative w-full sm:w-48">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
+                <Filter size={18} />
+              </span>
+              <select
+                value={filterClass}
+                onChange={(e) => setFilterClass(e.target.value)}
+                className="w-full pl-10 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors font-bold text-slate-800 appearance-none cursor-pointer"
+              >
+                <option value="all">All Classes</option>
+                {classesList.map(c => (
+                  <option key={c.classId} value={c.classId}>{c.name}</option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </div>
             </div>
+          </div>
+          <div className="text-sm font-bold text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shrink-0 shadow-sm">
+            {filteredStudents.length} Students
+          </div>
+        </div>
             
             {loading ? (
               <div className="flex-1 flex items-center justify-center p-8">
@@ -234,7 +282,7 @@ const Students = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {students.map((student) => (
+                    {filteredStudents.map((student) => (
                       <tr key={student.studentId} className="hover:bg-blue-50/30 transition-colors group">
                         <td className="py-4 px-6">
                           <div className="font-bold text-slate-800">{student.name}</div>
@@ -276,12 +324,12 @@ const Students = () => {
                         </td>
                       </tr>
                     ))}
-                    {students.length === 0 && (
+                    {filteredStudents.length === 0 && (
                       <tr>
                         <td colSpan="5" className="py-12 text-center text-slate-400">
                           <Users size={48} className="mx-auto mb-3 opacity-20" />
                           <p className="font-medium text-lg">No students found</p>
-                          <p className="text-sm">Register a student to get started.</p>
+                          <p className="text-sm">Try adjusting your search or filters.</p>
                         </td>
                       </tr>
                     )}
