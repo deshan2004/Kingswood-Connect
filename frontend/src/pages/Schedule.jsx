@@ -9,8 +9,19 @@ const Schedule = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [newClass, setNewClass] = useState({ name: '', teacherId: '', time: '', fee: 1000 });
+  const [newClass, setNewClass] = useState({ name: '', teacherId: '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 1000 });
   const [submitting, setSubmitting] = useState(false);
+
+  // Helper to format 24h time string to 12h AM/PM
+  const formatTimeStr = (time24) => {
+    if (!time24) return '';
+    const [h, m] = time24.split(':');
+    let hours = parseInt(h, 10);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    return `${hours}:${m} ${ampm}`;
+  };
 
   useEffect(() => {
     fetchData();
@@ -43,11 +54,11 @@ const Schedule = () => {
         name: newClass.name,
         teacherId: newClass.teacherId,
         teacherName: selectedTeacher ? selectedTeacher.name : 'Unknown',
-        time: newClass.time,
+        schedule: `${newClass.day} ${formatTimeStr(newClass.startTime)} - ${formatTimeStr(newClass.endTime)}`,
         fee: Number(newClass.fee)
       });
       setShowModal(false);
-      setNewClass({ name: '', teacherId: teachers[0]?.teacherId || '', time: '', fee: 1000 });
+      setNewClass({ name: '', teacherId: teachers[0]?.teacherId || '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 1000 });
       fetchData();
     } catch (error) {
       alert('Failed to add class');
@@ -222,14 +233,36 @@ const Schedule = () => {
 
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Schedule Time</label>
-                <input 
-                  type="text" 
-                  required
-                  value={newClass.time}
-                  onChange={(e) => setNewClass({...newClass, time: e.target.value})}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="e.g. Saturday 8:00 AM - 12:00 PM"
-                />
+                <div className="grid grid-cols-3 gap-2">
+                  <select
+                    required
+                    value={newClass.day}
+                    onChange={(e) => setNewClass({...newClass, day: e.target.value})}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  >
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                  </select>
+                  <input 
+                    type="time" 
+                    required
+                    value={newClass.startTime}
+                    onChange={(e) => setNewClass({...newClass, startTime: e.target.value})}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                  <input 
+                    type="time" 
+                    required
+                    value={newClass.endTime}
+                    onChange={(e) => setNewClass({...newClass, endTime: e.target.value})}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                </div>
               </div>
 
               <div>
