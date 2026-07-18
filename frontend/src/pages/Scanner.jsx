@@ -138,7 +138,9 @@ const Scanner = () => {
   };
 
   const onScanSuccess = (decodedText, decodedResult) => {
-    processScan(decodedText);
+    if (processScanRef.current) {
+      processScanRef.current(decodedText);
+    }
   };
 
   const handleManualSubmit = (e) => {
