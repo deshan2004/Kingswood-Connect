@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare } from 'lucide-react';
+import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -17,6 +17,12 @@ const Students = () => {
   const [password, setPassword] = useState('');
   const [enrolledClasses, setEnrolledClasses] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (type, message) => {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 10000);
+  };
 
   useEffect(() => {
     fetchData();
@@ -49,7 +55,7 @@ const Students = () => {
 
   const sendWhatsApp = async (student, dataUrl) => {
     if (!dataUrl || !student.contact) {
-      alert("Missing contact number or QR code");
+      showToast('error', "Missing contact number or QR code");
       return;
     }
     
@@ -60,7 +66,7 @@ const Students = () => {
       try {
         const item = new ClipboardItem({ "image/png": blob });
         await navigator.clipboard.write([item]);
-        alert("QR Image copied to clipboard! Just press Paste (Ctrl+V) in the WhatsApp chat to send it.");
+        showToast('success', "QR Image copied to clipboard! Just press Paste (Ctrl+V) in the WhatsApp chat to send it.");
       } catch (clipboardErr) {
         console.warn("Clipboard copy failed, downloading fallback", clipboardErr);
         downloadQR(student.studentId, dataUrl);
@@ -113,7 +119,26 @@ const Students = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-12">
+    <div className="max-w-7xl mx-auto space-y-8 pb-12 relative">
+      
+      {/* Custom Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className={`px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 max-w-sm border ${
+            toast.type === 'success' ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-rose-600 text-white border-rose-500'
+          }`}>
+            {toast.type === 'success' ? <CheckCircle2 size={24} className="text-emerald-100 shrink-0" /> : <AlertCircle size={24} className="text-rose-100 shrink-0" />}
+            <div>
+              <h4 className="font-bold text-lg mb-0.5">{toast.type === 'success' ? 'Success!' : 'Error'}</h4>
+              <p className="opacity-90 leading-tight text-sm">{toast.message}</p>
+            </div>
+            <button onClick={() => setToast(null)} className="ml-2 p-1.5 hover:bg-black/10 rounded-full transition-colors shrink-0">
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-3xl font-black text-slate-800 tracking-tight">Student Directory</h2>
