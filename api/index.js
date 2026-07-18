@@ -31,12 +31,26 @@ try {
   }
 }
 
-initializeApp({
-  credential: cert(serviceAccount)
-});
+let firebaseError = null;
+let db = null;
+try {
+  initializeApp({
+    credential: cert(serviceAccount)
+  });
+  db = getFirestore();
+  console.log('Connected to Firebase Firestore successfully!');
+} catch (error) {
+  firebaseError = error.message;
+  console.error('CRITICAL: Failed to initialize Firebase Admin SDK:', error.message);
+}
 
-const db = getFirestore();
-console.log('Connected to Firebase Firestore successfully!');
+// Middleware to check if Firebase is initialized
+app.use('/api', (req, res, next) => {
+  if (firebaseError && req.path !== '/') {
+    return res.status(500).json({ error: 'Backend Initialization Error', details: firebaseError });
+  }
+  next();
+});
 
 // --- Helper Functions ---
 const generateId = (prefix) => `${prefix}-${Math.floor(10000 + Math.random() * 90000)}`;
