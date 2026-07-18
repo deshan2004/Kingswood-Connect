@@ -7,6 +7,9 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 const Teachers = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [newTeacher, setNewTeacher] = useState({ name: '', contact: '', subject: '', commissionRate: 50 });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchTeachers();
@@ -23,6 +26,26 @@ const Teachers = () => {
     }
   };
 
+  const handleAddTeacher = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await axios.post(`${API_URL}/teachers`, {
+        name: newTeacher.name,
+        contact: newTeacher.contact,
+        subject: newTeacher.subject,
+        commissionRate: newTeacher.commissionRate / 100
+      });
+      setShowModal(false);
+      setNewTeacher({ name: '', contact: '', subject: '', commissionRate: 50 });
+      fetchTeachers();
+    } catch (error) {
+      alert('Failed to add teacher');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-12">
       <div className="flex justify-between items-end">
@@ -30,7 +53,10 @@ const Teachers = () => {
           <h2 className="text-3xl font-black text-slate-800 tracking-tight">Faculty & Commissions</h2>
           <p className="text-slate-500 font-medium mt-1">Manage instructors and calculate monthly payouts</p>
         </div>
-        <button className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center transition-all shadow-lg shadow-indigo-200 active:scale-95">
+        <button 
+          onClick={() => setShowModal(true)}
+          className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center transition-all shadow-lg shadow-indigo-200 active:scale-95"
+        >
           <UserCog size={18} className="mr-2" />
           Add Teacher
         </button>
@@ -110,7 +136,80 @@ const Teachers = () => {
             </table>
           </div>
         )}
-      </div>
+      {/* Add Teacher Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full relative animate-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <h3 className="text-2xl font-black text-slate-800 mb-6 flex items-center">
+              <UserCog className="mr-2 text-violet-600" />
+              Add New Teacher
+            </h3>
+            
+            <form onSubmit={handleAddTeacher} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Name</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newTeacher.name}
+                  onChange={(e) => setNewTeacher({...newTeacher, name: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                  placeholder="e.g. Nimal Perera"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Contact No</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newTeacher.contact}
+                  onChange={(e) => setNewTeacher({...newTeacher, contact: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                  placeholder="e.g. 0771234567"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Subject</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newTeacher.subject}
+                  onChange={(e) => setNewTeacher({...newTeacher, subject: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                  placeholder="e.g. Science"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Commission Percentage (%)</label>
+                <input 
+                  type="number" 
+                  required
+                  min="0"
+                  max="100"
+                  value={newTeacher.commissionRate}
+                  onChange={(e) => setNewTeacher({...newTeacher, commissionRate: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                />
+                <p className="text-xs text-slate-500 mt-1">E.g. 50 means 50% from class fees.</p>
+              </div>
+              
+              <button 
+                type="submit" 
+                disabled={submitting}
+                className="w-full mt-4 bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50"
+              >
+                {submitting ? 'Adding...' : 'Save Teacher'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

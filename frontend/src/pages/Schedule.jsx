@@ -6,20 +6,53 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const Schedule = () => {
   const [classes, setClasses] = useState([]);
+  const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [newClass, setNewClass] = useState({ name: '', teacherId: '', time: '', fee: 1000 });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchClasses();
+    fetchData();
   }, []);
 
-  const fetchClasses = async () => {
+  const fetchData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/classes`);
-      setClasses(response.data);
+      const [classesRes, teachersRes] = await Promise.all([
+        axios.get(`${API_URL}/classes`),
+        axios.get(`${API_URL}/teachers/commission`)
+      ]);
+      setClasses(classesRes.data);
+      setTeachers(teachersRes.data);
+      if (teachersRes.data.length > 0) {
+        setNewClass(prev => ({ ...prev, teacherId: teachersRes.data[0].teacherId }));
+      }
     } catch (error) {
-      console.error('Error fetching classes:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddClass = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const selectedTeacher = teachers.find(t => t.teacherId === newClass.teacherId);
+      await axios.post(`${API_URL}/classes`, {
+        name: newClass.name,
+        teacherId: newClass.teacherId,
+        teacherName: selectedTeacher ? selectedTeacher.name : 'Unknown',
+        time: newClass.time,
+        fee: Number(newClass.fee)
+      });
+      setShowModal(false);
+      setNewClass({ name: '', teacherId: teachers[0]?.teacherId || '', time: '', fee: 1000 });
+      fetchData();
+    } catch (error) {
+      alert('Failed to add class');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -34,6 +67,13 @@ const Schedule = () => {
           <h2 className="text-3xl font-black text-slate-800 tracking-tight">Class Scheduler</h2>
           <p className="text-slate-500 font-medium mt-1">Manage timetables and broadcast urgent updates</p>
         </div>
+        <button 
+          onClick={() => setShowModal(true)}
+          className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center transition-all shadow-lg shadow-indigo-200 active:scale-95"
+        >
+          <CalendarIcon size={18} className="mr-2" />
+          Add Class
+        </button>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
@@ -137,7 +177,84 @@ const Schedule = () => {
           </div>
         </div>
 
-      </div>
+      {/* Add Class Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full relative animate-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <h3 className="text-2xl font-black text-slate-800 mb-6 flex items-center">
+              <CalendarIcon className="mr-2 text-indigo-600" />
+              Add New Class
+            </h3>
+            
+            <form onSubmit={handleAddClass} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Class Name</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newClass.name}
+                  onChange={(e) => setNewClass({...newClass, name: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="e.g. A/L Science 2026"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Teacher</label>
+                <select
+                  required
+                  value={newClass.teacherId}
+                  onChange={(e) => setNewClass({...newClass, teacherId: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="" disabled>Select a teacher</option>
+                  {teachers.map(t => (
+                    <option key={t.teacherId} value={t.teacherId}>{t.name} ({t.subject})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Schedule Time</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newClass.time}
+                  onChange={(e) => setNewClass({...newClass, time: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="e.g. Saturday 8:00 AM - 12:00 PM"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Monthly Fee (Rs.)</label>
+                <input 
+                  type="number" 
+                  required
+                  min="0"
+                  value={newClass.fee}
+                  onChange={(e) => setNewClass({...newClass, fee: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              
+              <button 
+                type="submit" 
+                disabled={submitting}
+                className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50"
+              >
+                {submitting ? 'Adding...' : 'Save Class'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
