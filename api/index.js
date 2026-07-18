@@ -235,9 +235,17 @@ async function processAttendanceScan(studentId, classId) {
     .where('classId', '==', classId)
     .where('month', '==', currentMonth).get();
   
+  const todayDate = new Date();
+  const dayOfMonth = todayDate.getDate();
+  
   let paymentStatus = { outstanding: false, message: 'Fees up to date' };
   if (paymentQuery.empty) {
-    paymentStatus = { outstanding: true, message: `Fees pending for ${classData.name} (${currentMonth})` };
+    if (dayOfMonth >= 15) {
+      paymentStatus = { outstanding: true, message: `Fees pending for ${classData.name} (${currentMonth})` };
+    } else {
+      // Grace period until 15th
+      paymentStatus = { outstanding: false, message: `Grace Period: Fees pending for ${currentMonth}` };
+    }
   }
 
   // Check Attendance for this specific class
@@ -411,6 +419,35 @@ app.get('/api/attendance/dashboard', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch dashboard data' });
+  }
+});
+
+// 4.5 Unpaid Students
+app.get('/api/finance/unpaid', async (req, res) => {
+  try {
+    const { classId, month } = req.query;
+    if (!classId || !month) return res.status(400).json({ error: 'Missing classId or month' });
+    
+    // Get all students enrolled in this class
+    const studentsSnapshot = await db.collection('students').where('enrolledClasses', 'array-contains', classId).get();
+    let students = [];
+    studentsSnapshot.forEach(doc => students.push(doc.data()));
+    
+    // Get all payments for this class & month
+    const paymentsSnapshot = await db.collection('payments')
+      .where('classId', '==', classId)
+      .where('month', '==', month).get();
+      
+    let paidStudentIds = new Set();
+    paymentsSnapshot.forEach(doc => paidStudentIds.add(doc.data().studentId));
+    
+    // Filter unpaid
+    let unpaidStudents = students.filter(s => !paidStudentIds.has(s.studentId));
+    
+    res.json(unpaidStudents);
+  } catch (error) {
+    console.error('Error fetching unpaid students:', error);
+    res.status(500).json({ error: 'Failed to fetch unpaid students' });
   }
 });
 

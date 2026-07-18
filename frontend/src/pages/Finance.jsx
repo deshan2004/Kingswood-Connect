@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { CreditCard, Receipt, Wallet, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { CreditCard, Receipt, Wallet, ArrowRight, ShieldCheck, CheckCircle2, FileText, AlertCircle, MessageSquare } from 'lucide-react';
 import { format } from 'date-fns';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -16,6 +16,13 @@ const Finance = () => {
   const [classesList, setClassesList] = useState([]);
   const [studentStatus, setStudentStatus] = useState([]);
   const [statusLoading, setStatusLoading] = useState(false);
+
+  // Unpaid Reports State
+  const [activeTab, setActiveTab] = useState('record'); // 'record' or 'unpaid'
+  const [reportClass, setReportClass] = useState('');
+  const [reportMonth, setReportMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [unpaidStudents, setUnpaidStudents] = useState([]);
+  const [reportLoading, setReportLoading] = useState(false);
 
   React.useEffect(() => {
     fetchData();
@@ -64,6 +71,26 @@ const Finance = () => {
       console.error('Error fetching data:', error);
     }
   };
+
+  const fetchUnpaidReports = async () => {
+    if (!reportClass || !reportMonth) return;
+    setReportLoading(true);
+    try {
+      const res = await axios.get(`${API_URL}/finance/unpaid?classId=${reportClass}&month=${reportMonth}`);
+      setUnpaidStudents(res.data);
+    } catch (err) {
+      console.error('Error fetching unpaid reports', err);
+      setUnpaidStudents([]);
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (activeTab === 'unpaid') {
+      fetchUnpaidReports();
+    }
+  }, [activeTab, reportClass, reportMonth]);
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -114,13 +141,25 @@ const Finance = () => {
           <h2 className="text-3xl font-black text-slate-800 tracking-tight">Fee Management</h2>
           <p className="text-slate-500 font-medium mt-1">Record payments and generate receipts</p>
         </div>
-        <div className="flex items-center justify-center gap-2 text-sm font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100 w-full sm:w-auto">
-          <Wallet size={18} /> Cashier Desk
+        <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-full sm:w-auto overflow-x-auto">
+          <button 
+            onClick={() => setActiveTab('record')}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${activeTab === 'record' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
+          >
+            <Wallet size={18} /> Record Payment
+          </button>
+          <button 
+            onClick={() => setActiveTab('unpaid')}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${activeTab === 'unpaid' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}
+          >
+            <FileText size={18} /> Unpaid Reports
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Payment Form */}
+      {activeTab === 'record' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Payment Form */}
         <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full blur-3xl -z-10 translate-x-10 -translate-y-10"></div>
           
@@ -307,6 +346,91 @@ const Finance = () => {
           )}
         </div>
       </div>
+      ) : (
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+          <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between sm:items-center bg-slate-50/50">
+            <h3 className="text-xl font-bold text-slate-800 flex items-center">
+              <AlertCircle className="mr-3 text-rose-500" size={24} /> Unpaid Students
+            </h3>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <select
+                value={reportClass}
+                onChange={(e) => setReportClass(e.target.value)}
+                className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-bold text-slate-700 text-sm"
+              >
+                <option value="" disabled>Select Class</option>
+                {classesList.map(c => (
+                  <option key={c.classId} value={c.classId}>{c.name}</option>
+                ))}
+              </select>
+              <input 
+                type="month" 
+                value={reportMonth}
+                onChange={(e) => setReportMonth(e.target.value)}
+                className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-bold text-slate-700 text-sm"
+              />
+            </div>
+          </div>
+          
+          <div className="p-0">
+            {!reportClass ? (
+              <div className="p-12 text-center text-slate-400">
+                <FileText size={48} className="mx-auto mb-3 opacity-20" />
+                <p className="font-medium text-lg">Select a class to view unpaid reports</p>
+              </div>
+            ) : reportLoading ? (
+              <div className="p-12 flex justify-center">
+                <div className="w-8 h-8 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+              </div>
+            ) : unpaidStudents.length === 0 ? (
+              <div className="p-12 text-center text-emerald-500">
+                <CheckCircle2 size={48} className="mx-auto mb-3 opacity-40" />
+                <p className="font-bold text-xl text-emerald-600">All Clear!</p>
+                <p className="text-sm font-medium mt-1">Everyone in this class has paid for {format(new Date(reportMonth), 'MMMM')}.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-100">
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Student</th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">ID</th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {unpaidStudents.map(student => (
+                      <tr key={student.studentId} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="py-4 px-6">
+                          <div className="font-bold text-slate-800">{student.name}</div>
+                          <div className="text-xs font-medium text-slate-500 mt-0.5">{student.contact}</div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className="font-mono text-sm font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">
+                            {student.studentId}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6 text-right">
+                          <button
+                            onClick={() => {
+                              const message = `Hello ${student.name},\n\nThis is a gentle reminder that the class fee for ${format(new Date(reportMonth), 'MMMM yyyy')} is pending.\n\nPlease complete your payment at the next class.\n\nThank you!\n- Kingswood Connect`;
+                              const whatsappUrl = `https://wa.me/${student.contact.replace(/^0/, '94')}?text=${encodeURIComponent(message)}`;
+                              window.open(whatsappUrl, '_blank');
+                            }}
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 font-bold rounded-lg text-xs transition-colors border border-green-200"
+                          >
+                            <MessageSquare size={14} /> Reminder
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
