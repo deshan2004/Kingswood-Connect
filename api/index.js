@@ -317,22 +317,41 @@ app.post('/api/payments', async (req, res) => {
 app.get('/api/attendance/dashboard', async (req, res) => {
   try {
     const today = format(new Date(), 'yyyy-MM-dd');
+    const { classId } = req.query;
     
     const studentsSnapshot = await db.collection('students').get();
-    const totalStudents = studentsSnapshot.size;
+    let totalStudents = 0;
+    
+    if (classId && classId !== 'all') {
+      studentsSnapshot.forEach(doc => {
+        const student = doc.data();
+        if (student.enrolledClasses && student.enrolledClasses.includes(classId)) {
+          totalStudents++;
+        }
+      });
+    } else {
+      totalStudents = studentsSnapshot.size;
+    }
     
     const attendanceSnapshot = await db.collection('attendance').where('date', '==', today).where('status', '==', 'Present').get();
-    const presentToday = attendanceSnapshot.size;
-
+    let presentToday = 0;
     let recentScans = [];
-    // Firestore doesn't easily sort if we use 'where' on a different field without index, so we sort in memory for this small demo
-    attendanceSnapshot.forEach(doc => recentScans.push({ _id: doc.id, ...doc.data() }));
+    
+    attendanceSnapshot.forEach(doc => {
+      const scan = doc.data();
+      if (!classId || classId === 'all' || scan.classId === classId) {
+        presentToday++;
+        recentScans.push({ _id: doc.id, ...scan });
+      }
+    });
+
     recentScans.sort((a, b) => new Date(b.timeIn) - new Date(a.timeIn));
     recentScans = recentScans.slice(0, 10).map(scan => ({
       _id: scan._id,
-      student: { name: scan.studentName, grade: scan.grade },
+      student: { name: scan.studentName, grade: scan.className || scan.grade },
       timeIn: scan.timeIn,
-      status: scan.status
+      status: scan.status,
+      className: scan.className
     }));
 
     res.json({

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Users, UserCheck, UserX, Clock, Activity, TrendingUp, QrCode } from 'lucide-react';
+import { Users, UserCheck, UserX, Clock, Activity, TrendingUp, QrCode, Filter } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -35,16 +35,33 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [classesList, setClassesList] = useState([]);
+  const [selectedClass, setSelectedClass] = useState('all');
+
   useEffect(() => {
-    fetchDashboardData();
-    // Poll every 30 seconds for live updates
-    const interval = setInterval(fetchDashboardData, 30000);
-    return () => clearInterval(interval);
+    fetchClasses();
   }, []);
 
-  const fetchDashboardData = async () => {
+  useEffect(() => {
+    fetchDashboardData(selectedClass);
+    // Poll every 30 seconds for live updates
+    const interval = setInterval(() => fetchDashboardData(selectedClass), 30000);
+    return () => clearInterval(interval);
+  }, [selectedClass]);
+
+  const fetchClasses = async () => {
     try {
-      const response = await axios.get(`${API_URL}/attendance/dashboard`);
+      const response = await axios.get(`${API_URL}/classes`);
+      setClassesList(response.data);
+    } catch (error) {
+      console.error('Failed to fetch classes:', error);
+    }
+  };
+
+  const fetchDashboardData = async (classId = 'all') => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/attendance/dashboard?classId=${classId}`);
       setData(response.data);
       setError(null);
     } catch (error) {
@@ -77,13 +94,28 @@ const Dashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-12">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
         <div>
           <h2 className="text-3xl font-black text-slate-800 tracking-tight">Overview</h2>
           <p className="text-slate-500 font-medium mt-1">Real-time attendance metrics</p>
         </div>
-        <div className="flex items-center gap-2 text-sm font-medium text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
-          <Activity size={16} className="animate-pulse" /> Live Status
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm w-full sm:w-auto">
+            <Filter size={16} className="text-slate-400" />
+            <select
+              value={selectedClass}
+              onChange={(e) => setSelectedClass(e.target.value)}
+              className="bg-transparent border-none text-sm font-bold text-slate-700 focus:ring-0 outline-none w-full sm:w-auto"
+            >
+              <option value="all">All Classes</option>
+              {classesList.map(c => (
+                <option key={c.classId} value={c.classId}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center justify-center gap-2 text-sm font-medium text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100 w-full sm:w-auto">
+            <Activity size={16} className="animate-pulse" /> Live Status
+          </div>
         </div>
       </div>
       
