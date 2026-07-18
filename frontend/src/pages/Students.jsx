@@ -27,6 +27,9 @@ const Students = () => {
   const [editEnrolledClasses, setEditEnrolledClasses] = useState([]);
   const [updating, setUpdating] = useState(false);
 
+  // Modals
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+
   const showToast = (type, message) => {
     setToast({ type, message });
     setTimeout(() => setToast(null), 10000);
@@ -107,6 +110,7 @@ const Students = () => {
       const newStudent = response.data;
       
       if (newStudent.qrCodeUrl) {
+        showToast('success', 'Student registered successfully!');
         sendWhatsApp(newStudent, newStudent.qrCodeUrl);
       }
       
@@ -116,6 +120,7 @@ const Students = () => {
       setContact('');
       setPassword('');
       setEnrolledClasses([]);
+      setShowRegisterModal(false); // Close modal on success
       fetchData(); // Refresh list
     } catch (error) {
       alert('Failed to register student');
@@ -182,114 +187,22 @@ const Students = () => {
         </div>
       )}
 
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
         <div>
           <h2 className="text-3xl font-black text-slate-800 tracking-tight">Student Directory</h2>
           <p className="text-slate-500 font-medium mt-1">Manage enrollments and profiles</p>
         </div>
+        <button 
+          onClick={() => setShowRegisterModal(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-2"
+        >
+          <UserPlus size={20} /> Register Student
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Registration Form */}
-        <div className="lg:col-span-1">
-          <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -z-10 translate-x-10 -translate-y-10"></div>
-            
-            <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
-              <UserPlus className="mr-3 text-blue-500" size={24} /> New Student
-            </h3>
-            
-            <form onSubmit={handleRegister} className="space-y-5">
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Full Name</label>
-                <input 
-                  type="text" 
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800"
-                  placeholder="e.g. Kasun Perera"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Email (Optional)</label>
-                <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800"
-                  placeholder="student@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Grade/Class</label>
-                <input 
-                  type="text" 
-                  required
-                  value={grade}
-                  onChange={(e) => setGrade(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800"
-                  placeholder="e.g. 10-A"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Parent Contact</label>
-                <input 
-                  type="text" 
-                  required
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800"
-                  placeholder="e.g. 0771234567"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Password (Optional)</label>
-                <input 
-                  type="text" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800"
-                  placeholder="Leave empty to use phone number"
-                />
-              </div>
-
-              {classesList.length > 0 && (
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Enroll in Classes</label>
-                  <div className="space-y-2 max-h-48 overflow-y-auto bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    {classesList.map(c => (
-                      <label key={c.classId} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-100 rounded-lg transition-colors">
-                        <input 
-                          type="checkbox" 
-                          checked={enrolledClasses.includes(c.classId)}
-                          onChange={() => toggleClass(c.classId)}
-                          className="w-5 h-5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
-                        />
-                        <span className="text-sm font-medium text-slate-800">{c.name} - {c.teacherName}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <button 
-                type="submit" 
-                disabled={submitting}
-                className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-              >
-                {submitting ? 'Registering...' : 'Register Student'}
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* Student List */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden h-full flex flex-col">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-              <div className="relative w-64">
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden h-full flex flex-col">
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <div className="relative w-full max-w-sm">
                 <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                   <Search size={18} />
                 </span>
@@ -377,8 +290,125 @@ const Students = () => {
               </div>
             )}
           </div>
+      {/* Register Student Modal */}
+      {showRegisterModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+            <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+              <h3 className="text-lg font-black text-slate-800 flex items-center">
+                <UserPlus className="mr-3 text-blue-500" size={20} /> Register Student
+              </h3>
+              <button 
+                onClick={() => setShowRegisterModal(false)}
+                className="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-100 p-2 rounded-xl transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto">
+              <form onSubmit={handleRegister} className="space-y-5">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Full Name</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800 text-sm"
+                    placeholder="e.g. Kasun Perera"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Email (Optional)</label>
+                  <input 
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800 text-sm"
+                    placeholder="student@example.com"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Grade/Class</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={grade}
+                      onChange={(e) => setGrade(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800 text-sm"
+                      placeholder="e.g. 10-A"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Parent Contact</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={contact}
+                      onChange={(e) => setContact(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800 text-sm"
+                      placeholder="e.g. 0771234567"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Password (Optional)</label>
+                  <input 
+                    type="text" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800 text-sm"
+                    placeholder="Leave empty to use phone number"
+                  />
+                </div>
+
+                {classesList.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Enroll in Classes</label>
+                    <div className="bg-slate-50 rounded-xl p-4 max-h-48 overflow-y-auto border border-slate-100 space-y-3">
+                      {classesList.map(c => (
+                        <label key={c.classId} className="flex items-center gap-3 cursor-pointer group">
+                          <div className="relative flex items-center justify-center">
+                            <input 
+                              type="checkbox" 
+                              checked={enrolledClasses.includes(c.classId)}
+                              onChange={() => toggleClass(c.classId)}
+                              className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-md checked:bg-blue-600 checked:border-blue-600 transition-colors"
+                            />
+                            <CheckCircle2 size={14} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
+                          </div>
+                          <span className="text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors">
+                            {c.name} <span className="text-slate-400 font-medium ml-1">({c.teacherName})</span>
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-4">
+                  <button 
+                    type="button"
+                    onClick={() => setShowRegisterModal(false)}
+                    className="px-5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={submitting}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95 disabled:opacity-70 flex items-center gap-2"
+                  >
+                    {submitting ? 'Registering...' : 'Register Student'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Edit Student Modal */}
       {editingStudent && (

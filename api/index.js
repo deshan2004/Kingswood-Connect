@@ -124,6 +124,26 @@ app.post('/api/students', async (req, res) => {
     };
     await db.collection('students').doc(studentId).set(studentData);
     
+    // Auto-mark attendance for today for enrolled classes
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const timeIn = new Date().toISOString();
+    if (enrolledClasses && enrolledClasses.length > 0) {
+      for (const classId of enrolledClasses) {
+        const classDoc = await db.collection('classes').doc(classId).get();
+        const className = classDoc.exists ? classDoc.data().name : 'Unknown Class';
+        
+        await db.collection('attendance').add({
+          studentId, 
+          studentName: name, 
+          classId,
+          className,
+          date: today, 
+          timeIn, 
+          status: 'Present'
+        });
+      }
+    }
+    
     res.status(201).json({ ...studentData, email, password });
   } catch (error) {
     console.error('Error creating student:', error);
