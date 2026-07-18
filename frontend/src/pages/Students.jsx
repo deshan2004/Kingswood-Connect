@@ -13,6 +13,7 @@ const Students = () => {
   const [email, setEmail] = useState('');
   const [grade, setGrade] = useState('');
   const [contact, setContact] = useState('');
+  const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -76,7 +77,7 @@ const Students = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await axios.post(`${API_URL}/students`, { name, email, grade, contact });
+      const response = await axios.post(`${API_URL}/students`, { name, email, grade, contact, password });
       const newStudent = response.data;
       
       if (newStudent.qrCodeUrl) {
@@ -87,6 +88,7 @@ const Students = () => {
       setEmail('');
       setGrade('');
       setContact('');
+      setPassword('');
       fetchStudents(); // Refresh list
     } catch (error) {
       alert('Failed to register student');
@@ -157,6 +159,16 @@ const Students = () => {
                   onChange={(e) => setContact(e.target.value)}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800"
                   placeholder="e.g. 0771234567"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Password (Optional)</label>
+                <input 
+                  type="text" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800"
+                  placeholder="Leave empty to use phone number"
                 />
               </div>
               <button 

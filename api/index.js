@@ -80,7 +80,7 @@ app.get('/api/debug', (req, res) => {
 // 1. Register a new student
 app.post('/api/students', async (req, res) => {
   try {
-    const { name, email: reqEmail, grade, contact } = req.body;
+    const { name, email: reqEmail, grade, contact, password: reqPassword } = req.body;
     const studentId = generateId('KWS');
     const qrCodeUrl = await qrcode.toDataURL(studentId);
 
@@ -89,7 +89,10 @@ app.post('/api/students', async (req, res) => {
       ? reqEmail.trim().toLowerCase() 
       : `${studentId.toLowerCase()}@kingswood.edu`;
       
-    let password = contact.replace(/\s+/g, ''); // Use contact as password without spaces
+    let password = (reqPassword && reqPassword.trim() !== '') 
+      ? reqPassword.trim() 
+      : contact.replace(/\s+/g, ''); // Fallback to contact without spaces
+
     if (password.length < 6) {
       password = password.padEnd(6, '0'); // Firebase Auth requires at least 6 characters
     }
