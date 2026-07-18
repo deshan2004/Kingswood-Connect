@@ -16,10 +16,10 @@ const Login = () => {
 
   // If already logged in, redirect based on role
   useEffect(() => {
-    if (user && user.role) {
-      const currentRole = user.role.toLowerCase();
+    if (user) {
+      const currentRole = user.role ? user.role.toLowerCase() : 'student';
       if (currentRole === 'admin') navigate('/');
-      else if (currentRole === 'student') navigate('/student');
+      else navigate('/student');
     }
   }, [user, navigate]);
 

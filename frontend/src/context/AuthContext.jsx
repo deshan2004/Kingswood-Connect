@@ -17,8 +17,14 @@ export const AuthProvider = ({ children }) => {
           const res = await axios.get(`${import.meta.env.VITE_API_URL || '/api'}/auth/me/${firebaseUser.uid}`);
           setUser({ ...firebaseUser, ...res.data });
         } catch (error) {
-          console.error("Failed to fetch user role", error);
-          setUser(firebaseUser); // Fallback
+          console.error("Failed to fetch user role from API:", error);
+          try {
+            const idTokenResult = await firebaseUser.getIdTokenResult();
+            const role = idTokenResult.claims.role || 'student';
+            setUser({ ...firebaseUser, role });
+          } catch (e) {
+            setUser({ ...firebaseUser, role: 'student' });
+          }
         }
       } else {
         setUser(null);
