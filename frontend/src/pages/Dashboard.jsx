@@ -49,7 +49,8 @@ const Dashboard = () => {
       setError(null);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      setError('Cannot connect to backend.');
+      const errorMessage = error.response?.data?.details || error.response?.data?.error || error.message || 'Cannot connect to backend.';
+      setError(`Connection Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
