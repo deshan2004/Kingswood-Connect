@@ -435,8 +435,13 @@ app.post('/api/classes', async (req, res) => {
     }
 
     const classData = { 
-      classId, name, grade, teacherId, teacherName, 
-      fee: parseFloat(fee) || 0, schedule, 
+      classId, 
+      name, 
+      grade: grade || 'General', 
+      teacherId, 
+      teacherName, 
+      fee: parseFloat(fee) || 0, 
+      schedule: schedule || '', 
       createdAt: new Date().toISOString() 
     };
     await db.collection('classes').doc(classId).set(classData);
