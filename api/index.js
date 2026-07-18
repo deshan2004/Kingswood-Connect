@@ -80,7 +80,7 @@ app.get('/api/debug', (req, res) => {
 // 1. Register a new student
 app.post('/api/students', async (req, res) => {
   try {
-    const { name, email: reqEmail, grade, contact, password: reqPassword } = req.body;
+    const { name, email: reqEmail, grade, contact, password: reqPassword, enrolledClasses } = req.body;
     const studentId = generateId('KWS');
     const qrCodeUrl = await qrcode.toDataURL(studentId);
 
@@ -119,6 +119,7 @@ app.post('/api/students', async (req, res) => {
     // Store in students collection
     const studentData = {
       studentId, name, grade, contact, qrCodeUrl,
+      enrolledClasses: enrolledClasses || [], // Array of classIds
       createdAt: new Date().toISOString()
     };
     await db.collection('students').doc(studentId).set(studentData);
@@ -287,22 +288,64 @@ app.get('/api/attendance/dashboard', async (req, res) => {
   }
 });
 
-// 5. Teachers & Commission Calculator (Basic endpoint)
-app.get('/api/teachers/commission', async (req, res) => {
-  // Still mock for now since we don't have a teacher UI to add teachers
-  res.json([
-    { teacherId: 'T01', name: 'Mr. Silva', subject: 'Science', students: 45, commissionRate: 0.6, expectedIncome: 45 * 2000 * 0.6 },
-    { teacherId: 'T02', name: 'Ms. Perera', subject: 'Maths', students: 60, commissionRate: 0.5, expectedIncome: 60 * 1500 * 0.5 }
-  ]);
+// 5. Teachers
+app.get('/api/teachers', async (req, res) => {
+  try {
+    let teachers = [];
+    const snapshot = await db.collection('teachers').get();
+    snapshot.forEach(doc => teachers.push(doc.data()));
+    res.json(teachers);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch teachers' });
+  }
 });
 
-// 6. Class Schedule
+app.post('/api/teachers', async (req, res) => {
+  try {
+    const { name, subject, contact, commissionRate } = req.body;
+    const teacherId = generateId('TCH');
+    const teacherData = { teacherId, name, subject, contact, commissionRate: parseFloat(commissionRate) || 0, createdAt: new Date().toISOString() };
+    await db.collection('teachers').doc(teacherId).set(teacherData);
+    res.status(201).json(teacherData);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add teacher' });
+  }
+});
+
+// 6. Classes
 app.get('/api/classes', async (req, res) => {
-  // Mock classes
-  res.json([
-    { id: 1, name: 'Grade 10 Science', teacher: 'Mr. Silva', time: 'Mon 2:30 PM - 4:30 PM' },
-    { id: 2, name: 'Grade 11 Maths', teacher: 'Ms. Perera', time: 'Tue 3:00 PM - 5:00 PM' }
-  ]);
+  try {
+    let classes = [];
+    const snapshot = await db.collection('classes').get();
+    snapshot.forEach(doc => classes.push(doc.data()));
+    res.json(classes);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch classes' });
+  }
+});
+
+app.post('/api/classes', async (req, res) => {
+  try {
+    const { name, grade, teacherId, fee, schedule } = req.body;
+    const classId = generateId('CLS');
+    
+    // Fetch teacher details to store name along with ID for easy display
+    let teacherName = 'Unknown';
+    if (teacherId) {
+      const teacherDoc = await db.collection('teachers').doc(teacherId).get();
+      if (teacherDoc.exists) teacherName = teacherDoc.data().name;
+    }
+
+    const classData = { 
+      classId, name, grade, teacherId, teacherName, 
+      fee: parseFloat(fee) || 0, schedule, 
+      createdAt: new Date().toISOString() 
+    };
+    await db.collection('classes').doc(classId).set(classData);
+    res.status(201).json(classData);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add class' });
+  }
 });
 
 // 7. Firebase Auth Registration (Signup)

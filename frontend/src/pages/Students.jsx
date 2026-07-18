@@ -6,6 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const Students = () => {
   const [students, setStudents] = useState([]);
+  const [classesList, setClassesList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Form State
@@ -14,18 +15,23 @@ const Students = () => {
   const [grade, setGrade] = useState('');
   const [contact, setContact] = useState('');
   const [password, setPassword] = useState('');
+  const [enrolledClasses, setEnrolledClasses] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchStudents();
+    fetchData();
   }, []);
 
-  const fetchStudents = async () => {
+  const fetchData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/students`);
-      setStudents(response.data);
+      const [studentsRes, classesRes] = await Promise.all([
+        axios.get(`${API_URL}/students`),
+        axios.get(`${API_URL}/classes`)
+      ]);
+      setStudents(studentsRes.data);
+      setClassesList(classesRes.data);
     } catch (error) {
-      console.error('Error fetching students:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
@@ -77,7 +83,7 @@ const Students = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await axios.post(`${API_URL}/students`, { name, email, grade, contact, password });
+      const response = await axios.post(`${API_URL}/students`, { name, email, grade, contact, password, enrolledClasses });
       const newStudent = response.data;
       
       if (newStudent.qrCodeUrl) {
@@ -89,11 +95,20 @@ const Students = () => {
       setGrade('');
       setContact('');
       setPassword('');
-      fetchStudents(); // Refresh list
+      setEnrolledClasses([]);
+      fetchData(); // Refresh list
     } catch (error) {
       alert('Failed to register student');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const toggleClass = (classId) => {
+    if (enrolledClasses.includes(classId)) {
+      setEnrolledClasses(enrolledClasses.filter(id => id !== classId));
+    } else {
+      setEnrolledClasses([...enrolledClasses, classId]);
     }
   };
 
@@ -171,6 +186,26 @@ const Students = () => {
                   placeholder="Leave empty to use phone number"
                 />
               </div>
+
+              {classesList.length > 0 && (
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Enroll in Classes</label>
+                  <div className="space-y-2 max-h-48 overflow-y-auto bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    {classesList.map(c => (
+                      <label key={c.classId} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                        <input 
+                          type="checkbox" 
+                          checked={enrolledClasses.includes(c.classId)}
+                          onChange={() => toggleClass(c.classId)}
+                          className="w-5 h-5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-medium text-slate-800">{c.name} - {c.teacherName}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <button 
                 type="submit" 
                 disabled={submitting}
@@ -213,28 +248,28 @@ const Students = () => {
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Student</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">ID</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Grade</th>
-                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Contact</th>
-                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">QR</th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Classes</th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {students.map((student) => (
-                      <tr key={student.studentId} className="hover:bg-slate-50/80 transition-colors group">
+                      <tr key={student.studentId} className="hover:bg-blue-50/30 transition-colors group">
                         <td className="py-4 px-6">
-                          <div className="flex items-center">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-blue-100 to-indigo-100 flex items-center justify-center text-blue-700 font-bold mr-3 border border-blue-200/50">
-                              {student.name.charAt(0)}
-                            </div>
-                            <span className="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{student.name}</span>
-                          </div>
+                          <div className="font-bold text-slate-800">{student.name}</div>
+                          <div className="text-xs font-medium text-slate-500 mt-0.5">{student.contact}</div>
                         </td>
-                        <td className="py-4 px-6 text-sm font-mono font-semibold text-slate-600">{student.studentId}</td>
                         <td className="py-4 px-6">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                            {student.grade}
+                          <span className="font-mono text-sm font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                            {student.studentId}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-sm font-medium text-slate-500">{student.contact}</td>
+                        <td className="py-4 px-6 text-sm font-bold text-slate-700">
+                          {student.grade}
+                        </td>
+                        <td className="py-4 px-6 text-sm font-bold text-slate-700">
+                          {student.enrolledClasses ? student.enrolledClasses.length : 0} classes
+                        </td>
                         <td className="py-4 px-6 text-right flex items-center justify-end gap-1">
                           <button 
                             onClick={() => sendWhatsApp(student, student.qrCodeUrl)}
