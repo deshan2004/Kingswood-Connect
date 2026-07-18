@@ -4,6 +4,8 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
 import { doc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { CheckCircle2, QrCode, Smartphone } from 'lucide-react';
+import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const MobileScanner = () => {
   const { sessionId } = useParams();
@@ -20,13 +22,11 @@ const MobileScanner = () => {
       const onScanSuccess = async (decodedText) => {
         setScanStatus('Sending...');
         try {
-          const sessionRef = doc(db, 'scan_sessions', sessionId);
-          // Try to update the session. If it doesn't exist, this might fail, but Scanner.jsx creates it.
-          // Using setDoc with merge to be safe
-          await setDoc(sessionRef, {
-            studentId: decodedText,
-            scannedAt: new Date().toISOString()
-          }, { merge: true });
+          // Send to the backend API which has admin privileges to bypass Firestore rules
+          await axios.post(`${API_URL}/mobile-scan`, {
+            sessionId: sessionId,
+            studentId: decodedText
+          });
           
           setLastScanned(decodedText);
           setScanStatus('Sent successfully!');

@@ -185,6 +185,27 @@ app.post('/api/attendance/scan', async (req, res) => {
   }
 });
 
+// Mobile Scanner bridge - updates the session document so the admin dashboard sees it
+app.post('/api/mobile-scan', async (req, res) => {
+  try {
+    const { sessionId, studentId } = req.body;
+    if (!sessionId || !studentId) {
+      return res.status(400).json({ error: 'Missing sessionId or studentId' });
+    }
+    
+    // Update the scan session document using admin SDK (bypasses rules)
+    await db.collection('scan_sessions').doc(sessionId).set({
+      studentId: studentId,
+      scannedAt: new Date().toISOString()
+    }, { merge: true });
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Mobile scan bridge error:', error);
+    res.status(500).json({ error: 'Failed to update scan session' });
+  }
+});
+
 // 4. Record a Payment
 app.post('/api/payments', async (req, res) => {
   try {
