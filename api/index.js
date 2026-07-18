@@ -124,7 +124,7 @@ app.post('/api/students', async (req, res) => {
     };
     await db.collection('students').doc(studentId).set(studentData);
     
-    res.status(201).json(studentData);
+    res.status(201).json({ ...studentData, email, password });
   } catch (error) {
     console.error('Error creating student:', error);
     res.status(500).json({ error: 'Failed to create student' });

@@ -76,8 +76,13 @@ const Students = () => {
       if (phone.startsWith('0')) {
         phone = '94' + phone.substring(1);
       }
+      let message = `Hello ${student.name},\n\nWelcome to Kingswood Connect! Your Student ID is *${student.studentId}*.\n`;
+      if (student.email && student.password) {
+        message += `\n*Student Portal Login*\nLink: https://kingswood-connect.vercel.app/login\nEmail: ${student.email}\nPassword: ${student.password}\n`;
+      }
+      message += `\nPlease save the QR code image (Paste it from clipboard!) to mark your attendance.`;
       
-      const text = encodeURIComponent(`Hello ${student.name},\n\nWelcome to Kingswood Connect! Your Student ID is *${student.studentId}*.\n\nPlease save the QR code image to mark your attendance.`);
+      const text = encodeURIComponent(message);
       window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
       
     } catch (error) {
