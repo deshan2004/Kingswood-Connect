@@ -76,11 +76,12 @@ const Students = () => {
       if (phone.startsWith('0')) {
         phone = '94' + phone.substring(1);
       }
+      const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${student.studentId}`;
       let message = `Hello ${student.name},\n\nWelcome to Kingswood Connect! Your Student ID is *${student.studentId}*.\n`;
       if (student.email && student.password) {
         message += `\n*Student Portal Login*\nLink: https://kingswood-connect.vercel.app/login\nEmail: ${student.email}\nPassword: ${student.password}\n`;
       }
-      message += `\nPlease save the QR code image (Paste it from clipboard!) to mark your attendance.`;
+      message += `\n*Your QR Code:*\n${qrImageUrl}\n\nPlease save this QR code image to mark your attendance. (You can also paste the image directly if it was copied).`;
       
       const text = encodeURIComponent(message);
       window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
