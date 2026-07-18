@@ -109,12 +109,12 @@ const Finance = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-12">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
         <div>
           <h2 className="text-3xl font-black text-slate-800 tracking-tight">Fee Management</h2>
           <p className="text-slate-500 font-medium mt-1">Record payments and generate receipts</p>
         </div>
-        <div className="flex items-center gap-2 text-sm font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100">
+        <div className="flex items-center justify-center gap-2 text-sm font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100 w-full sm:w-auto">
           <Wallet size={18} /> Cashier Desk
         </div>
       </div>

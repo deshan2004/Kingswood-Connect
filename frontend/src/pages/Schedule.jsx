@@ -73,14 +73,14 @@ const Schedule = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-12">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
         <div>
           <h2 className="text-3xl font-black text-slate-800 tracking-tight">Class Scheduler</h2>
           <p className="text-slate-500 font-medium mt-1">Manage timetables and broadcast urgent updates</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center transition-all shadow-lg shadow-indigo-200 active:scale-95"
+          className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center justify-center sm:justify-start transition-all shadow-lg shadow-indigo-200 active:scale-95 w-full sm:w-auto"
         >
           <CalendarIcon size={18} className="mr-2" />
           Add Class
@@ -233,7 +233,7 @@ const Schedule = () => {
 
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Schedule Time</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <select
                     required
                     value={newClass.day}
