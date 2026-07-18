@@ -65,6 +65,18 @@ app.get('/api', (req, res) => {
   res.send('Kingswood Connect API is running with Firebase on Vercel!');
 });
 
+// Debug endpoint
+app.get('/api/debug', (req, res) => {
+  const envKey = process.env.FIREBASE_SERVICE_ACCOUNT;
+  res.json({
+    hasEnvVar: !!envKey,
+    envVarLength: envKey ? envKey.length : 0,
+    envVarStart: envKey ? envKey.substring(0, 15) : null,
+    firebaseError: firebaseError ? firebaseError.toString() : null,
+    dbInitialized: !!db
+  });
+});
+
 // 1. Register a new student
 app.post('/api/students', async (req, res) => {
   try {
