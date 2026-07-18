@@ -116,7 +116,7 @@ const Schedule = () => {
                           {cls.name}
                         </h3>
                         <p className="text-sm font-medium text-slate-500 mt-1 flex items-center">
-                           {cls.teacher}
+                           {cls.teacherName}
                         </p>
                       </div>
                       <div className="bg-indigo-50 p-2 rounded-xl text-indigo-600 group-hover:scale-110 transition-transform">
@@ -129,7 +129,7 @@ const Schedule = () => {
                         <Clock size={16} className="mr-2 text-slate-400" /> Time
                       </span>
                       <span className="text-sm font-bold text-indigo-700">
-                        {cls.time}
+                        {cls.schedule}
                       </span>
                     </div>
 
