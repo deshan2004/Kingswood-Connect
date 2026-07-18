@@ -143,49 +143,67 @@ app.get('/api/students', async (req, res) => {
 });
 
 // 3. Scan QR code and mark attendance
+async function processAttendanceScan(studentId) {
+  if (!studentId) throw new Error('Student ID is required');
+
+  const currentMonth = format(new Date(), 'yyyy-MM');
+  const today = format(new Date(), 'yyyy-MM-dd');
+
+  const studentDoc = await db.collection('students').doc(studentId).get();
+  if (!studentDoc.exists) {
+    const error = new Error('Student not found');
+    error.status = 404;
+    throw error;
+  }
+  const student = studentDoc.data();
+
+  // Check Payments
+  const paymentQuery = await db.collection('payments')
+    .where('studentId', '==', studentId)
+    .where('month', '==', currentMonth).get();
+  
+  let paymentStatus = { outstanding: false, message: 'Fees up to date' };
+  if (paymentQuery.empty) {
+    paymentStatus = { outstanding: true, message: 'Fees pending for ' + currentMonth };
+  }
+
+  // Check Attendance
+  const attendanceQuery = await db.collection('attendance')
+    .where('studentId', '==', studentId)
+    .where('date', '==', today).get();
+  
+  if (!attendanceQuery.empty) {
+    const error = new Error('Attendance already marked');
+    error.status = 400;
+    error.studentName = student.name;
+    throw error;
+  }
+
+  // Mark Attendance
+  const timeIn = new Date().toISOString();
+  await db.collection('attendance').add({
+    studentId, studentName: student.name, grade: student.grade, date: today, timeIn, status: 'Present'
+  });
+
+  return { message: 'Attendance marked successfully', student: student.name, timeIn, paymentAlert: paymentStatus };
+}
+
+// 3. Scan QR code and mark attendance (Direct from Admin Laptop)
 app.post('/api/attendance/scan', async (req, res) => {
   try {
-    const { studentId } = req.body;
-    if (!studentId) return res.status(400).json({ error: 'Student ID is required' });
-
-    const currentMonth = format(new Date(), 'yyyy-MM');
-    const today = format(new Date(), 'yyyy-MM-dd');
-
-    const studentDoc = await db.collection('students').doc(studentId).get();
-    if (!studentDoc.exists) return res.status(404).json({ error: 'Student not found' });
-    const student = studentDoc.data();
-
-    // Check Payments
-    const paymentQuery = await db.collection('payments')
-      .where('studentId', '==', studentId)
-      .where('month', '==', currentMonth).get();
-    
-    let paymentStatus = { outstanding: false, message: 'Fees up to date' };
-    if (paymentQuery.empty) {
-      paymentStatus = { outstanding: true, message: 'Fees pending for ' + currentMonth };
-    }
-
-    // Check Attendance
-    const attendanceQuery = await db.collection('attendance')
-      .where('studentId', '==', studentId)
-      .where('date', '==', today).get();
-    
-    if (!attendanceQuery.empty) return res.status(400).json({ message: 'Attendance already marked', student: student.name });
-
-    // Mark Attendance
-    const timeIn = new Date().toISOString();
-    await db.collection('attendance').add({
-      studentId, studentName: student.name, grade: student.grade, date: today, timeIn, status: 'Present'
-    });
-
-    return res.status(200).json({ message: 'Attendance marked successfully', student: student.name, timeIn, paymentAlert: paymentStatus });
+    const result = await processAttendanceScan(req.body.studentId);
+    return res.status(200).json(result);
   } catch (error) {
     console.error('Scan error:', error);
-    res.status(500).json({ error: 'Failed to process scan' });
+    if (error.status === 400) {
+      return res.status(400).json({ message: error.message, student: error.studentName });
+    }
+    const status = error.status || 500;
+    res.status(status).json({ error: error.message || 'Failed to process scan' });
   }
 });
 
-// Mobile Scanner bridge - updates the session document so the admin dashboard sees it
+// Mobile Scanner bridge - marks attendance AND updates the session document so the admin laptop sees it
 app.post('/api/mobile-scan', async (req, res) => {
   try {
     const { sessionId, studentId } = req.body;
@@ -193,13 +211,24 @@ app.post('/api/mobile-scan', async (req, res) => {
       return res.status(400).json({ error: 'Missing sessionId or studentId' });
     }
     
-    // Update the scan session document using admin SDK (bypasses rules)
+    // First, try to actually mark the attendance in the database!
+    let scanResultData = null;
+    let scanError = null;
+    try {
+      scanResultData = await processAttendanceScan(studentId);
+    } catch (err) {
+      scanError = err.message || 'Error processing scan';
+    }
+
+    // Then, update the scan session document so the laptop UI (if open) updates
     await db.collection('scan_sessions').doc(sessionId).set({
       studentId: studentId,
-      scannedAt: new Date().toISOString()
+      scannedAt: new Date().toISOString(),
+      result: scanResultData,
+      error: scanError
     }, { merge: true });
 
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: true, result: scanResultData, error: scanError });
   } catch (error) {
     console.error('Mobile scan bridge error:', error);
     res.status(500).json({ error: 'Failed to update scan session' });

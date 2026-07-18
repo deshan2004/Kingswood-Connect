@@ -39,8 +39,26 @@ const Scanner = () => {
         const data = snapshot.data();
         if (data.studentId && data.scannedAt && (!processScanRef.lastScannedAt || data.scannedAt > processScanRef.lastScannedAt)) {
           processScanRef.lastScannedAt = data.scannedAt;
-          if (processScanRef.current) {
-            processScanRef.current(data.studentId);
+          
+          // The backend now marks the attendance directly during the mobile scan and saves the result here!
+          if (data.result) {
+            setScanResult({
+              success: true,
+              message: data.result.message,
+              student: data.result.student,
+              paymentAlert: data.result.paymentAlert
+            });
+            setError(null);
+            setTimeout(() => setScanResult(null), 5000);
+          } else if (data.error) {
+            setError(data.error);
+            setScanResult(null);
+            setTimeout(() => setError(null), 3000);
+          } else {
+            // Fallback for older sessions without result field
+            if (processScanRef.current) {
+              processScanRef.current(data.studentId);
+            }
           }
         }
       }
