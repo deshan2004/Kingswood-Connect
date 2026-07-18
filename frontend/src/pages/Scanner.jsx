@@ -15,6 +15,8 @@ const Scanner = () => {
   const [loading, setLoading] = useState(false);
   const [manualId, setManualId] = useState('');
   const [students, setStudents] = useState([]);
+  const [classesList, setClassesList] = useState([]);
+  const [activeClass, setActiveClass] = useState('');
   const [sessionId, setSessionId] = useState(null);
   const [showMobileLink, setShowMobileLink] = useState(false);
   const processScanRef = React.useRef();
@@ -24,6 +26,8 @@ const Scanner = () => {
   });
 
   useEffect(() => {
+    fetchClasses();
+    
     // Generate session ID for mobile scanner
     const newSessionId = Math.random().toString(36).substring(2, 15);
     setSessionId(newSessionId);
@@ -67,6 +71,26 @@ const Scanner = () => {
     return () => unsubscribe();
   }, []);
 
+  // Update session doc whenever activeClass changes so mobile scanner knows which class
+  useEffect(() => {
+    if (sessionId && activeClass) {
+      const sessionRef = doc(db, 'scan_sessions', sessionId);
+      setDoc(sessionRef, { classId: activeClass }, { merge: true }).catch(console.error);
+    }
+  }, [sessionId, activeClass]);
+
+  const fetchClasses = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/classes`);
+      setClassesList(response.data);
+      if (response.data.length > 0) {
+        setActiveClass(response.data[0].classId);
+      }
+    } catch (err) {
+      console.error('Failed to fetch classes:', err);
+    }
+  };
+
   useEffect(() => {
     axios.get(`${API_URL}/students`).then(res => setStudents(res.data)).catch(console.error);
 
@@ -90,26 +114,23 @@ const Scanner = () => {
   }, []);
 
   const processScan = async (studentId) => {
-    if (loading) return;
+    if (!studentId || !activeClass) return;
+    
     setLoading(true);
+    setScanResult(null);
+    setError(null);
+
     try {
-      const response = await axios.post(`${API_URL}/attendance/scan`, {
-        studentId: studentId
-      });
-      
+      const response = await axios.post(`${API_URL}/attendance/scan`, { studentId, classId: activeClass });
       setScanResult({
         success: true,
         message: response.data.message,
         student: response.data.student,
         paymentAlert: response.data.paymentAlert
       });
-      setError(null);
-      
       setTimeout(() => setScanResult(null), 5000);
-      
     } catch (err) {
-      setError(err.response?.data?.message || err.response?.data?.error || 'Failed to mark attendance');
-      setScanResult(null);
+      setError(err.response?.data?.message || err.response?.data?.error || 'Failed to scan student');
       setTimeout(() => setError(null), 3000);
     } finally {
       setLoading(false);
@@ -143,6 +164,29 @@ const Scanner = () => {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12">
+      
+      {/* Class Selection */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">
+          Scanning Attendance For:
+        </label>
+        {classesList.length === 0 ? (
+          <div className="text-sm text-amber-600 font-medium">Please add classes from the backend before scanning.</div>
+        ) : (
+          <select
+            value={activeClass}
+            onChange={(e) => setActiveClass(e.target.value)}
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all font-bold text-slate-800 text-lg"
+          >
+            {classesList.map(c => (
+              <option key={c.classId} value={c.classId}>
+                {c.name} ({c.teacherName})
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+
       <div className="text-center space-y-2">
         <h2 className="text-3xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-3">
           <QrCode className="text-indigo-600" size={32} /> Fast Scan

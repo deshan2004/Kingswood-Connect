@@ -9,13 +9,31 @@ const Finance = () => {
   const [studentId, setStudentId] = useState('');
   const [amount, setAmount] = useState('');
   const [month, setMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [selectedClass, setSelectedClass] = useState('');
   const [loading, setLoading] = useState(false);
   const [receipt, setReceipt] = useState(null);
   const [students, setStudents] = useState([]);
+  const [classesList, setClassesList] = useState([]);
 
   React.useEffect(() => {
-    axios.get(`${API_URL}/students`).then(res => setStudents(res.data)).catch(console.error);
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const [studentsRes, classesRes] = await Promise.all([
+        axios.get(`${API_URL}/students`),
+        axios.get(`${API_URL}/classes`)
+      ]);
+      setStudents(studentsRes.data);
+      setClassesList(classesRes.data);
+      if (classesRes.data.length > 0) {
+        setSelectedClass(classesRes.data[0].classId);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -36,10 +54,16 @@ const Finance = () => {
       return;
     }
 
+    if (!selectedClass) {
+      alert('Please select a class for this payment.');
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await axios.post(`${API_URL}/payments`, {
         studentId: resolvedId,
+        classId: selectedClass,
         amount: Number(amount),
         month
       });
@@ -47,7 +71,7 @@ const Finance = () => {
       setStudentId('');
       setAmount('');
     } catch (error) {
-      alert('Payment failed');
+      alert(error.response?.data?.error || 'Payment failed');
     } finally {
       setLoading(false);
     }
@@ -93,6 +117,23 @@ const Finance = () => {
                   ))}
                 </datalist>
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Payment For Class</label>
+              <select
+                required
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all font-medium text-slate-800"
+              >
+                <option value="" disabled>Select a class</option>
+                {classesList.map(c => (
+                  <option key={c.classId} value={c.classId}>
+                    {c.name} ({c.teacherName}) - Rs. {c.fee}
+                  </option>
+                ))}
+              </select>
             </div>
             
             <div className="grid grid-cols-2 gap-5">
@@ -166,6 +207,10 @@ const Finance = () => {
                   <div className="flex justify-between items-end border-b border-dashed border-slate-200 pb-4">
                     <span className="text-sm font-medium text-slate-500">Student ID</span>
                     <span className="font-bold text-slate-800">{receipt.studentId}</span>
+                  </div>
+                  <div className="flex justify-between items-end border-b border-dashed border-slate-200 pb-4">
+                    <span className="text-sm font-medium text-slate-500">Class</span>
+                    <span className="font-bold text-slate-800">{receipt.className}</span>
                   </div>
                   <div className="flex justify-between items-end border-b border-dashed border-slate-200 pb-4">
                     <span className="text-sm font-medium text-slate-500">Amount Paid</span>

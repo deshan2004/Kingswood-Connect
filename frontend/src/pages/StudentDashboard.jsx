@@ -95,7 +95,7 @@ const StudentDashboard = () => {
                         <CheckCircle2 className="text-emerald-500" size={20} />
                         <div>
                           <p className="font-bold text-slate-800">{format(new Date(att.date), 'MMMM do, yyyy')}</p>
-                          <p className="text-xs font-semibold text-slate-500">Status: {att.status}</p>
+                          <p className="text-xs font-semibold text-slate-500">{att.className || 'General'} • {att.status}</p>
                         </div>
                       </div>
                       <div className="text-sm font-bold text-slate-600 bg-white px-3 py-1 rounded-lg border border-slate-200">
@@ -129,7 +129,7 @@ const StudentDashboard = () => {
                     <div key={i} className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
                       <div>
                         <p className="font-bold text-slate-800">Fee for {format(new Date(pay.month), 'MMMM yyyy')}</p>
-                        <p className="text-xs font-semibold text-slate-500">Receipt: {pay.receiptNo}</p>
+                        <p className="text-xs font-semibold text-slate-500">{pay.className || 'General'} • Receipt: {pay.receiptNo}</p>
                       </div>
                       <div className="text-right">
                         <p className="font-black text-emerald-600">Rs. {pay.amount.toLocaleString()}</p>

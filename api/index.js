@@ -144,12 +144,27 @@ app.get('/api/students', async (req, res) => {
 });
 
 // 3. Scan QR code and mark attendance
-async function processAttendanceScan(studentId) {
+async function processAttendanceScan(studentId, classId) {
   if (!studentId) throw new Error('Student ID is required');
+  if (!classId) {
+    const err = new Error('Class ID is required');
+    err.status = 400;
+    throw err;
+  }
 
   const currentMonth = format(new Date(), 'yyyy-MM');
   const today = format(new Date(), 'yyyy-MM-dd');
 
+  // Verify Class
+  const classDoc = await db.collection('classes').doc(classId).get();
+  if (!classDoc.exists) {
+    const err = new Error('Class not found');
+    err.status = 404;
+    throw err;
+  }
+  const classData = classDoc.data();
+
+  // Verify Student
   const studentDoc = await db.collection('students').doc(studentId).get();
   if (!studentDoc.exists) {
     const error = new Error('Student not found');
@@ -158,23 +173,33 @@ async function processAttendanceScan(studentId) {
   }
   const student = studentDoc.data();
 
-  // Check Payments
+  // Check Enrollment
+  if (!student.enrolledClasses || !student.enrolledClasses.includes(classId)) {
+    const error = new Error(`Student is not enrolled in ${classData.name}`);
+    error.status = 403;
+    error.studentName = student.name;
+    throw error;
+  }
+
+  // Check Payments for this specific class
   const paymentQuery = await db.collection('payments')
     .where('studentId', '==', studentId)
+    .where('classId', '==', classId)
     .where('month', '==', currentMonth).get();
   
   let paymentStatus = { outstanding: false, message: 'Fees up to date' };
   if (paymentQuery.empty) {
-    paymentStatus = { outstanding: true, message: 'Fees pending for ' + currentMonth };
+    paymentStatus = { outstanding: true, message: `Fees pending for ${classData.name} (${currentMonth})` };
   }
 
-  // Check Attendance
+  // Check Attendance for this specific class
   const attendanceQuery = await db.collection('attendance')
     .where('studentId', '==', studentId)
+    .where('classId', '==', classId)
     .where('date', '==', today).get();
   
   if (!attendanceQuery.empty) {
-    const error = new Error('Attendance already marked');
+    const error = new Error('Attendance already marked for this class today');
     error.status = 400;
     error.studentName = student.name;
     throw error;
@@ -183,21 +208,28 @@ async function processAttendanceScan(studentId) {
   // Mark Attendance
   const timeIn = new Date().toISOString();
   await db.collection('attendance').add({
-    studentId, studentName: student.name, grade: student.grade, date: today, timeIn, status: 'Present'
+    studentId, 
+    studentName: student.name, 
+    classId,
+    className: classData.name,
+    date: today, 
+    timeIn, 
+    status: 'Present'
   });
 
-  return { message: 'Attendance marked successfully', student: student.name, timeIn, paymentAlert: paymentStatus };
+  return { message: `Attendance marked for ${classData.name}`, student: student.name, timeIn, paymentAlert: paymentStatus };
 }
 
 // 3. Scan QR code and mark attendance (Direct from Admin Laptop)
 app.post('/api/attendance/scan', async (req, res) => {
   try {
-    const result = await processAttendanceScan(req.body.studentId);
+    const { studentId, classId } = req.body;
+    const result = await processAttendanceScan(studentId, classId);
     return res.status(200).json(result);
   } catch (error) {
     console.error('Scan error:', error);
-    if (error.status === 400) {
-      return res.status(400).json({ message: error.message, student: error.studentName });
+    if (error.status === 400 || error.status === 403) {
+      return res.status(error.status).json({ message: error.message, student: error.studentName });
     }
     const status = error.status || 500;
     res.status(status).json({ error: error.message || 'Failed to process scan' });
@@ -212,11 +244,18 @@ app.post('/api/mobile-scan', async (req, res) => {
       return res.status(400).json({ error: 'Missing sessionId or studentId' });
     }
     
-    // First, try to actually mark the attendance in the database!
+    // First, fetch the session to know WHICH class they are scanning for
+    const sessionDoc = await db.collection('scan_sessions').doc(sessionId).get();
+    if (!sessionDoc.exists || !sessionDoc.data().classId) {
+      return res.status(400).json({ error: 'Invalid scan session or missing class selection' });
+    }
+    const classId = sessionDoc.data().classId;
+
+    // Try to actually mark the attendance in the database!
     let scanResultData = null;
     let scanError = null;
     try {
-      scanResultData = await processAttendanceScan(studentId);
+      scanResultData = await processAttendanceScan(studentId, classId);
     } catch (err) {
       scanError = err.message || 'Error processing scan';
     }
@@ -239,14 +278,34 @@ app.post('/api/mobile-scan', async (req, res) => {
 // 4. Record a Payment
 app.post('/api/payments', async (req, res) => {
   try {
-    const { studentId, amount, month } = req.body; // month format: 'yyyy-MM'
+    const { studentId, classId, amount, month } = req.body; // month format: 'yyyy-MM'
+    
+    if (!studentId || !classId || !amount || !month) {
+      return res.status(400).json({ error: 'Missing required payment fields (studentId, classId, amount, month)' });
+    }
+
+    // Verify Class
+    const classDoc = await db.collection('classes').doc(classId).get();
+    if (!classDoc.exists) {
+      return res.status(404).json({ error: 'Class not found' });
+    }
+    const className = classDoc.data().name;
+
     const receiptNo = generateId('REC');
-    const paymentData = { studentId, amount, month, datePaid: new Date().toISOString(), receiptNo };
+    const paymentData = { 
+      studentId, 
+      classId,
+      className,
+      amount: parseFloat(amount), 
+      month, 
+      datePaid: new Date().toISOString(), 
+      receiptNo 
+    };
 
     await db.collection('payments').add(paymentData);
     
     // MOCK SMS NOTIFICATION HERE
-    console.log(`[SMS NOTIFICATION] Receipt ${receiptNo}: Received Rs.${amount} for student ${studentId} for month ${month}.`);
+    console.log(`[SMS NOTIFICATION] Receipt ${receiptNo}: Received Rs.${amount} for student ${studentId} for ${className} (${month}).`);
 
     res.status(201).json({ message: 'Payment recorded', paymentData });
   } catch (error) {
@@ -311,7 +370,46 @@ app.post('/api/teachers', async (req, res) => {
     res.status(500).json({ error: 'Failed to add teacher' });
   }
 });
+// Get all teachers with commission calculations
+app.get('/api/teachers/commission', async (req, res) => {
+  try {
+    const snapshot = await db.collection('teachers').get();
+    const teachers = [];
+    
+    for (const doc of snapshot.docs) {
+      const teacher = doc.data();
+      const teacherId = teacher.teacherId;
+      
+      // Fetch classes for this teacher
+      const classSnap = await db.collection('classes').where('teacherId', '==', teacherId).get();
+      let totalStudents = 0;
+      let expectedIncome = 0;
 
+      for (const classDoc of classSnap.docs) {
+        const classData = classDoc.data();
+        const classFee = classData.fee || 0;
+        
+        // Count students enrolled in this class
+        const studentSnap = await db.collection('students')
+          .where('enrolledClasses', 'array-contains', classDoc.id).get();
+        
+        totalStudents += studentSnap.size;
+        expectedIncome += studentSnap.size * classFee * (teacher.commissionRate || 0.5);
+      }
+
+      teachers.push({
+        ...teacher,
+        students: totalStudents,
+        expectedIncome
+      });
+    }
+
+    res.json(teachers);
+  } catch (error) {
+    console.error('Error fetching teachers commission:', error);
+    res.status(500).json({ error: 'Failed to fetch teachers commission' });
+  }
+});
 // 6. Classes
 app.get('/api/classes', async (req, res) => {
   try {
