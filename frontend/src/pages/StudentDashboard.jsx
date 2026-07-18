@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { QrCode, Calendar, Wallet, CheckCircle2, AlertCircle } from 'lucide-react';
+import { QrCode, Calendar, Wallet, CheckCircle2, AlertCircle, BookOpen } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
-  const [data, setData] = useState({ attendance: [], payments: [] });
+  const [data, setData] = useState({ attendance: [], payments: [], classesStatus: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -77,6 +77,47 @@ const StudentDashboard = () => {
         {/* Info Sections */}
         <div className="lg:col-span-2 space-y-8">
           
+          {/* My Classes Summary */}
+          {data.classesStatus && data.classesStatus.length > 0 && (
+            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+              <div className="p-6 border-b border-slate-100 flex items-center gap-3">
+                <div className="bg-blue-100 p-2 rounded-xl text-blue-600">
+                  <BookOpen size={20} />
+                </div>
+                <h3 className="text-lg font-bold text-slate-800">My Classes & Fees</h3>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {data.classesStatus.map(cls => (
+                    <div key={cls.classId} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between">
+                      <div>
+                        <h4 className="font-bold text-slate-800 text-lg">{cls.name}</h4>
+                        <p className="text-sm font-medium text-slate-500 mb-4">{cls.teacherName} • Rs. {cls.fee}</p>
+                      </div>
+                      <div className="flex items-center justify-between mt-2 pt-4 border-t border-slate-200 border-dashed">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-500 uppercase">Fee ({format(new Date(), 'MMM')})</span>
+                          {cls.isPaidThisMonth ? (
+                            <span className="flex items-center text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-md text-xs">
+                              <CheckCircle2 size={12} className="mr-1" /> Paid
+                            </span>
+                          ) : (
+                            <span className="flex items-center text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md text-xs">
+                              Unpaid
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs font-bold text-slate-500">
+                          {cls.attendanceThisMonth} Days
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Attendance History */}
           <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
             <div className="p-6 border-b border-slate-100 flex items-center gap-3">

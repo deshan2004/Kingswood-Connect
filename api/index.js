@@ -530,11 +530,68 @@ app.get('/api/auth/me/:uid', async (req, res) => {
   }
 });
 
+// 8.5. Get Student Payment Status (For Admin Finance page)
+app.get('/api/student/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { month } = req.query; // expected format: YYYY-MM
+    
+    if (!month) {
+      return res.status(400).json({ error: 'Month parameter is required' });
+    }
+
+    const studentDoc = await db.collection('students').doc(id).get();
+    if (!studentDoc.exists) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+    
+    const student = studentDoc.data();
+    const enrolledClasses = student.enrolledClasses || [];
+    
+    const classesStatus = [];
+    
+    for (const classId of enrolledClasses) {
+      const classDoc = await db.collection('classes').doc(classId).get();
+      if (!classDoc.exists) continue;
+      
+      const classData = classDoc.data();
+      
+      // Check if paid for this month
+      const paymentQuery = await db.collection('payments')
+        .where('studentId', '==', id)
+        .where('classId', '==', classId)
+        .where('month', '==', month).get();
+        
+      classesStatus.push({
+        classId: classData.classId,
+        name: classData.name,
+        teacherName: classData.teacherName,
+        fee: classData.fee,
+        isPaid: !paymentQuery.empty
+      });
+    }
+    
+    res.json(classesStatus);
+  } catch (error) {
+    console.error('Fetch student status error:', error);
+    res.status(500).json({ error: 'Failed to fetch student status' });
+  }
+});
+
 // 9. Student Dashboard Data
 app.get('/api/student/:id/dashboard', async (req, res) => {
   try {
     const { id } = req.params;
+    const currentMonth = format(new Date(), 'yyyy-MM');
     
+    // Fetch Student
+    const studentDoc = await db.collection('students').doc(id).get();
+    if (!studentDoc.exists) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+    const student = studentDoc.data();
+    const enrolledClasses = student.enrolledClasses || [];
+
     // Fetch Attendance
     const attendanceSnapshot = await db.collection('attendance').where('studentId', '==', id).get();
     let attendance = [];
@@ -547,7 +604,27 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
     paymentsSnapshot.forEach(doc => payments.push(doc.data()));
     payments.sort((a, b) => new Date(b.datePaid) - new Date(a.datePaid));
 
-    res.json({ attendance, payments });
+    // Calculate Classes Status
+    const classesStatus = [];
+    for (const classId of enrolledClasses) {
+      const classDoc = await db.collection('classes').doc(classId).get();
+      if (!classDoc.exists) continue;
+      const classData = classDoc.data();
+      
+      const isPaidThisMonth = payments.some(p => p.classId === classId && p.month === currentMonth);
+      const attendanceThisMonth = attendance.filter(a => a.classId === classId && a.date.startsWith(currentMonth)).length;
+
+      classesStatus.push({
+        classId: classData.classId,
+        name: classData.name,
+        teacherName: classData.teacherName,
+        fee: classData.fee,
+        isPaidThisMonth,
+        attendanceThisMonth
+      });
+    }
+
+    res.json({ attendance, payments, classesStatus });
   } catch (error) {
     console.error('Student dashboard error:', error);
     res.status(500).json({ error: 'Failed to load data' });

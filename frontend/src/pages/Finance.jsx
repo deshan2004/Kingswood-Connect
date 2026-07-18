@@ -14,10 +14,40 @@ const Finance = () => {
   const [receipt, setReceipt] = useState(null);
   const [students, setStudents] = useState([]);
   const [classesList, setClassesList] = useState([]);
+  const [studentStatus, setStudentStatus] = useState([]);
+  const [statusLoading, setStatusLoading] = useState(false);
 
   React.useEffect(() => {
     fetchData();
   }, []);
+
+  React.useEffect(() => {
+    let resolvedId = studentId.trim();
+    const searchString = resolvedId.toLowerCase();
+    
+    const matchedStudent = students.find(s => 
+      s.studentId.toLowerCase() === searchString || 
+      s.name.toLowerCase() === searchString || 
+      s.contact === searchString
+    );
+
+    if (matchedStudent) {
+      resolvedId = matchedStudent.studentId;
+    }
+
+    if (resolvedId && resolvedId.toUpperCase().startsWith('KWS-') && month) {
+      setStatusLoading(true);
+      axios.get(`${API_URL}/student/${resolvedId}/status?month=${month}`)
+        .then(res => setStudentStatus(res.data))
+        .catch(err => {
+          console.error(err);
+          setStudentStatus([]);
+        })
+        .finally(() => setStatusLoading(false));
+    } else {
+      setStudentStatus([]);
+    }
+  }, [studentId, month, students]);
 
   const fetchData = async () => {
     try {
@@ -117,6 +147,35 @@ const Finance = () => {
                   ))}
                 </datalist>
               </div>
+              
+              {/* Payment Status Summary */}
+              {studentStatus.length > 0 && (
+                <div className="mt-4 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                  <div className="text-sm font-bold text-slate-700 mb-2 flex items-center justify-between">
+                    <span>Payment Status for {format(new Date(month), 'MMMM yyyy')}</span>
+                    {statusLoading && <div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>}
+                  </div>
+                  <div className="space-y-2">
+                    {studentStatus.map(status => (
+                      <div key={status.classId} className="flex justify-between items-center text-sm bg-white p-2.5 rounded-lg border border-slate-100 shadow-sm">
+                        <div>
+                          <span className="font-semibold text-slate-800">{status.name}</span>
+                          <span className="text-xs text-slate-500 ml-2">Rs. {status.fee}</span>
+                        </div>
+                        {status.isPaid ? (
+                          <span className="flex items-center text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-md text-xs">
+                            <CheckCircle2 size={14} className="mr-1" /> Paid
+                          </span>
+                        ) : (
+                          <span className="flex items-center text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md text-xs">
+                            Unpaid
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
