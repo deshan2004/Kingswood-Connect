@@ -1,8 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { onAuthStateChanged, signOut, signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
-import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -11,53 +10,54 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        try {
-          // Fetch custom user data/role from backend
-          const res = await axios.get(`${import.meta.env.VITE_API_URL || '/api'}/auth/me/${firebaseUser.uid}`);
-          setUser({ ...firebaseUser, ...res.data });
-        } catch (error) {
-          console.error("Failed to fetch user role from API:", error);
-          
-          try {
-            // Fallback 1: Try fetching directly from Firestore if backend is down
-            const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-            
-            if (userDoc.exists()) {
-              setUser({ ...firebaseUser, ...userDoc.data() });
-              setLoading(false);
-              return;
-            }
-          } catch (fsError) {
-            console.error("Failed to fetch directly from Firestore", fsError);
-          }
+    let unsubscribeSnapshot = null;
 
-          try {
-            // Fallback 2: Token claims or email-based fallback
-            const idTokenResult = await firebaseUser.getIdTokenResult();
-            let role = idTokenResult.claims.role;
-            if (!role) {
-              // If manually created in Firebase console without claims, guess from email
-              const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
-              if (email.includes('admin') || email === 'deshandhakshitha16@gmail.com') {
-                role = 'admin';
-              } else {
-                role = 'student';
-              }
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        // Use onSnapshot to instantly react to changes in Firestore (like changing role to 'admin')
+        unsubscribeSnapshot = onSnapshot(doc(db, 'users', firebaseUser.uid), 
+          async (docSnap) => {
+            if (docSnap.exists()) {
+               let userData = docSnap.data();
+               
+               // Fetch additional student details if role is student
+               if (userData.role === 'student' && userData.studentId) {
+                 try {
+                   const studentDoc = await getDoc(doc(db, 'students', userData.studentId));
+                   if (studentDoc.exists()) {
+                     userData = { ...userData, ...studentDoc.data() };
+                   }
+                 } catch (err) {
+                   console.error("Failed to fetch student details", err);
+                 }
+               }
+               
+               setUser({ ...firebaseUser, ...userData });
+            } else {
+               // Fallback if user document does not exist yet
+               const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
+               const fallbackRole = (email.includes('admin') || email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
+               setUser({ ...firebaseUser, role: fallbackRole });
             }
-            setUser({ ...firebaseUser, role });
-          } catch (e) {
-            setUser({ ...firebaseUser, role: 'student' });
+            setLoading(false);
+          },
+          (error) => {
+             console.error("Error listening to user document:", error);
+             setUser({ ...firebaseUser, role: 'student' });
+             setLoading(false);
           }
-        }
+        );
       } else {
         setUser(null);
+        setLoading(false);
+        if (unsubscribeSnapshot) unsubscribeSnapshot();
       }
-      setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnapshot) unsubscribeSnapshot();
+    };
   }, []);
 
   const login = async (email, password) => {
