@@ -18,9 +18,34 @@ export const AuthProvider = ({ children }) => {
           setUser({ ...firebaseUser, ...res.data });
         } catch (error) {
           console.error("Failed to fetch user role from API:", error);
+          
           try {
+            // Fallback 1: Try fetching directly from Firestore if backend is down
+            const { doc, getDoc } = await import('firebase/firestore');
+            const { db } = await import('../config/firebase');
+            const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+            
+            if (userDoc.exists()) {
+              setUser({ ...firebaseUser, ...userDoc.data() });
+              setLoading(false);
+              return;
+            }
+          } catch (fsError) {
+            console.error("Failed to fetch directly from Firestore", fsError);
+          }
+
+          try {
+            // Fallback 2: Token claims or email-based fallback
             const idTokenResult = await firebaseUser.getIdTokenResult();
-            const role = idTokenResult.claims.role || 'student';
+            let role = idTokenResult.claims.role;
+            if (!role) {
+              // If manually created in Firebase console without claims, guess from email
+              if (firebaseUser.email && firebaseUser.email.toLowerCase().includes('admin')) {
+                role = 'admin';
+              } else {
+                role = 'student';
+              }
+            }
             setUser({ ...firebaseUser, role });
           } catch (e) {
             setUser({ ...firebaseUser, role: 'student' });
