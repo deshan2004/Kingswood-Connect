@@ -296,8 +296,18 @@ const Students = () => {
                         <td className="py-4 px-6 text-sm font-bold text-slate-700">
                           {student.grade}
                         </td>
-                        <td className="py-4 px-6 text-sm font-bold text-slate-700">
-                          {student.enrolledClasses ? student.enrolledClasses.length : 0} classes
+                        <td className="py-4 px-6 text-sm font-bold text-slate-700 max-w-[150px]">
+                          {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
+                            <select className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer appearance-none truncate">
+                              <option value="">{student.enrolledClasses.length} classes</option>
+                              {student.enrolledClasses.map(classId => {
+                                const cls = classesList.find(c => c.classId === classId);
+                                return <option key={classId} value={classId}>{cls ? cls.name : classId}</option>
+                              })}
+                            </select>
+                          ) : (
+                            <span className="text-slate-400 font-medium px-2">0 classes</span>
+                          )}
                         </td>
                         <td className="py-4 px-6 text-right flex items-center justify-end gap-1">
                           <button 
