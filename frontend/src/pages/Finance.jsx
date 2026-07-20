@@ -124,7 +124,11 @@ const Finance = () => {
         amount: Number(amount),
         month
       });
-      setReceipt(response.data.paymentData);
+      setReceipt({ 
+        ...response.data.paymentData, 
+        studentName: matchedStudent?.name || 'Student', 
+        studentContact: matchedStudent?.contact || '' 
+      });
       setStudentId('');
       setAmount('');
     } catch (error) {
@@ -328,9 +332,24 @@ const Finance = () => {
                   <div className="bg-emerald-200/50 p-1 rounded text-emerald-700 shrink-0 mt-0.5">
                     <CheckCircle2 size={16} />
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-emerald-800">Digital Receipt Sent</p>
-                    <p className="text-xs font-medium text-emerald-600/80 mt-0.5">An SMS confirmation has been dispatched to the parent's registered mobile number.</p>
+                  <div className="w-full">
+                    <p className="text-sm font-bold text-emerald-800">Payment Saved Successfully</p>
+                    <p className="text-xs font-medium text-emerald-600/80 mt-0.5 mb-3">You can send this receipt to the parent's WhatsApp.</p>
+                    <button
+                      onClick={() => {
+                        const contact = receipt.studentContact;
+                        if (!contact) {
+                          alert('No contact number available for this student.');
+                          return;
+                        }
+                        const message = `*Payment Receipt: Kingswood Connect*\n\nHello ${receipt.studentName},\n\nWe have received your payment.\n\n*Receipt No:* ${receipt.receiptNo}\n*Class:* ${receipt.className}\n*Amount:* Rs. ${receipt.amount.toLocaleString()}\n*Month:* ${format(new Date(receipt.month), 'MMMM yyyy')}\n*Date:* ${new Date(receipt.datePaid).toLocaleString()}\n\nThank you!`;
+                        const whatsappUrl = `https://wa.me/${contact.replace(/^0/, '94')}?text=${encodeURIComponent(message)}`;
+                        window.open(whatsappUrl, '_blank');
+                      }}
+                      className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm"
+                    >
+                      <MessageSquare size={16} /> Send Receipt via WhatsApp
+                    </button>
                   </div>
                 </div>
               </div>
