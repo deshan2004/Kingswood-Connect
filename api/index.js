@@ -422,8 +422,8 @@ app.get('/api/attendance/dashboard', async (req, res) => {
   }
 });
 
-// 4.5 Unpaid Students
-app.get('/api/finance/unpaid', async (req, res) => {
+// 4.5 Class Payment Reports
+app.get('/api/finance/reports', async (req, res) => {
   try {
     const { classId, month } = req.query;
     if (!classId || !month) return res.status(400).json({ error: 'Missing classId or month' });
@@ -441,13 +441,21 @@ app.get('/api/finance/unpaid', async (req, res) => {
     let paidStudentIds = new Set();
     paymentsSnapshot.forEach(doc => paidStudentIds.add(doc.data().studentId));
     
-    // Filter unpaid
-    let unpaidStudents = students.filter(s => !paidStudentIds.has(s.studentId));
+    let paidStudents = [];
+    let unpaidStudents = [];
     
-    res.json(unpaidStudents);
+    students.forEach(s => {
+      if (paidStudentIds.has(s.studentId)) {
+        paidStudents.push(s);
+      } else {
+        unpaidStudents.push(s);
+      }
+    });
+    
+    res.json({ unpaidStudents, paidStudents });
   } catch (error) {
-    console.error('Error fetching unpaid students:', error);
-    res.status(500).json({ error: 'Failed to fetch unpaid students' });
+    console.error('Error fetching reports:', error);
+    res.status(500).json({ error: 'Failed to fetch reports' });
   }
 });
 
