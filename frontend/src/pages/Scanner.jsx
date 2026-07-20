@@ -87,7 +87,11 @@ const Scanner = () => {
     try {
       const response = await axios.get(`${API_URL}/classes`);
       setClassesList(response.data);
-      if (response.data.length > 0) {
+      
+      const savedClassId = localStorage.getItem('scanner_active_class');
+      if (savedClassId && response.data.some(c => c.classId === savedClassId)) {
+        setActiveClass(savedClassId);
+      } else if (response.data.length > 0) {
         setActiveClass(response.data[0].classId);
       }
     } catch (err) {
@@ -182,7 +186,10 @@ const Scanner = () => {
         ) : (
           <select
             value={activeClass}
-            onChange={(e) => setActiveClass(e.target.value)}
+            onChange={(e) => {
+              setActiveClass(e.target.value);
+              localStorage.setItem('scanner_active_class', e.target.value);
+            }}
             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all font-bold text-slate-800 text-lg"
           >
             {classesList.map(c => (
