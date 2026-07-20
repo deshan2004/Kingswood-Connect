@@ -97,8 +97,9 @@ const Scanner = () => {
     const scanner = new Html5QrcodeScanner(
       "reader",
       { 
-        fps: 10, 
+        fps: 20, 
         qrbox: { width: 250, height: 250 },
+        disableFlip: false, // allow scanning mirrored/reflected codes
         videoConstraints: {
           facingMode: "environment"
         }

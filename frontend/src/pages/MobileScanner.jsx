@@ -17,7 +17,7 @@ const MobileScanner = () => {
     import('html5-qrcode').then(({ Html5Qrcode }) => {
       const html5QrCode = new Html5Qrcode("mobile-reader");
       
-      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+      const config = { fps: 20, qrbox: { width: 250, height: 250 }, disableFlip: false };
       
       const onScanSuccess = async (decodedText) => {
         setScanStatus('Sending...');
@@ -32,7 +32,8 @@ const MobileScanner = () => {
           setScanStatus('Sent successfully!');
         } catch (error) {
           console.error("Error updating scan session:", error);
-          setScanStatus('Error: Could not connect to session.');
+          const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Error processing scan';
+          setScanStatus(`Error: ${errorMsg}`);
         }
         
         setTimeout(() => setScanStatus('Waiting for next scan...'), 2000);
