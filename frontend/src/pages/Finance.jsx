@@ -142,6 +142,20 @@ const Finance = () => {
     }
   };
 
+  const handleBulkRemind = () => {
+    if (unpaidStudents.length === 0) return;
+    
+    if (window.confirm(`Are you sure you want to send reminders to ${unpaidStudents.length} students?\n\nPlease make sure to ALLOW POPUPS in your browser for this to work.`)) {
+      unpaidStudents.forEach((student, index) => {
+        setTimeout(() => {
+          const message = `Hello ${student.name},\n\nThis is a gentle reminder that the class fee for ${format(new Date(reportMonth), 'MMMM yyyy')} is pending.\n\nPlease complete your payment at the next class.\n\nThank you!\n- Kingswood Connect`;
+          const whatsappUrl = `https://wa.me/${student.contact.replace(/^0/, '94')}?text=${encodeURIComponent(message)}`;
+          window.open(whatsappUrl, '_blank');
+        }, index * 1000);
+      });
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-12">
       <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
@@ -436,6 +450,16 @@ const Finance = () => {
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
+                    {reportFilter === 'unpaid' && unpaidStudents.length > 0 && (
+                      <div className="px-6 py-4 border-b border-slate-100 flex justify-end bg-rose-50/30">
+                        <button
+                          onClick={handleBulkRemind}
+                          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-sm transition-colors shadow-sm"
+                        >
+                          <MessageSquare size={16} /> Remind All ({unpaidStudents.length})
+                        </button>
+                      </div>
+                    )}
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="bg-slate-50 border-b border-slate-100">
