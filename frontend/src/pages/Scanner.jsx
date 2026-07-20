@@ -28,12 +28,16 @@ const Scanner = () => {
   useEffect(() => {
     fetchClasses();
     
-    // Generate session ID for mobile scanner
-    const newSessionId = Math.random().toString(36).substring(2, 15);
-    setSessionId(newSessionId);
+    // Use a persistent session ID for this browser to keep the QR code the same
+    let savedSessionId = localStorage.getItem('scanner_session_id');
+    if (!savedSessionId) {
+      savedSessionId = Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('scanner_session_id', savedSessionId);
+    }
+    setSessionId(savedSessionId);
 
     // Listen to Firestore for scan results in this session
-    const sessionRef = doc(db, 'scan_sessions', newSessionId);
+    const sessionRef = doc(db, 'scan_sessions', savedSessionId);
     
     // Initialize session document
     setDoc(sessionRef, { createdAt: new Date().toISOString() }).catch(console.error);
