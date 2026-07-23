@@ -775,6 +775,72 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
   }
 });
 
+// --- Phase 1: Exams & Progress ---
+app.post('/api/exams', async (req, res) => {
+  try {
+    const { classId, title, date, marks } = req.body;
+    // marks is an array: [{ studentId, mark }]
+    const examId = generateId('EXM');
+    
+    const examData = {
+      examId,
+      classId,
+      title,
+      date: date || new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString()
+    };
+    
+    await db.collection('exams').doc(examId).set(examData);
+    
+    const batch = db.batch();
+    for (const m of marks) {
+      if (m.studentId) {
+        const markRef = db.collection('examMarks').doc();
+        batch.set(markRef, {
+          examId,
+          classId,
+          title: examData.title,
+          date: examData.date,
+          studentId: m.studentId,
+          mark: Number(m.mark)
+        });
+      }
+    }
+    await batch.commit();
+
+    res.status(201).json({ message: 'Exam marks saved', examId });
+  } catch (error) {
+    console.error('Save exam error:', error);
+    res.status(500).json({ error: 'Failed to save exam' });
+  }
+});
+
+app.get('/api/exams/class/:id', async (req, res) => {
+  try {
+    const classId = req.params.id;
+    const examsSnapshot = await db.collection('exams').where('classId', '==', classId).get();
+    let exams = [];
+    examsSnapshot.forEach(doc => exams.push(doc.data()));
+    exams.sort((a, b) => new Date(b.date) - new Date(a.date));
+    res.json(exams);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch class exams' });
+  }
+});
+
+app.get('/api/exams/student/:id', async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const marksSnapshot = await db.collection('examMarks').where('studentId', '==', studentId).get();
+    let marks = [];
+    marksSnapshot.forEach(doc => marks.push(doc.data()));
+    marks.sort((a, b) => new Date(a.date) - new Date(b.date)); // chronological
+    res.json(marks);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch student marks' });
+  }
+});
+
 // Export the Express API for Vercel Serverless Function
 if (require.main === module) {
   const PORT = process.env.PORT || 5000;

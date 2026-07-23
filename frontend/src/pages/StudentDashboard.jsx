@@ -2,19 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { QrCode, Calendar, Wallet, CheckCircle2, AlertCircle, BookOpen } from 'lucide-react';
+import { QrCode, Calendar, Wallet, CheckCircle2, AlertCircle, BookOpen, Award } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
   const [data, setData] = useState({ attendance: [], payments: [], classesStatus: [] });
+  const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user?.studentId) {
-      axios.get(`${API_URL}/student/${user.studentId}/dashboard`)
-        .then(res => setData(res.data))
+      Promise.all([
+        axios.get(`${API_URL}/student/${user.studentId}/dashboard`),
+        axios.get(`${API_URL}/exams/student/${user.studentId}`)
+      ])
+        .then(([dashRes, examsRes]) => {
+          setData(dashRes.data);
+          setExams(examsRes.data);
+        })
         .catch(console.error)
         .finally(() => setLoading(false));
     } else {
@@ -117,6 +124,44 @@ const StudentDashboard = () => {
               </div>
             </div>
           )}
+
+          {/* Exam Marks / Progress */}
+          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex items-center gap-3">
+              <div className="bg-purple-100 p-2 rounded-xl text-purple-600">
+                <Award size={20} />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">My Progress & Exam Marks</h3>
+            </div>
+            
+            <div className="p-6">
+              {exams.length > 0 ? (
+                <div className="space-y-4">
+                  {exams.map((exam, i) => (
+                    <div key={i} className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                      <div>
+                        <p className="font-bold text-slate-800">{exam.title}</p>
+                        <p className="text-xs font-semibold text-slate-500">{format(new Date(exam.date), 'MMMM do, yyyy')}</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-32 bg-slate-200 rounded-full h-2.5 hidden sm:block">
+                          <div className={`h-2.5 rounded-full ${exam.mark >= 75 ? 'bg-emerald-500' : exam.mark >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`} style={{ width: `${exam.mark}%` }}></div>
+                        </div>
+                        <div className="text-lg font-black text-slate-700 w-12 text-right">
+                          {exam.mark}%
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-slate-400 py-8">
+                  <Award size={48} className="mx-auto mb-3 opacity-20" />
+                  <p className="font-medium">No exam marks recorded yet.</p>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Attendance History */}
           <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
