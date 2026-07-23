@@ -444,12 +444,15 @@ app.get('/api/attendance/reports', async (req, res) => {
     
     const attendanceSnapshot = await db.collection('attendance')
       .where('classId', '==', classId)
-      .where('date', '>=', startDate)
-      .where('date', '<=', endDate)
       .get();
       
     const attendanceData = [];
-    attendanceSnapshot.forEach(doc => attendanceData.push(doc.data()));
+    attendanceSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.date >= startDate && data.date <= endDate) {
+        attendanceData.push(data);
+      }
+    });
 
     // 3. Calculate total distinct class days
     const classDates = new Set(attendanceData.map(a => a.date));
