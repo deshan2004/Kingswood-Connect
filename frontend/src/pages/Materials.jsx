@@ -306,15 +306,16 @@ const Materials = () => {
       {/* Add Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
               <h3 className="font-bold text-slate-800 text-xl">Add New Material</h3>
               <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600 bg-white shadow-sm p-1.5 rounded-full border border-slate-100">
                 <X size={20} />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden">
+              <div className="p-6 space-y-4 overflow-y-auto">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1.5">Class</label>
                 <select 
@@ -401,8 +402,9 @@ const Materials = () => {
                   className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-medium resize-none"
                 ></textarea>
               </div>
+              </div>
 
-              <div className="pt-4 border-t border-slate-100 flex gap-3">
+              <div className="p-6 pt-4 border-t border-slate-100 flex gap-3 shrink-0 bg-white">
                 <button 
                   type="button"
                   onClick={() => setShowAddModal(false)}
