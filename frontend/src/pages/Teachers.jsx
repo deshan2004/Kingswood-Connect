@@ -34,6 +34,8 @@ const Teachers = () => {
       if (editingTeacher) {
         await axios.put(`${API_URL}/teachers/${editingTeacher.teacherId}`, {
           name: newTeacher.name,
+          email: newTeacher.email,
+          password: newTeacher.password,
           contact: newTeacher.contact,
           subject: newTeacher.subject,
           commissionRate: newTeacher.commissionRate / 100
@@ -203,32 +205,28 @@ const Teachers = () => {
                   placeholder="e.g. Nimal Perera"
                 />
               </div>
-              {!editingTeacher && (
-                <>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1">Email</label>
-                    <input 
-                      type="email" 
-                      required
-                      value={newTeacher.email}
-                      onChange={(e) => setNewTeacher({...newTeacher, email: e.target.value})}
-                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                      placeholder="e.g. nimal@example.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1">Password</label>
-                    <input 
-                      type="password" 
-                      required
-                      value={newTeacher.password}
-                      onChange={(e) => setNewTeacher({...newTeacher, password: e.target.value})}
-                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                      placeholder="Minimum 6 characters"
-                    />
-                  </div>
-                </>
-              )}
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Email</label>
+                <input 
+                  type="email" 
+                  required={!editingTeacher} // Only required when adding
+                  value={newTeacher.email}
+                  onChange={(e) => setNewTeacher({...newTeacher, email: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                  placeholder={editingTeacher ? "Leave blank to keep unchanged" : "e.g. nimal@example.com"}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Password</label>
+                <input 
+                  type="password" 
+                  required={!editingTeacher} // Only required when adding
+                  value={newTeacher.password}
+                  onChange={(e) => setNewTeacher({...newTeacher, password: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                  placeholder={editingTeacher ? "Leave blank to keep unchanged" : "Minimum 6 characters"}
+                />
+              </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Contact No</label>
                 <input 

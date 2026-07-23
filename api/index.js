@@ -485,8 +485,32 @@ app.post('/api/teachers', async (req, res) => {
 
 app.put('/api/teachers/:id', async (req, res) => {
   try {
-    const { name, subject, contact, commissionRate } = req.body;
+    const { name, subject, contact, commissionRate, email, password } = req.body;
     const teacherId = req.params.id;
+    
+    // Update auth and users collection if linked
+    const usersSnapshot = await db.collection('users').where('linkedId', '==', teacherId).get();
+    if (!usersSnapshot.empty) {
+      const userDoc = usersSnapshot.docs[0];
+      const uid = userDoc.id;
+      
+      const authUpdates = {};
+      if (email) authUpdates.email = email;
+      if (password) authUpdates.password = password;
+      if (name) authUpdates.displayName = name;
+      
+      if (Object.keys(authUpdates).length > 0) {
+         await getAuth().updateUser(uid, authUpdates);
+      }
+      
+      if (email || name) {
+         await db.collection('users').doc(uid).update({
+           ...(email && { email }),
+           ...(name && { name })
+         });
+      }
+    }
+
     const updateData = { 
       name, 
       subject, 
@@ -497,7 +521,8 @@ app.put('/api/teachers/:id', async (req, res) => {
     await db.collection('teachers').doc(teacherId).update(updateData);
     res.json({ teacherId, ...updateData });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update teacher' });
+    console.error(error);
+    res.status(500).json({ error: error.message || 'Failed to update teacher' });
   }
 });
 // Get all teachers with commission calculations
