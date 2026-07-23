@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Calendar as CalendarIcon, Clock, BellRing, ChevronRight, MessageSquareWarning } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, BellRing, ChevronRight, MessageSquareWarning, Edit2, X } from 'lucide-react';
+
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -12,6 +13,12 @@ const Schedule = () => {
   const [newClass, setNewClass] = useState({ name: '', teacherId: '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 1000 });
   const [submitting, setSubmitting] = useState(false);
 
+  // Edit State
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingClass, setEditingClass] = useState(null);
+  const [editClassData, setEditClassData] = useState({ name: '', teacherId: '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 1000 });
+  const [updating, setUpdating] = useState(false);
+
   // Helper to format 24h time string to 12h AM/PM
   const formatTimeStr = (time24) => {
     if (!time24) return '';
@@ -21,6 +28,36 @@ const Schedule = () => {
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
     return `${hours}:${m} ${ampm}`;
+  };
+
+  const parseSchedule = (scheduleStr) => {
+    try {
+      if (!scheduleStr) throw new Error();
+      const [startPart, endPart] = scheduleStr.split(' - ');
+      const startTokens = startPart.split(' '); // ["Monday", "8:00", "AM"]
+      const day = startTokens[0];
+      const startTime12 = `${startTokens[1]} ${startTokens[2]}`;
+      const endTime12 = endPart;
+      
+      const parseTime12 = (t12) => {
+        if (!t12) return '00:00';
+        const parts = t12.trim().split(' ');
+        if (parts.length !== 2) return '00:00';
+        let [hours, minutes] = parts[0].split(':');
+        const modifier = parts[1];
+        if (hours === '12') hours = '00';
+        if (modifier === 'PM') hours = (parseInt(hours, 10) + 12).toString();
+        return `${hours.toString().padStart(2, '0')}:${minutes}`;
+      };
+
+      return {
+        day: day || 'Monday',
+        startTime: parseTime12(startTime12),
+        endTime: parseTime12(endTime12)
+      };
+    } catch(e) {
+      return { day: 'Monday', startTime: '08:00', endTime: '10:00' };
+    }
   };
 
   useEffect(() => {
@@ -67,6 +104,40 @@ const Schedule = () => {
     }
   };
 
+  const handleEditClick = (cls) => {
+    setEditingClass(cls);
+    const parsed = parseSchedule(cls.schedule || '');
+    setEditClassData({
+      name: cls.name || '',
+      teacherId: cls.teacherId || '',
+      fee: cls.fee || 1000,
+      day: parsed.day,
+      startTime: parsed.startTime,
+      endTime: parsed.endTime
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateClass = async (e) => {
+    e.preventDefault();
+    setUpdating(true);
+    try {
+      await axios.put(`${API_URL}/classes/${editingClass.classId || editingClass.id}`, {
+        name: editClassData.name,
+        teacherId: editClassData.teacherId,
+        fee: Number(editClassData.fee),
+        schedule: `${editClassData.day} ${formatTimeStr(editClassData.startTime)} - ${formatTimeStr(editClassData.endTime)}`
+      });
+      setShowEditModal(false);
+      setEditingClass(null);
+      fetchData();
+    } catch (error) {
+      alert('Failed to update class');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const handleBroadcast = (className) => {
     alert(`[MOCK] SMS/WhatsApp broadcast sent to all students in ${className} regarding schedule updates.`);
   };
@@ -107,20 +178,27 @@ const Schedule = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {classes.map(cls => (
-                <div key={cls.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md hover:border-indigo-200 transition-all">
+                <div key={cls.id || cls.classId} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md hover:border-indigo-200 transition-all relative">
                   <div className="h-2 w-full bg-gradient-to-r from-indigo-500 to-blue-500"></div>
+                  
+                  {/* Edit Button */}
+                  <button
+                    onClick={() => handleEditClick(cls)}
+                    className="absolute top-4 right-4 p-2 bg-indigo-50 text-indigo-600 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-indigo-100"
+                    title="Edit Class"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+
                   <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
+                    <div className="flex justify-between items-start mb-4 pr-10">
                       <div>
                         <h3 className="text-lg font-bold text-slate-800 leading-tight">
                           {cls.name}
                         </h3>
                         <p className="text-sm font-medium text-slate-500 mt-1 flex items-center">
-                           {cls.teacherName}
+                           {cls.teacherName || cls.teacher}
                         </p>
-                      </div>
-                      <div className="bg-indigo-50 p-2 rounded-xl text-indigo-600 group-hover:scale-110 transition-transform">
-                        <CalendarIcon size={20} />
                       </div>
                     </div>
                     
@@ -283,6 +361,106 @@ const Schedule = () => {
                 className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50"
               >
                 {submitting ? 'Adding...' : 'Save Class'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Class Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full relative animate-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => { setShowEditModal(false); setEditingClass(null); }}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition-colors"
+            >
+              <X size={20} />
+            </button>
+            <h3 className="text-2xl font-black text-slate-800 mb-6 flex items-center">
+              <Edit2 className="mr-2 text-indigo-600" />
+              Edit Class
+            </h3>
+            
+            <form onSubmit={handleUpdateClass} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Class Name</label>
+                <input 
+                  type="text" 
+                  required
+                  value={editClassData.name}
+                  onChange={(e) => setEditClassData({...editClassData, name: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Teacher</label>
+                <select
+                  required
+                  value={editClassData.teacherId}
+                  onChange={(e) => setEditClassData({...editClassData, teacherId: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="" disabled>Select a teacher</option>
+                  {teachers.map(t => (
+                    <option key={t.teacherId} value={t.teacherId}>{t.name} ({t.subject})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Schedule Time</label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <select
+                    required
+                    value={editClassData.day}
+                    onChange={(e) => setEditClassData({...editClassData, day: e.target.value})}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  >
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                  </select>
+                  <input 
+                    type="time" 
+                    required
+                    value={editClassData.startTime}
+                    onChange={(e) => setEditClassData({...editClassData, startTime: e.target.value})}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                  <input 
+                    type="time" 
+                    required
+                    value={editClassData.endTime}
+                    onChange={(e) => setEditClassData({...editClassData, endTime: e.target.value})}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Monthly Fee (Rs.)</label>
+                <input 
+                  type="number" 
+                  required
+                  min="0"
+                  value={editClassData.fee}
+                  onChange={(e) => setEditClassData({...editClassData, fee: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              
+              <button 
+                type="submit" 
+                disabled={updating}
+                className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50"
+              >
+                {updating ? 'Saving...' : 'Save Changes'}
               </button>
             </form>
           </div>

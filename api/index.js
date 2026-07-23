@@ -563,6 +563,33 @@ app.post('/api/classes', async (req, res) => {
   }
 });
 
+app.put('/api/classes/:id', async (req, res) => {
+  try {
+    const { name, grade, teacherId, fee, schedule } = req.body;
+    const classId = req.params.id;
+    
+    let teacherName = 'Unknown';
+    if (teacherId) {
+      const teacherDoc = await db.collection('teachers').doc(teacherId).get();
+      if (teacherDoc.exists) teacherName = teacherDoc.data().name;
+    }
+
+    const classData = { 
+      name, 
+      grade: grade || 'General', 
+      teacherId, 
+      teacherName, 
+      fee: parseFloat(fee) || 0, 
+      schedule: schedule || '', 
+      updatedAt: new Date().toISOString() 
+    };
+    await db.collection('classes').doc(classId).update(classData);
+    res.json({ classId, ...classData });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update class' });
+  }
+});
+
 // 7. Firebase Auth Registration (Signup)
 app.post('/api/auth/signup', async (req, res) => {
   try {
