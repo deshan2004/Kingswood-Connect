@@ -6,6 +6,7 @@ import { io } from 'socket.io-client';
 import { QRCodeSVG } from 'qrcode.react';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import Select from 'react-select';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -184,20 +185,45 @@ const Scanner = () => {
         {classesList.length === 0 ? (
           <div className="text-sm text-amber-600 font-medium">Please add classes from the backend before scanning.</div>
         ) : (
-          <select
-            value={activeClass}
-            onChange={(e) => {
-              setActiveClass(e.target.value);
-              localStorage.setItem('scanner_active_class', e.target.value);
+          <Select
+            value={activeClass ? { value: activeClass, label: classesList.find(c => c.classId === activeClass)?.name ? `${classesList.find(c => c.classId === activeClass).name} (${classesList.find(c => c.classId === activeClass).teacherName})` : 'Select Class' } : null}
+            onChange={(selectedOption) => {
+              setActiveClass(selectedOption.value);
+              localStorage.setItem('scanner_active_class', selectedOption.value);
             }}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all font-bold text-slate-800 text-lg"
-          >
-            {classesList.map(c => (
-              <option key={c.classId} value={c.classId}>
-                {c.name} ({c.teacherName})
-              </option>
-            ))}
-          </select>
+            options={classesList.map(c => ({ value: c.classId, label: `${c.name} (${c.teacherName})` }))}
+            placeholder="Select a class"
+            styles={{
+              control: (base, state) => ({
+                ...base,
+                minHeight: '52px',
+                borderRadius: '0.75rem',
+                borderColor: state.isFocused ? '#4f46e5' : '#e2e8f0',
+                boxShadow: state.isFocused ? '0 0 0 2px rgba(79, 70, 229, 0.2)' : 'none',
+                '&:hover': {
+                  borderColor: state.isFocused ? '#4f46e5' : '#cbd5e1'
+                },
+                backgroundColor: '#ffffff',
+                fontSize: '1.125rem',
+                fontWeight: '700',
+                color: '#1e293b'
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isSelected ? '#4f46e5' : state.isFocused ? '#f1f5f9' : 'transparent',
+                color: state.isSelected ? '#ffffff' : '#1e293b',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }),
+              menu: (base) => ({
+                ...base,
+                borderRadius: '0.75rem',
+                overflow: 'hidden',
+                zIndex: 50
+              })
+            }}
+          />
         )}
       </div>
 
