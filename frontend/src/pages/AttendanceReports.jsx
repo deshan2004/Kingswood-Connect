@@ -34,7 +34,7 @@ const AttendanceReports = () => {
       }
       setClassesList(classes);
       if (classes.length > 0) {
-        setSelectedClass(classes[0].id);
+        setSelectedClass(classes[0].classId);
       }
     } catch (err) {
       console.error('Failed to fetch classes', err);
@@ -54,7 +54,7 @@ const AttendanceReports = () => {
   };
 
   const handleWhatsAppWarning = (student) => {
-    const className = classesList.find(c => c.id === selectedClass)?.name || 'the class';
+    const className = classesList.find(c => c.classId === selectedClass)?.name || 'the class';
     const message = `Kingswood Connect Alert: \nDear Parent, ${student.studentName}'s attendance for ${className} in ${selectedMonth} is low (${student.percentage}%). Please ensure regular attendance.`;
     const encodedMessage = encodeURIComponent(message);
     let contact = student.contact;
@@ -84,7 +84,7 @@ const AttendanceReports = () => {
           >
             <option value="">-- Choose Class --</option>
             {classesList.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
+              <option key={c.classId} value={c.classId}>{c.name}</option>
             ))}
           </select>
         </div>
