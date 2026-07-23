@@ -8,11 +8,12 @@ import Students from './pages/Students';
 import Finance from './pages/Finance';
 import Teachers from './pages/Teachers';
 import Schedule from './pages/Schedule';
+import Exams from './pages/Exams';
+import AttendanceReports from './pages/AttendanceReports';
 import Login from './pages/Login';
 import StudentDashboard from './pages/StudentDashboard';
 import StudentLayout from './components/StudentLayout';
 import MobileScanner from './pages/MobileScanner';
-import Exams from './pages/Exams';
 import TeacherLayout from './components/TeacherLayout';
 import TeacherDashboard from './pages/TeacherDashboard';
 
@@ -54,6 +55,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="scanner" element={<Scanner />} />
             <Route path="students" element={<Students />} />
+            <Route path="attendance" element={<AttendanceReports />} />
             <Route path="finance" element={<Finance />} />
             <Route path="teachers" element={<Teachers />} />
             <Route path="schedule" element={<Schedule />} />
@@ -76,6 +78,7 @@ function App() {
           }>
             <Route index element={<TeacherDashboard />} />
             <Route path="exams" element={<Exams />} />
+            <Route path="attendance" element={<AttendanceReports />} />
           </Route>
         </Routes>
       </Router>

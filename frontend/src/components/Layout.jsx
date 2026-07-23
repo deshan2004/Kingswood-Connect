@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, QrCode, Users, CreditCard, UserCog, Calendar, Award, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, QrCode, Users, CreditCard, UserCog, Calendar, Award, LogOut, Menu, X, ClipboardList } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Layout = () => {
@@ -18,6 +18,7 @@ const Layout = () => {
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'Scanner', href: '/scanner', icon: QrCode },
     { name: 'Students', href: '/students', icon: Users },
+    { name: 'Attendance', href: '/attendance', icon: ClipboardList },
     { name: 'Fees & Payments', href: '/finance', icon: CreditCard },
     { name: 'Faculty', href: '/teachers', icon: UserCog },
     { name: 'Schedule', href: '/schedule', icon: Calendar },

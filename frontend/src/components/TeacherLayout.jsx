@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { Briefcase, LogOut, Menu, X, LayoutDashboard, Award } from 'lucide-react';
+import { Briefcase, LogOut, Menu, X, LayoutDashboard, Award, ClipboardList } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const TeacherLayout = () => {
@@ -68,6 +68,19 @@ const TeacherLayout = () => {
             }
           >
             <Award size={20} className="shrink-0" /> Exams & Marks
+          </NavLink>
+          <NavLink
+            to="/teacher/attendance"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${
+                isActive 
+                  ? 'bg-violet-50 text-violet-700 shadow-sm border border-violet-100/50' 
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+              }`
+            }
+          >
+            <ClipboardList size={20} className="shrink-0" /> Attendance Reports
           </NavLink>
         </nav>
 

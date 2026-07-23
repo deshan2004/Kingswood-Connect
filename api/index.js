@@ -422,6 +422,62 @@ app.get('/api/attendance/dashboard', async (req, res) => {
   }
 });
 
+// 4.1 Attendance Reports
+app.get('/api/attendance/reports', async (req, res) => {
+  try {
+    const { classId, month } = req.query; // month format: 'yyyy-MM'
+    if (!classId || !month) return res.status(400).json({ error: 'Missing classId or month' });
+    
+    // 1. Get all students enrolled in this class
+    const studentsSnapshot = await db.collection('students').get();
+    const enrolledStudents = [];
+    studentsSnapshot.forEach(doc => {
+      const student = doc.data();
+      if (student.enrolledClasses && student.enrolledClasses.includes(classId)) {
+        enrolledStudents.push(student);
+      }
+    });
+
+    // 2. Get attendance records for this class in this month
+    const startDate = `${month}-01`;
+    const endDate = `${month}-31`;
+    
+    const attendanceSnapshot = await db.collection('attendance')
+      .where('classId', '==', classId)
+      .where('date', '>=', startDate)
+      .where('date', '<=', endDate)
+      .get();
+      
+    const attendanceData = [];
+    attendanceSnapshot.forEach(doc => attendanceData.push(doc.data()));
+
+    // 3. Calculate total distinct class days
+    const classDates = new Set(attendanceData.map(a => a.date));
+    const totalClassDays = classDates.size;
+
+    // 4. Format report
+    const report = enrolledStudents.map(student => {
+      const studentAttendance = attendanceData.filter(a => a.studentId === student.studentId);
+      const daysPresent = studentAttendance.length;
+      const percentage = totalClassDays > 0 ? Math.round((daysPresent / totalClassDays) * 100) : 0;
+      
+      return {
+        studentId: student.studentId,
+        studentName: student.name,
+        contact: student.contact,
+        daysPresent,
+        totalClassDays,
+        percentage
+      };
+    });
+
+    res.json(report);
+  } catch (error) {
+    console.error('Error generating attendance report:', error);
+    res.status(500).json({ error: 'Failed to generate attendance report' });
+  }
+});
+
 // 4.5 Class Payment Reports
 app.get('/api/finance/reports', async (req, res) => {
   try {
