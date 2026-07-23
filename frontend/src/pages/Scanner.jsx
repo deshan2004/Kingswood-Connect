@@ -21,6 +21,7 @@ const Scanner = () => {
   const [sessionId, setSessionId] = useState(null);
   const [showMobileLink, setShowMobileLink] = useState(false);
   const processScanRef = React.useRef();
+  const lastScannedRef = React.useRef({ id: null, time: 0 });
 
   useEffect(() => {
     processScanRef.current = processScan;
@@ -125,6 +126,13 @@ const Scanner = () => {
 
   const processScan = async (studentId) => {
     if (!studentId || !activeClass) return;
+
+    const now = Date.now();
+    // Prevent duplicate rapid scans of the same student within 4 seconds
+    if (lastScannedRef.current.id === studentId && (now - lastScannedRef.current.time) < 4000) {
+      return;
+    }
+    lastScannedRef.current = { id: studentId, time: now };
     
     setLoading(true);
     setScanResult(null);
