@@ -79,8 +79,8 @@ const Teachers = () => {
     <div className="max-w-6xl mx-auto space-y-8 pb-12">
       <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
         <div>
-          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Faculty & Commissions</h2>
-          <p className="text-slate-500 font-medium mt-1">Manage instructors and calculate monthly payouts</p>
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Faculty Management</h2>
+          <p className="text-slate-500 font-medium mt-1">Manage instructors and view active student counts</p>
         </div>
         <button 
           onClick={() => {
@@ -102,9 +102,9 @@ const Teachers = () => {
         <div className="p-6 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center text-slate-800">
             <div className="bg-violet-100 p-2 rounded-lg text-violet-600 mr-3">
-              <Calculator size={20} />
+              <UserCog size={20} />
             </div>
-            <h3 className="font-bold text-lg">Monthly Commission Calculator</h3>
+            <h3 className="font-bold text-lg">Active Faculty Members</h3>
           </div>
           <div className="flex items-center gap-2 text-sm font-bold text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
             <Briefcase size={16} className="text-slate-400" /> {teachers.length} Active Staff
@@ -125,8 +125,6 @@ const Teachers = () => {
                   <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Faculty Member</th>
                   <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Subject</th>
                   <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Active Students</th>
-                  <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Comm. Rate</th>
-                  <th className="py-4 px-6 text-xs font-bold text-slate-700 uppercase tracking-wider bg-violet-50/50 text-right">Expected Income (Rs.)</th>
                   <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
@@ -150,19 +148,6 @@ const Teachers = () => {
                     </td>
                     <td className="py-4 px-6 text-center">
                       <span className="font-bold text-slate-700">{teacher.students}</span>
-                    </td>
-                    <td className="py-4 px-6 text-center">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-100 text-emerald-700">
-                        {teacher.commissionRate * 100}%
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-right bg-violet-50/30 group-hover:bg-violet-50/50 transition-colors">
-                      <div className="flex flex-col items-end">
-                        <span className="text-lg font-black text-violet-700">
-                          {teacher.expectedIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                        </span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Est. Payout</span>
-                      </div>
                     </td>
                     <td className="py-4 px-6 text-right">
                       <button 
