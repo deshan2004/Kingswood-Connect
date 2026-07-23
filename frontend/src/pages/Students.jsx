@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X, Edit2, Filter } from 'lucide-react';
+import Select from 'react-select';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -242,22 +243,48 @@ const Students = () => {
             </div>
             
             <div className="relative w-full sm:w-48">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none z-10">
                 <Filter size={18} />
               </span>
-              <select
-                value={filterClass}
-                onChange={(e) => setFilterClass(e.target.value)}
-                className="w-full pl-10 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors font-bold text-slate-800 appearance-none cursor-pointer"
-              >
-                <option value="all">All Classes</option>
-                {classesList.map(c => (
-                  <option key={c.classId} value={c.classId}>{c.name}</option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-              </div>
+              <Select
+                value={{ value: filterClass, label: filterClass === 'all' ? 'All Classes' : classesList.find(c => c.classId === filterClass)?.name || 'Select Class' }}
+                onChange={(selectedOption) => setFilterClass(selectedOption.value)}
+                options={[
+                  { value: 'all', label: 'All Classes' },
+                  ...classesList.map(c => ({ value: c.classId, label: c.name }))
+                ]}
+                styles={{
+                  control: (base, state) => ({
+                    ...base,
+                    paddingLeft: '2rem',
+                    minHeight: '44px',
+                    borderRadius: '0.75rem',
+                    borderColor: state.isFocused ? '#3b82f6' : '#e2e8f0',
+                    boxShadow: state.isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.2)' : 'none',
+                    '&:hover': {
+                      borderColor: state.isFocused ? '#3b82f6' : '#cbd5e1'
+                    },
+                    backgroundColor: '#ffffff',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: '#1e293b'
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#f1f5f9' : 'transparent',
+                    color: state.isSelected ? '#ffffff' : '#1e293b',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    cursor: 'pointer'
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    borderRadius: '0.75rem',
+                    overflow: 'hidden',
+                    zIndex: 50
+                  })
+                }}
+              />
             </div>
           </div>
           <div className="text-sm font-bold text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shrink-0 shadow-sm">

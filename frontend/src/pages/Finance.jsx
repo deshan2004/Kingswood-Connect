@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { CreditCard, Receipt, Wallet, ArrowRight, ShieldCheck, CheckCircle2, FileText, AlertCircle, MessageSquare } from 'lucide-react';
 import { format } from 'date-fns';
+import Select from 'react-select';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -241,19 +242,42 @@ const Finance = () => {
 
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Payment For Class</label>
-              <select
-                required
-                value={selectedClass}
-                onChange={(e) => setSelectedClass(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all font-medium text-slate-800"
-              >
-                <option value="" disabled>Select a class</option>
-                {classesList.map(c => (
-                  <option key={c.classId} value={c.classId}>
-                    {c.name} ({c.teacherName}) - Rs. {c.fee}
-                  </option>
-                ))}
-              </select>
+              <Select
+                value={selectedClass ? { value: selectedClass, label: classesList.find(c => c.classId === selectedClass)?.name || '' } : null}
+                onChange={(selectedOption) => setSelectedClass(selectedOption.value)}
+                options={classesList.map(c => ({ value: c.classId, label: `${c.name} (${c.teacherName}) - Rs. ${c.fee}` }))}
+                placeholder="Select a class"
+                styles={{
+                  control: (base, state) => ({
+                    ...base,
+                    minHeight: '46px',
+                    borderRadius: '0.75rem',
+                    borderColor: state.isFocused ? '#6366f1' : '#e2e8f0',
+                    boxShadow: state.isFocused ? '0 0 0 2px rgba(99, 102, 241, 0.2)' : 'none',
+                    '&:hover': {
+                      borderColor: state.isFocused ? '#6366f1' : '#cbd5e1'
+                    },
+                    backgroundColor: '#f8fafc',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: '#1e293b'
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isSelected ? '#6366f1' : state.isFocused ? '#f1f5f9' : 'transparent',
+                    color: state.isSelected ? '#ffffff' : '#1e293b',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    cursor: 'pointer'
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    borderRadius: '0.75rem',
+                    overflow: 'hidden',
+                    zIndex: 50
+                  })
+                }}
+              />
             </div>
             
             <div className="grid grid-cols-2 gap-5">

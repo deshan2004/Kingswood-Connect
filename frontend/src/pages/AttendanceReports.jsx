@@ -3,6 +3,7 @@ import axios from 'axios';
 import { format } from 'date-fns';
 import { ClipboardList, Search, MessageCircle, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Select from 'react-select';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -77,16 +78,41 @@ const AttendanceReports = () => {
       <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row gap-4 items-center">
         <div className="flex-1 w-full">
           <label className="block text-sm font-bold text-slate-700 mb-1">Select Class</label>
-          <select 
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-medium"
-          >
-            <option value="">-- Choose Class --</option>
-            {classesList.map(c => (
-              <option key={c.classId} value={c.classId}>{c.name}</option>
-            ))}
-          </select>
+          <Select
+            value={{ value: selectedClass, label: selectedClass ? classesList.find(c => c.classId === selectedClass)?.name : 'Select Class' }}
+            onChange={(selectedOption) => setSelectedClass(selectedOption.value)}
+            options={classesList.map(c => ({ value: c.classId, label: c.name }))}
+            styles={{
+              control: (base, state) => ({
+                ...base,
+                minHeight: '44px',
+                borderRadius: '0.75rem',
+                borderColor: state.isFocused ? '#3b82f6' : '#e2e8f0',
+                boxShadow: state.isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.2)' : 'none',
+                '&:hover': {
+                  borderColor: state.isFocused ? '#3b82f6' : '#cbd5e1'
+                },
+                backgroundColor: '#ffffff',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                color: '#1e293b'
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#f1f5f9' : 'transparent',
+                color: state.isSelected ? '#ffffff' : '#1e293b',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                cursor: 'pointer'
+              }),
+              menu: (base) => ({
+                ...base,
+                borderRadius: '0.75rem',
+                overflow: 'hidden',
+                zIndex: 50
+              })
+            }}
+          />
         </div>
         <div className="flex-1 w-full">
           <label className="block text-sm font-bold text-slate-700 mb-1">Select Month</label>

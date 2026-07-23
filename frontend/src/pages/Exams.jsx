@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Award, Search, CheckCircle2, ChevronDown, User, Filter, AlertCircle, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Select from 'react-select';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -53,8 +54,8 @@ const Exams = () => {
     }
   };
 
-  const handleClassChange = (e) => {
-    const cid = e.target.value;
+  const handleClassChange = (selectedOption) => {
+    const cid = selectedOption.value;
     setSelectedClass(cid);
     fetchStudentsForClass(cid);
   };
@@ -139,16 +140,42 @@ const Exams = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Select Class</label>
-                <select 
-                  value={selectedClass}
+                <Select
+                  value={selectedClass ? { value: selectedClass, label: classesList.find(c => c.classId === selectedClass)?.name || '' } : null}
                   onChange={handleClassChange}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-slate-800"
-                >
-                  <option value="">-- Choose a Class --</option>
-                  {classesList.map(c => (
-                    <option key={c.classId} value={c.classId}>{c.name}</option>
-                  ))}
-                </select>
+                  options={classesList.map(c => ({ value: c.classId, label: c.name }))}
+                  placeholder="-- Choose a Class --"
+                  styles={{
+                    control: (base, state) => ({
+                      ...base,
+                      minHeight: '46px',
+                      borderRadius: '0.75rem',
+                      borderColor: state.isFocused ? '#3b82f6' : '#e2e8f0',
+                      boxShadow: state.isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.2)' : 'none',
+                      '&:hover': {
+                        borderColor: state.isFocused ? '#3b82f6' : '#cbd5e1'
+                      },
+                      backgroundColor: '#f8fafc',
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      color: '#1e293b'
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#f1f5f9' : 'transparent',
+                      color: state.isSelected ? '#ffffff' : '#1e293b',
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      cursor: 'pointer'
+                    }),
+                    menu: (base) => ({
+                      ...base,
+                      borderRadius: '0.75rem',
+                      overflow: 'hidden',
+                      zIndex: 50
+                    })
+                  }}
+                />
               </div>
 
               <div>
