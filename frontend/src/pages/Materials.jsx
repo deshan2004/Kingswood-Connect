@@ -3,6 +3,8 @@ import axios from 'axios';
 import { BookOpen, Search, Link as LinkIcon, Trash2, Plus, X, CheckCircle2, AlertCircle, FileText, Video, Download } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Select from 'react-select';
+import { storage } from '../config/firebase';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -17,9 +19,11 @@ const Materials = () => {
   const [title, setTitle] = useState('');
   const [type, setType] = useState('Tute');
   const [link, setLink] = useState('');
+  const [file, setFile] = useState(null);
   const [description, setDescription] = useState('');
   
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
@@ -73,18 +77,46 @@ const Materials = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedClass || !title || !link) {
-      showToast('error', 'Please fill all required fields.');
+    if (!selectedClass || !title || (!link && !file)) {
+      showToast('error', 'Please provide a link or upload a file.');
       return;
     }
     
     setSubmitting(true);
+    setUploadProgress(0);
+    
     try {
+      let finalLink = link;
+
+      if (file) {
+        // Upload to Firebase Storage
+        const fileRef = ref(storage, `materials/${selectedClass}/${Date.now()}_${file.name}`);
+        const uploadTask = uploadBytesResumable(fileRef, file);
+
+        finalLink = await new Promise((resolve, reject) => {
+          uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              setUploadProgress(Math.round(progress));
+            },
+            (error) => {
+              console.error("Upload error:", error);
+              reject(error);
+            },
+            async () => {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              resolve(downloadURL);
+            }
+          );
+        });
+      }
+
       const res = await axios.post(`${API_URL}/materials`, {
         classId: selectedClass,
         title,
         type,
-        link,
+        link: finalLink,
         description,
         teacherId: user?.linkedId || 'admin'
       });
@@ -95,8 +127,10 @@ const Materials = () => {
       // Reset form
       setTitle('');
       setLink('');
+      setFile(null);
       setDescription('');
       setType('Tute');
+      setUploadProgress(0);
     } catch (error) {
       showToast('error', 'Failed to add material.');
     } finally {
@@ -324,15 +358,37 @@ const Materials = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Resource Link (Google Drive, YouTube, etc.) <span className="text-red-500">*</span></label>
-                <input 
-                  type="url" 
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                  required
-                  placeholder="https://..."
-                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-medium"
-                />
+                <label className="block text-sm font-bold text-slate-700 mb-1.5">Resource Link OR Upload File <span className="text-red-500">*</span></label>
+                <div className="space-y-3">
+                  <input 
+                    type="url" 
+                    value={link}
+                    onChange={(e) => setLink(e.target.value)}
+                    disabled={!!file}
+                    placeholder="https://... (Google Drive, YouTube)"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-medium disabled:bg-slate-100 disabled:text-slate-400"
+                  />
+                  <div className="relative text-center">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest bg-white px-2 relative z-10">OR</span>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-full border-t border-slate-200"></div>
+                    </div>
+                  </div>
+                  <input 
+                    type="file" 
+                    onChange={(e) => {
+                      setFile(e.target.files[0]);
+                      if (e.target.files[0]) setLink('');
+                    }}
+                    disabled={!!link}
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none font-medium disabled:bg-slate-100 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+                  />
+                  {uploadProgress > 0 && uploadProgress < 100 && (
+                    <div className="w-full bg-slate-200 rounded-full h-2.5 mt-2 overflow-hidden">
+                      <div className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>
