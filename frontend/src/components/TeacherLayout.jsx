@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { Briefcase, LogOut, Menu, X, LayoutDashboard, Award, ClipboardList } from 'lucide-react';
+import { Briefcase, LogOut, Menu, X, LayoutDashboard, Award, ClipboardList, BookOpen } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const TeacherLayout = () => {
@@ -81,6 +81,19 @@ const TeacherLayout = () => {
             }
           >
             <ClipboardList size={20} className="shrink-0" /> Attendance Reports
+          </NavLink>
+          <NavLink
+            to="/teacher/materials"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${
+                isActive 
+                  ? 'bg-violet-50 text-violet-700 shadow-sm border border-violet-100/50' 
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+              }`
+            }
+          >
+            <BookOpen size={20} className="shrink-0" /> Study Materials
           </NavLink>
         </nav>
 

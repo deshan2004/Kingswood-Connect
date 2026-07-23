@@ -904,6 +904,56 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
   }
 });
 
+// --- Materials / Tutes & Exams ---
+app.post('/api/materials', async (req, res) => {
+  try {
+    const { classId, title, type, link, description, teacherId } = req.body;
+    const materialId = generateId('MAT');
+    
+    const materialData = {
+      materialId,
+      classId,
+      title,
+      type: type || 'Tute',
+      link,
+      description: description || '',
+      teacherId,
+      createdAt: new Date().toISOString()
+    };
+    
+    await db.collection('materials').doc(materialId).set(materialData);
+    res.status(201).json({ message: 'Material added successfully', material: materialData });
+  } catch (error) {
+    console.error('Add material error:', error);
+    res.status(500).json({ error: 'Failed to add material' });
+  }
+});
+
+app.get('/api/materials/class/:id', async (req, res) => {
+  try {
+    const classId = req.params.id;
+    const materialsSnapshot = await db.collection('materials').where('classId', '==', classId).get();
+    let materials = [];
+    materialsSnapshot.forEach(doc => materials.push(doc.data()));
+    materials.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // newest first
+    res.json(materials);
+  } catch (error) {
+    console.error('Get materials error:', error);
+    res.status(500).json({ error: 'Failed to fetch materials' });
+  }
+});
+
+app.delete('/api/materials/:id', async (req, res) => {
+  try {
+    const materialId = req.params.id;
+    await db.collection('materials').doc(materialId).delete();
+    res.json({ message: 'Material deleted successfully' });
+  } catch (error) {
+    console.error('Delete material error:', error);
+    res.status(500).json({ error: 'Failed to delete material' });
+  }
+});
+
 // --- Phase 1: Exams & Progress ---
 app.post('/api/exams', async (req, res) => {
   try {
