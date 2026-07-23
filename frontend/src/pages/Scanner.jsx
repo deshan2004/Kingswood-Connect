@@ -17,7 +17,7 @@ const Scanner = () => {
   const [manualId, setManualId] = useState('');
   const [students, setStudents] = useState([]);
   const [classesList, setClassesList] = useState([]);
-  const [activeClass, setActiveClass] = useState('');
+  const [activeClass, setActiveClass] = useState(() => localStorage.getItem('scanner_active_class') || '');
   const [sessionId, setSessionId] = useState(null);
   const [showMobileLink, setShowMobileLink] = useState(false);
   const processScanRef = React.useRef();
@@ -186,7 +186,12 @@ const Scanner = () => {
           <div className="text-sm text-amber-600 font-medium">Please add classes from the backend before scanning.</div>
         ) : (
           <Select
-            value={activeClass ? { value: activeClass, label: classesList.find(c => c.classId === activeClass)?.name ? `${classesList.find(c => c.classId === activeClass).name} (${classesList.find(c => c.classId === activeClass).teacherName})` : 'Select Class' } : null}
+            value={activeClass ? { 
+              value: activeClass, 
+              label: classesList.find(c => c.classId === activeClass) 
+                ? `${classesList.find(c => c.classId === activeClass).name} (${classesList.find(c => c.classId === activeClass).teacherName})` 
+                : 'Select Class' 
+            } : null}
             onChange={(selectedOption) => {
               setActiveClass(selectedOption.value);
               localStorage.setItem('scanner_active_class', selectedOption.value);
