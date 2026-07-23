@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { Wallet, Users, BookOpen, Calculator } from 'lucide-react';
+import ChangePassword from '../components/ChangePassword';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -118,6 +119,12 @@ const TeacherDashboard = () => {
               <p className="font-medium">You don't have any classes assigned yet.</p>
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <ChangePassword />
         </div>
       </div>
     </div>
