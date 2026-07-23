@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Award, Search, CheckCircle2, ChevronDown, User, Filter, AlertCircle, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -9,6 +10,7 @@ const Exams = () => {
   const [selectedClass, setSelectedClass] = useState('');
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   const [examTitle, setExamTitle] = useState('');
   const [examDate, setExamDate] = useState('');
@@ -23,7 +25,11 @@ const Exams = () => {
   const fetchClasses = async () => {
     try {
       const res = await axios.get(`${API_URL}/classes`);
-      setClassesList(res.data);
+      let classes = res.data;
+      if (user?.role === 'teacher' && user?.linkedId) {
+        classes = classes.filter(c => c.teacherId === user.linkedId);
+      }
+      setClassesList(classes);
     } catch (err) {
       console.error(err);
     } finally {

@@ -57,7 +57,6 @@ function App() {
             <Route path="finance" element={<Finance />} />
             <Route path="teachers" element={<Teachers />} />
             <Route path="schedule" element={<Schedule />} />
-            <Route path="exams" element={<Exams />} />
           </Route>
 
           {/* Student Routes */}
@@ -76,6 +75,7 @@ function App() {
             </ProtectedRoute>
           }>
             <Route index element={<TeacherDashboard />} />
+            <Route path="exams" element={<Exams />} />
           </Route>
         </Routes>
       </Router>

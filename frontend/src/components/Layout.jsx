@@ -21,7 +21,6 @@ const Layout = () => {
     { name: 'Fees & Payments', href: '/finance', icon: CreditCard },
     { name: 'Faculty', href: '/teachers', icon: UserCog },
     { name: 'Schedule', href: '/schedule', icon: Calendar },
-    { name: 'Exams', href: '/exams', icon: Award },
   ];
 
   return (
