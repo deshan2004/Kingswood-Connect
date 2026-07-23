@@ -458,11 +458,22 @@ app.get('/api/attendance/reports', async (req, res) => {
     const classDates = new Set(attendanceData.map(a => a.date));
     const totalClassDays = classDates.size;
 
-    // 4. Format report
+    // 4. Check payments for this class and month
+    const paymentsSnapshot = await db.collection('payments')
+      .where('classId', '==', classId)
+      .where('month', '==', month).get();
+      
+    const paidStudentIds = new Set();
+    paymentsSnapshot.forEach(doc => {
+      paidStudentIds.add(doc.data().studentId);
+    });
+
+    // 5. Format report
     const report = enrolledStudents.map(student => {
       const studentAttendance = attendanceData.filter(a => a.studentId === student.studentId);
       const daysPresent = studentAttendance.length;
       const percentage = totalClassDays > 0 ? Math.round((daysPresent / totalClassDays) * 100) : 0;
+      const feesPaid = paidStudentIds.has(student.studentId);
       
       return {
         studentId: student.studentId,
@@ -470,7 +481,8 @@ app.get('/api/attendance/reports', async (req, res) => {
         contact: student.contact,
         daysPresent,
         totalClassDays,
-        percentage
+        percentage,
+        feesPaid
       };
     });
 

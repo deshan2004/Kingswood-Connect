@@ -139,6 +139,7 @@ const AttendanceReports = () => {
                   <th className="py-4 px-6 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Student</th>
                   <th className="py-4 px-6 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Days Present</th>
                   <th className="py-4 px-6 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Attendance %</th>
+                  <th className="py-4 px-6 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Fee Status</th>
                   <th className="py-4 px-6 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -173,6 +174,13 @@ const AttendanceReports = () => {
                           {student.percentage}%
                         </span>
                       )}
+                    </td>
+                    <td className="py-4 px-6 text-center">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold ${
+                        student.feesPaid ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      }`}>
+                        {student.feesPaid ? 'Paid' : 'Pending'}
+                      </span>
                     </td>
                     <td className="py-4 px-6 text-right">
                       {(student.percentage < 50 && student.totalClassDays > 0) ? (

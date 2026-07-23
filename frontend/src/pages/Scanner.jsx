@@ -101,8 +101,14 @@ const Scanner = () => {
     }
   };
 
+  const [isScannerActive, setIsScannerActive] = useState(false);
+
   useEffect(() => {
     axios.get(`${API_URL}/students`).then(res => setStudents(res.data)).catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    if (!isScannerActive) return;
 
     const scanner = new Html5QrcodeScanner(
       "reader",
@@ -122,7 +128,7 @@ const Scanner = () => {
     return () => {
       scanner.clear().catch(error => console.error("Failed to clear scanner", error));
     };
-  }, []);
+  }, [isScannerActive]);
 
   const processScan = async (studentId) => {
     if (!studentId || !activeClass) return;
@@ -350,7 +356,35 @@ const Scanner = () => {
               background-color: #4338ca !important;
             }
           `}</style>
-          <div id="reader" className="w-full rounded-2xl overflow-hidden"></div>
+          
+          {!isScannerActive ? (
+            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+              <div className="bg-slate-50 p-6 rounded-full mb-4">
+                <QrCode size={48} className="text-indigo-300" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-700 mb-2">Camera Scanner Inactive</h3>
+              <p className="text-slate-500 mb-6 max-w-sm">Click the button below to activate your device's camera for scanning.</p>
+              <button 
+                onClick={() => setIsScannerActive(true)}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-200 flex items-center gap-2"
+              >
+                <QrCode size={20} />
+                Open Camera
+              </button>
+            </div>
+          ) : (
+            <div>
+              <div className="flex justify-end mb-4">
+                <button 
+                  onClick={() => setIsScannerActive(false)}
+                  className="text-slate-500 hover:text-slate-700 text-sm font-bold flex items-center gap-1"
+                >
+                  <X size={16} /> Close Camera
+                </button>
+              </div>
+              <div id="reader" className="w-full rounded-2xl overflow-hidden"></div>
+            </div>
+          )}
         </div>
       </div>
 
