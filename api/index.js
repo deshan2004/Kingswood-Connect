@@ -509,6 +509,23 @@ app.put('/api/teachers/:id', async (req, res) => {
            ...(name && { name })
          });
       }
+    } else if (email && password) {
+      // Create user if they don't exist (for old teachers)
+      const userRecord = await getAuth().createUser({
+        email,
+        password,
+        displayName: name,
+      });
+      const uid = userRecord.uid;
+      await getAuth().setCustomUserClaims(uid, { role: 'teacher' });
+      await db.collection('users').doc(uid).set({
+        uid,
+        email,
+        name,
+        role: 'teacher',
+        linkedId: teacherId,
+        createdAt: new Date().toISOString()
+      });
     }
 
     const updateData = { 
