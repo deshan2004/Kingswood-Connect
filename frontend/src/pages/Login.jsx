@@ -19,6 +19,7 @@ const Login = () => {
     if (user) {
       const currentRole = user.role ? user.role.toLowerCase() : 'student';
       if (currentRole === 'admin') navigate('/');
+      else if (currentRole === 'teacher') navigate('/teacher');
       else navigate('/student');
     }
   }, [user, navigate]);

@@ -623,6 +623,19 @@ app.post('/api/auth/signup', async (req, res) => {
       };
       
       await db.collection('students').doc(studentId).set(studentData);
+    } else if (role === 'teacher') {
+      const teacherId = generateId('TCH');
+      const teacherData = {
+        teacherId,
+        name,
+        subject: req.body.subject || 'General',
+        contact: email,
+        commissionRate: req.body.commissionRate ? parseFloat(req.body.commissionRate) : 50,
+        createdAt: new Date().toISOString()
+      };
+      await db.collection('teachers').doc(teacherId).set(teacherData);
+      // We can reuse studentId variable just to store it in userData
+      studentId = teacherId; 
     }
 
     // Store user metadata in Firestore
@@ -634,8 +647,8 @@ app.post('/api/auth/signup', async (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    if (role === 'student') {
-      userData.studentId = studentId; // Link to auto-generated KWS-XXXXX
+    if (role === 'student' || role === 'teacher') {
+      userData.linkedId = studentId; // Link to auto-generated KWS-XXXXX or TCH-XXXXX
     }
 
     await db.collection('users').doc(uid).set(userData);
@@ -838,6 +851,51 @@ app.get('/api/exams/student/:id', async (req, res) => {
     res.json(marks);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch student marks' });
+  }
+});
+
+app.get('/api/teacher/:id/dashboard', async (req, res) => {
+  try {
+    const teacherId = req.params.id;
+    const teacherDoc = await db.collection('teachers').doc(teacherId).get();
+    
+    if (!teacherDoc.exists) {
+      return res.status(404).json({ error: 'Teacher not found' });
+    }
+    
+    const teacherData = teacherDoc.data();
+    const classSnap = await db.collection('classes').where('teacherId', '==', teacherId).get();
+    
+    let totalStudents = 0;
+    let expectedIncome = 0;
+    let classes = [];
+
+    for (const classDoc of classSnap.docs) {
+      const cls = classDoc.data();
+      const studentSnap = await db.collection('students').where('enrolledClasses', 'array-contains', classDoc.id).get();
+      const studentCount = studentSnap.size;
+      const classIncome = studentCount * cls.fee * teacherData.commissionRate;
+      
+      totalStudents += studentCount;
+      expectedIncome += classIncome;
+      
+      classes.push({
+        ...cls,
+        classId: classDoc.id,
+        studentsCount: studentCount,
+        expectedIncome: classIncome
+      });
+    }
+
+    res.json({
+      teacher: teacherData,
+      totalStudents,
+      expectedIncome,
+      classes
+    });
+  } catch (error) {
+    console.error('Teacher dashboard error:', error);
+    res.status(500).json({ error: 'Failed to load teacher dashboard' });
   }
 });
 

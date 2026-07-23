@@ -13,6 +13,8 @@ import StudentDashboard from './pages/StudentDashboard';
 import StudentLayout from './components/StudentLayout';
 import MobileScanner from './pages/MobileScanner';
 import Exams from './pages/Exams';
+import TeacherLayout from './components/TeacherLayout';
+import TeacherDashboard from './pages/TeacherDashboard';
 
 const ProtectedRoute = ({ children, allowedRole }) => {
   const { user, loading } = useAuth();
@@ -65,6 +67,15 @@ function App() {
             </ProtectedRoute>
           }>
             <Route index element={<StudentDashboard />} />
+          </Route>
+
+          {/* Teacher Routes */}
+          <Route path="/teacher" element={
+            <ProtectedRoute allowedRole="teacher">
+              <TeacherLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<TeacherDashboard />} />
           </Route>
         </Routes>
       </Router>
