@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Calculator, UserCog, Briefcase, GraduationCap } from 'lucide-react';
+import { Calculator, UserCog, Briefcase, GraduationCap, Edit } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -8,6 +8,7 @@ const Teachers = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [editingTeacher, setEditingTeacher] = useState(null);
   const [newTeacher, setNewTeacher] = useState({ name: '', email: '', password: '', contact: '', subject: '', commissionRate: 50 });
   const [submitting, setSubmitting] = useState(false);
 
@@ -30,23 +31,46 @@ const Teachers = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await axios.post(`${API_URL}/auth/signup`, {
-        name: newTeacher.name,
-        email: newTeacher.email,
-        password: newTeacher.password,
-        role: 'teacher',
-        contact: newTeacher.contact,
-        subject: newTeacher.subject,
-        commissionRate: newTeacher.commissionRate
-      });
+      if (editingTeacher) {
+        await axios.put(`${API_URL}/teachers/${editingTeacher.teacherId}`, {
+          name: newTeacher.name,
+          contact: newTeacher.contact,
+          subject: newTeacher.subject,
+          commissionRate: newTeacher.commissionRate / 100
+        });
+      } else {
+        await axios.post(`${API_URL}/auth/signup`, {
+          name: newTeacher.name,
+          email: newTeacher.email,
+          password: newTeacher.password,
+          role: 'teacher',
+          contact: newTeacher.contact,
+          subject: newTeacher.subject,
+          commissionRate: newTeacher.commissionRate
+        });
+      }
       setShowModal(false);
+      setEditingTeacher(null);
       setNewTeacher({ name: '', email: '', password: '', contact: '', subject: '', commissionRate: 50 });
       fetchTeachers();
     } catch (error) {
-      alert('Failed to add teacher: ' + (error.response?.data?.error || error.message));
+      alert(`Failed to ${editingTeacher ? 'update' : 'add'} teacher: ` + (error.response?.data?.error || error.message));
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const openEditModal = (teacher) => {
+    setEditingTeacher(teacher);
+    setNewTeacher({
+      name: teacher.name,
+      email: '', // Not editable via this modal
+      password: '', // Not editable via this modal
+      contact: teacher.contact,
+      subject: teacher.subject,
+      commissionRate: (teacher.commissionRate || 0) * 100
+    });
+    setShowModal(true);
   };
 
   return (
@@ -57,7 +81,11 @@ const Teachers = () => {
           <p className="text-slate-500 font-medium mt-1">Manage instructors and calculate monthly payouts</p>
         </div>
         <button 
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setEditingTeacher(null);
+            setNewTeacher({ name: '', email: '', password: '', contact: '', subject: '', commissionRate: 50 });
+            setShowModal(true);
+          }}
           className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center justify-center sm:justify-start transition-all shadow-lg shadow-indigo-200 active:scale-95 w-full sm:w-auto"
         >
           <UserCog size={18} className="mr-2" />
@@ -97,6 +125,7 @@ const Teachers = () => {
                   <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Active Students</th>
                   <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Comm. Rate</th>
                   <th className="py-4 px-6 text-xs font-bold text-slate-700 uppercase tracking-wider bg-violet-50/50 text-right">Expected Income (Rs.)</th>
+                  <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -133,6 +162,14 @@ const Teachers = () => {
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Est. Payout</span>
                       </div>
                     </td>
+                    <td className="py-4 px-6 text-right">
+                      <button 
+                        onClick={() => openEditModal(teacher)}
+                        className="p-2 bg-slate-100 hover:bg-violet-100 text-slate-500 hover:text-violet-600 rounded-lg transition-colors"
+                      >
+                        <Edit size={16} />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -151,7 +188,7 @@ const Teachers = () => {
             </button>
             <h3 className="text-2xl font-black text-slate-800 mb-6 flex items-center">
               <UserCog className="mr-2 text-violet-600" />
-              Add New Teacher
+              {editingTeacher ? 'Edit Teacher' : 'Add New Teacher'}
             </h3>
             
             <form onSubmit={handleAddTeacher} className="space-y-4">
@@ -166,28 +203,32 @@ const Teachers = () => {
                   placeholder="e.g. Nimal Perera"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Email</label>
-                <input 
-                  type="email" 
-                  required
-                  value={newTeacher.email}
-                  onChange={(e) => setNewTeacher({...newTeacher, email: e.target.value})}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                  placeholder="e.g. nimal@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Password</label>
-                <input 
-                  type="password" 
-                  required
-                  value={newTeacher.password}
-                  onChange={(e) => setNewTeacher({...newTeacher, password: e.target.value})}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                  placeholder="Minimum 6 characters"
-                />
-              </div>
+              {!editingTeacher && (
+                <>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1">Email</label>
+                    <input 
+                      type="email" 
+                      required
+                      value={newTeacher.email}
+                      onChange={(e) => setNewTeacher({...newTeacher, email: e.target.value})}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                      placeholder="e.g. nimal@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1">Password</label>
+                    <input 
+                      type="password" 
+                      required
+                      value={newTeacher.password}
+                      onChange={(e) => setNewTeacher({...newTeacher, password: e.target.value})}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                      placeholder="Minimum 6 characters"
+                    />
+                  </div>
+                </>
+              )}
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Contact No</label>
                 <input 
@@ -229,7 +270,7 @@ const Teachers = () => {
                 disabled={submitting}
                 className="w-full mt-4 bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50"
               >
-                {submitting ? 'Adding...' : 'Save Teacher'}
+                {submitting ? 'Saving...' : (editingTeacher ? 'Update Teacher' : 'Save Teacher')}
               </button>
             </form>
           </div>

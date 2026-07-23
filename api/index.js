@@ -482,6 +482,24 @@ app.post('/api/teachers', async (req, res) => {
     res.status(500).json({ error: 'Failed to add teacher' });
   }
 });
+
+app.put('/api/teachers/:id', async (req, res) => {
+  try {
+    const { name, subject, contact, commissionRate } = req.body;
+    const teacherId = req.params.id;
+    const updateData = { 
+      name, 
+      subject, 
+      contact, 
+      commissionRate: parseFloat(commissionRate) || 0,
+      updatedAt: new Date().toISOString() 
+    };
+    await db.collection('teachers').doc(teacherId).update(updateData);
+    res.json({ teacherId, ...updateData });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update teacher' });
+  }
+});
 // Get all teachers with commission calculations
 app.get('/api/teachers/commission', async (req, res) => {
   try {
