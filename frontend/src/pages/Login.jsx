@@ -74,19 +74,19 @@ const Login = () => {
             
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
-                Student ID or Email Address
+                Email Address
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
                   <User size={18} />
                 </span>
                 <input
-                  type="text"
+                  type="email"
                   required
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-slate-800"
-                  placeholder="e.g. KWS-12345 or admin@example.com"
+                  placeholder="e.g. user@example.com"
                 />
               </div>
             </div>
