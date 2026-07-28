@@ -31,7 +31,7 @@ const ProtectedRoute = ({ children, allowedRole }) => {
     const currentRole = user.role ? user.role.toLowerCase() : 'student';
     if (currentRole !== allowedRole.toLowerCase()) {
       // Redirect to their respective dashboard if they try to access the wrong area
-      return <Navigate to={currentRole === 'admin' ? '/' : '/student'} replace />;
+      return <Navigate to={currentRole === 'admin' ? '/' : currentRole === 'teacher' ? '/teacher' : '/student'} replace />;
     }
   }
   
