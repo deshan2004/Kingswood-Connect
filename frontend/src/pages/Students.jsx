@@ -93,11 +93,11 @@ const Students = () => {
         phone = '94' + phone.substring(1);
       }
       const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${student.studentId}`;
-      let message = `Hello ${student.name},\n\nWelcome to Kingswood Connect! Your Student ID is *${student.studentId}*.\n`;
-      if (student.email && student.password) {
-        message += `\n*Student Portal Login*\nLink: https://kingswood-connect.vercel.app/login\nEmail: ${student.email}\nPassword: ${student.password}\n`;
-      }
-      message += `\n*Your QR Code:*\n${qrImageUrl}\n\nPlease save this QR code image to mark your attendance. (You can also paste the image directly if it was copied).`;
+      
+      const loginEmail = student.email || `${student.studentId.toLowerCase()}@kingswood.edu`;
+      const loginPassword = student.password || student.contact.replace(/\s+/g, '');
+
+      let message = `Hello ${student.name},\n\nWelcome to *Kingswood Connect*!\n\n🔑 *Student Portal Login Details*\n🌐 Portal: https://kingswood-connect.vercel.app/login\n🆔 Student ID: *${student.studentId}*\n📧 Email / Username: *${loginEmail}*\n🔒 Password: *${loginPassword}*\n\n📱 *Your Attendance QR Code Pass:*\n${qrImageUrl}\n\nPlease save this QR code image to mark your attendance.`;
       
       const text = encodeURIComponent(message);
       window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
@@ -413,6 +413,7 @@ const Students = () => {
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800 text-sm"
                     placeholder="student@example.com"
                   />
+                  <p className="mt-1 text-xs text-slate-400 font-medium">If empty, system email (e.g. kws-1002@kingswood.edu) will be created.</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -447,6 +448,7 @@ const Students = () => {
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800 text-sm"
                     placeholder="Leave empty to use phone number"
                   />
+                  <p className="mt-1 text-xs text-slate-400 font-medium">If empty, student's contact number will be set as their initial password.</p>
                 </div>
 
                 {classesList.length > 0 && (

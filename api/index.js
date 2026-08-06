@@ -118,7 +118,7 @@ app.post('/api/students', async (req, res) => {
 
     // Store in students collection
     const studentData = {
-      studentId, name, grade, contact, qrCodeUrl,
+      studentId, name, grade, contact, qrCodeUrl, email,
       enrolledClasses: enrolledClasses || [], // Array of classIds
       createdAt: new Date().toISOString()
     };
@@ -156,7 +156,13 @@ app.get('/api/students', async (req, res) => {
   try {
     let students = [];
     const snapshot = await db.collection('students').get();
-    snapshot.forEach(doc => students.push(doc.data()));
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (!data.email) {
+        data.email = `${data.studentId.toLowerCase()}@kingswood.edu`;
+      }
+      students.push(data);
+    });
     res.json(students);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch students' });
