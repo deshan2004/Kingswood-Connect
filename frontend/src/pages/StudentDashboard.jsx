@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { QrCode, Calendar, Wallet, CheckCircle2, AlertCircle, BookOpen, Award } from 'lucide-react';
+import { QrCode, Calendar, Wallet, CheckCircle2, AlertCircle, BookOpen, Award, ShieldAlert, ArrowRight } from 'lucide-react';
 import ChangePassword from '../components/ChangePassword';
-import VerifyEmail from '../components/VerifyEmail';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -54,6 +54,27 @@ const StudentDashboard = () => {
         <p className="text-slate-500 font-medium mt-1">Student ID: {user.studentId} • Grade: {user.grade}</p>
       </div>
 
+      {/* Default Email Warning Banner */}
+      {user.email?.endsWith('@kingswood.edu') && (
+        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-amber-100 text-amber-700 shrink-0">
+              <ShieldAlert size={20} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-amber-900">System Default Email Assigned ({user.email})</p>
+              <p className="text-xs font-medium text-amber-700 mt-0.5">Link your personal email address to receive password reset links and receipt alerts.</p>
+            </div>
+          </div>
+          <Link
+            to="/student/update-email"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition-colors shadow-sm shrink-0"
+          >
+            Update Email <ArrowRight size={14} />
+          </Link>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* QR Code Section */}
@@ -82,8 +103,7 @@ const StudentDashboard = () => {
             </div>
           </div>
           
-          <div className="mt-8 space-y-6">
-            <VerifyEmail />
+          <div className="mt-8">
             <ChangePassword />
           </div>
         </div>

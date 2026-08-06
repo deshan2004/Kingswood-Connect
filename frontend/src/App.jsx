@@ -17,6 +17,7 @@ import MobileScanner from './pages/MobileScanner';
 import TeacherLayout from './components/TeacherLayout';
 import TeacherDashboard from './pages/TeacherDashboard';
 import Materials from './pages/Materials';
+import UpdateEmailPage from './pages/UpdateEmailPage';
 
 const ProtectedRoute = ({ children, allowedRole }) => {
   const { user, loading } = useAuth();
@@ -70,6 +71,7 @@ function App() {
           }>
             <Route index element={<StudentDashboard />} />
             <Route path="materials" element={<Materials />} />
+            <Route path="update-email" element={<UpdateEmailPage />} />
           </Route>
 
           {/* Teacher Routes */}
