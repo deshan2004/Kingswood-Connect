@@ -210,21 +210,9 @@ const Login = () => {
               </div>
 
               <div>
-                <div className="flex justify-between items-center mb-1.5">
-                  <label className="block text-sm font-bold text-slate-700 uppercase tracking-wide">
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setResetIdentifier(identifier);
-                      setIsResetMode(true);
-                    }}
-                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
-                  >
-                    Forgot password?
-                  </button>
-                </div>
+                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
+                  Password
+                </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
                     <Key size={18} />
@@ -297,12 +285,17 @@ const Login = () => {
               </div>
 
               <div className="mt-8 text-center border-t border-slate-100 pt-6">
-                <p className="text-sm text-slate-500 font-medium">
-                  Don't have an account?{' '}
-                  <Link to="/signup" className="font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
-                    Sign Up
-                  </Link>
-                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setResetIdentifier(identifier);
+                    setIsResetMode(true);
+                  }}
+                  className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+                >
+                  Forgot your password?{' '}
+                  <span className="font-bold text-indigo-600 hover:underline">Reset Password</span>
+                </button>
               </div>
             </div>
           )}
