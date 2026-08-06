@@ -38,14 +38,14 @@ const Layout = () => {
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 w-64 bg-indigo-950 text-white flex flex-col shadow-2xl z-50 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out`}>
         <div className="p-6 border-b border-indigo-900/50 bg-indigo-950/50 backdrop-blur-md flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-black bg-gradient-to-r from-blue-400 to-indigo-300 bg-clip-text text-transparent flex items-center gap-2">
-              <span className="bg-indigo-600 p-1.5 rounded-lg text-white">
-                <QrCode size={20} />
-              </span>
-              K-Connect
-            </h1>
-            <p className="text-xs font-medium text-indigo-300 mt-1 uppercase tracking-wider">Education Center</p>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-900/60 border border-indigo-400/20 shrink-0">
+              <span className="text-white font-black tracking-tighter text-lg">KC</span>
+            </div>
+            <div>
+              <h1 className="font-black text-white text-lg tracking-tight leading-none">Kingswood</h1>
+              <span className="text-xs font-bold text-indigo-300 uppercase tracking-widest">Connect</span>
+            </div>
           </div>
           <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden text-indigo-300 hover:text-white">
             <X size={24} />
@@ -101,11 +101,11 @@ const Layout = () => {
       <main className="flex-1 flex flex-col relative h-screen overflow-hidden w-full">
         {/* Mobile Header */}
         <header className="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between z-10 relative shadow-sm shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
-              <QrCode size={18} />
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-lg flex items-center justify-center shadow-md shrink-0">
+              <span className="text-white font-black tracking-tighter text-xs">KC</span>
             </div>
-            <span className="font-black text-slate-800 text-lg tracking-tight">K-Connect</span>
+            <span className="font-black text-slate-800 text-lg tracking-tight">Kingswood Connect</span>
           </div>
           <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -mr-2 text-slate-600 hover:text-indigo-600 transition-colors">
             <Menu size={24} />

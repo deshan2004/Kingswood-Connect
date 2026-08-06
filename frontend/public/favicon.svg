@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="kcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Transparent canvas background, smooth rounded rectangle logo -->
+  <rect x="0" y="0" width="512" height="512" rx="120" ry="120" fill="url(#kcGradient)" />
+  
+  <!-- Stylized KC text -->
+  <text 
+    x="256" 
+    y="348" 
+    font-family="Outfit, Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+    font-weight="900" 
+    font-size="270" 
+    fill="#ffffff" 
+    text-anchor="middle" 
+    letter-spacing="-16"
+  >KC</text>
+</svg>
