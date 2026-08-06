@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { onAuthStateChanged, signOut, signInWithEmailAndPassword, updatePassword, reauthenticateWithCredential, EmailAuthProvider, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { onAuthStateChanged, signOut, signInWithEmailAndPassword, updatePassword, reauthenticateWithCredential, EmailAuthProvider, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 
@@ -82,8 +82,16 @@ export const AuthProvider = ({ children }) => {
     await updatePassword(auth.currentUser, newPassword);
   };
 
+  const resetPassword = async (identifier) => {
+    let email = identifier.trim().toLowerCase();
+    if (email.startsWith('kws-') && !email.includes('@')) {
+      email = `${email}@kingswood.edu`;
+    }
+    return sendPasswordResetEmail(auth, email);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, loginWithGoogle, logout, changePassword, loading }}>
+    <AuthContext.Provider value={{ user, login, loginWithGoogle, logout, changePassword, resetPassword, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
