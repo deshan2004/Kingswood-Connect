@@ -86,47 +86,47 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+    <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden text-slate-100 font-sans">
+      {/* Background decoration gradients */}
+      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/25 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/25 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center mb-6">
-          <div className="h-16 w-16 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
+          <div className="h-16 w-16 bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-900/60 border border-indigo-400/30">
             <span className="text-white font-black text-3xl tracking-tighter">KC</span>
           </div>
         </div>
-        <h2 className="text-center text-3xl font-black text-slate-800 tracking-tight">Kingswood Connect</h2>
-        <p className="mt-2 text-center text-sm font-medium text-slate-500">
-          {isResetMode ? 'Reset your account password' : 'Enter your credentials to access your dashboard'}
+        <h2 className="text-center text-3xl font-black text-white tracking-tight">Kingswood Connect</h2>
+        <p className="mt-2 text-center text-sm font-medium text-indigo-200/80">
+          {isResetMode ? 'Reset your account password' : 'Enter your credentials to access your portal'}
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-3xl sm:px-10 border border-slate-100">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
+        <div className="bg-indigo-950/40 backdrop-blur-xl py-8 px-6 sm:px-10 shadow-2xl shadow-indigo-950/80 sm:rounded-3xl border border-indigo-500/20">
           {isResetMode ? (
             /* Forgot Password Reset Form */
             <form className="space-y-6" onSubmit={handlePasswordReset}>
               {resetError && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl">
-                  <p className="text-sm font-medium text-red-700">{resetError}</p>
+                <div className="bg-red-950/50 border-l-4 border-red-500 p-4 rounded-xl backdrop-blur-md border border-red-900/40">
+                  <p className="text-sm font-medium text-red-300">{resetError}</p>
                 </div>
               )}
 
               {resetSuccess ? (
-                <div className="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl text-center space-y-3">
-                  <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                <div className="bg-emerald-950/40 border border-emerald-500/30 p-6 rounded-2xl text-center space-y-3 backdrop-blur-md">
+                  <div className="w-12 h-12 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
                     <CheckCircle2 size={28} />
                   </div>
-                  <p className="text-sm font-bold text-emerald-800">{resetSuccess}</p>
+                  <p className="text-sm font-bold text-emerald-200">{resetSuccess}</p>
                   <button
                     type="button"
                     onClick={() => {
                       setIsResetMode(false);
                       setResetSuccess('');
                     }}
-                    className="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-800 mt-2"
+                    className="inline-flex items-center gap-2 text-sm font-bold text-indigo-400 hover:text-white mt-2 transition-colors"
                   >
                     <ArrowLeft size={16} /> Back to Sign In
                   </button>
@@ -134,11 +134,11 @@ const Login = () => {
               ) : (
                 <>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
+                    <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest mb-2">
                       Email Address or Student ID
                     </label>
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                      <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-indigo-400">
                         <User size={18} />
                       </span>
                       <input
@@ -146,11 +146,11 @@ const Login = () => {
                         required
                         value={resetIdentifier}
                         onChange={(e) => setResetIdentifier(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-slate-800"
+                        className="w-full pl-11 pr-4 py-3 bg-indigo-950/60 border border-indigo-800/60 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-white placeholder-indigo-300/30"
                         placeholder="e.g. user@example.com or KWS-1002"
                       />
                     </div>
-                    <p className="mt-1.5 text-xs text-slate-400 font-medium">
+                    <p className="mt-2 text-xs text-indigo-300/60 font-medium">
                       Enter the email address or Student ID associated with your account.
                     </p>
                   </div>
@@ -158,7 +158,7 @@ const Login = () => {
                   <button
                     type="submit"
                     disabled={resetLoading}
-                    className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                    className="w-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-900/60 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                   >
                     {resetLoading ? (
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -173,7 +173,7 @@ const Login = () => {
                     <button
                       type="button"
                       onClick={() => setIsResetMode(false)}
-                      className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors"
+                      className="inline-flex items-center gap-2 text-sm font-bold text-indigo-300/80 hover:text-white transition-colors"
                     >
                       <ArrowLeft size={16} /> Back to Sign In
                     </button>
@@ -185,17 +185,17 @@ const Login = () => {
             /* Standard Login Form */
             <form className="space-y-6" onSubmit={handleLogin}>
               {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl">
-                  <p className="text-sm font-medium text-red-700">{error}</p>
+                <div className="bg-red-950/50 border-l-4 border-red-500 p-4 rounded-xl backdrop-blur-md border border-red-900/40">
+                  <p className="text-sm font-medium text-red-300">{error}</p>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
+                <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest mb-2">
                   Email Address or Student ID
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-indigo-400">
                     <User size={18} />
                   </span>
                   <input
@@ -203,18 +203,18 @@ const Login = () => {
                     required
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-slate-800"
+                    className="w-full pl-11 pr-4 py-3 bg-indigo-950/60 border border-indigo-800/60 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-white placeholder-indigo-300/30"
                     placeholder="e.g. user@example.com or KWS-1002"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
+                <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-indigo-400">
                     <Key size={18} />
                   </span>
                   <input
@@ -222,13 +222,13 @@ const Login = () => {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all font-medium text-slate-800"
+                    className="w-full pl-11 pr-12 py-3 bg-indigo-950/60 border border-indigo-800/60 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-white placeholder-indigo-300/30"
                     placeholder="Password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-indigo-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-indigo-400 hover:text-white transition-colors"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -238,7 +238,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-900/60 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -255,10 +255,10 @@ const Login = () => {
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-200"></div>
+                  <div className="w-full border-t border-indigo-900/60"></div>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-slate-500 font-medium">Or continue with</span>
+                <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                  <span className="px-3 bg-indigo-950/80 text-indigo-300/70 font-semibold rounded-full border border-indigo-800/40">Or continue with</span>
                 </div>
               </div>
 
@@ -266,10 +266,10 @@ const Login = () => {
                 <button
                   onClick={handleGoogleLogin}
                   disabled={googleLoading || loading}
-                  className="w-full bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70"
+                  className="w-full bg-indigo-900/30 border border-indigo-700/50 hover:bg-indigo-900/60 hover:border-indigo-500 text-indigo-100 font-bold py-3.5 rounded-xl shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70"
                 >
                   {googleLoading ? (
-                    <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
+                    <div className="w-5 h-5 border-2 border-indigo-300 border-t-white rounded-full animate-spin"></div>
                   ) : (
                     <>
                       <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -284,17 +284,17 @@ const Login = () => {
                 </button>
               </div>
 
-              <div className="mt-8 text-center border-t border-slate-100 pt-6">
+              <div className="mt-8 text-center border-t border-indigo-900/60 pt-6">
                 <button
                   type="button"
                   onClick={() => {
                     setResetIdentifier(identifier);
                     setIsResetMode(true);
                   }}
-                  className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+                  className="text-sm font-medium text-indigo-300/80 hover:text-white transition-colors"
                 >
                   Forgot your password?{' '}
-                  <span className="font-bold text-indigo-600 hover:underline">Reset Password</span>
+                  <span className="font-bold text-indigo-400 hover:text-indigo-300 underline">Reset Password</span>
                 </button>
               </div>
             </div>
