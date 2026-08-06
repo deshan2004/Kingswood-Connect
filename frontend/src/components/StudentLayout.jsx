@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { User, Calendar, LogOut, Menu, X, BookOpen, Mail } from 'lucide-react';
+import { User, Calendar, LogOut, Menu, X, BookOpen, Mail, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const StudentLayout = () => {
@@ -80,7 +80,7 @@ const StudentLayout = () => {
               }`
             }
           >
-            <Mail size={20} className="shrink-0" /> Verify Email
+            <ShieldCheck size={20} className="shrink-0" /> Account & Security
           </NavLink>
         </nav>
 

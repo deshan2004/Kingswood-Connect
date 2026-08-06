@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Mail, ShieldAlert, ShieldCheck, CheckCircle2, ArrowRight, RefreshCw, AlertCircle, ArrowLeft, Send } from 'lucide-react';
+import { Mail, ShieldAlert, ShieldCheck, CheckCircle2, ArrowRight, RefreshCw, AlertCircle, ArrowLeft, Send, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ChangePassword from '../components/ChangePassword';
 
 const UpdateEmailPage = () => {
   const { user, updateStudentEmail, sendVerification } = useAuth();
@@ -72,8 +73,8 @@ const UpdateEmailPage = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Email & Verification</h2>
-          <p className="text-slate-500 font-medium mt-1">Manage your account email address for recovery, receipts, and notifications.</p>
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Account & Security</h2>
+          <p className="text-slate-500 font-medium mt-1">Manage your email verification and update your account password.</p>
         </div>
         <Link 
           to="/student"
@@ -83,18 +84,29 @@ const UpdateEmailPage = () => {
         </Link>
       </div>
 
-      {/* Main Card */}
+      {/* Email Verification Card */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-8 space-y-6">
         
+        {/* Card Title */}
+        <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+          <div className="bg-indigo-50 p-2.5 rounded-2xl text-indigo-600">
+            <Mail size={22} />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-800">Email & Verification</h3>
+            <p className="text-xs text-slate-400 font-medium">Link your personal email address for account recovery and alerts</p>
+          </div>
+        </div>
+
         {/* Status Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100">
           <div className="flex items-center gap-4">
-            <div className={`p-3.5 rounded-2xl ${isVerified ? 'bg-emerald-100 text-emerald-600' : isDefaultEmail ? 'bg-amber-100 text-amber-600' : 'bg-indigo-100 text-indigo-600'}`}>
-              <Mail size={28} />
+            <div className={`p-3 rounded-2xl ${isVerified ? 'bg-emerald-100 text-emerald-600' : isDefaultEmail ? 'bg-amber-100 text-amber-600' : 'bg-indigo-100 text-indigo-600'}`}>
+              <Mail size={24} />
             </div>
             <div>
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Current Account Email</span>
-              <span className="text-lg font-bold text-slate-800 truncate block">{user?.email || 'None'}</span>
+              <span className="text-base font-bold text-slate-800 truncate block">{user?.email || 'None'}</span>
             </div>
           </div>
 
@@ -187,6 +199,11 @@ const UpdateEmailPage = () => {
             )}
           </div>
         </form>
+      </div>
+
+      {/* Change Password Card Section */}
+      <div>
+        <ChangePassword />
       </div>
     </div>
   );
