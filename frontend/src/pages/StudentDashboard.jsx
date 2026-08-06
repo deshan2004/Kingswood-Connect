@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { QrCode, Calendar, Wallet, CheckCircle2, AlertCircle, BookOpen, Award, ShieldAlert, ArrowRight } from 'lucide-react';
-import ChangePassword from '../components/ChangePassword';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -101,10 +100,6 @@ const StudentDashboard = () => {
               </button>
               <p className="text-xs text-slate-400 mt-4 font-medium">Show this code at the entrance to mark your attendance.</p>
             </div>
-          </div>
-          
-          <div className="mt-8">
-            <ChangePassword />
           </div>
         </div>
 
