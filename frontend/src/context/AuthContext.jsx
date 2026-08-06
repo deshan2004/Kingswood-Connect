@@ -1,7 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { onAuthStateChanged, signOut, signInWithEmailAndPassword, updatePassword, reauthenticateWithCredential, EmailAuthProvider, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
+import { onAuthStateChanged, signOut, signInWithEmailAndPassword, updatePassword, reauthenticateWithCredential, EmailAuthProvider, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, sendEmailVerification } from 'firebase/auth';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const AuthContext = createContext();
 
@@ -90,8 +93,42 @@ export const AuthProvider = ({ children }) => {
     return sendPasswordResetEmail(auth, email);
   };
 
+  const sendVerification = async () => {
+    if (!auth.currentUser) throw new Error("No user logged in");
+    return sendEmailVerification(auth.currentUser);
+  };
+
+  const updateStudentEmail = async (newEmail) => {
+    if (!auth.currentUser) throw new Error("No user logged in");
+    const uid = auth.currentUser.uid;
+    const studentId = user?.studentId;
+
+    const formattedEmail = newEmail.trim().toLowerCase();
+
+    // 1. Call API to update Firebase Auth + Firestore
+    const res = await axios.put(`${API_URL}/student/email`, {
+      uid,
+      studentId,
+      newEmail: formattedEmail
+    });
+
+    // 2. Try sending Firebase email verification
+    try {
+      if (auth.currentUser) {
+        await sendEmailVerification(auth.currentUser);
+      }
+    } catch (err) {
+      console.warn("Verification email trigger note:", err);
+    }
+
+    // 3. Update local state
+    setUser(prev => prev ? { ...prev, email: formattedEmail } : null);
+
+    return res.data;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, loginWithGoogle, logout, changePassword, resetPassword, loading }}>
+    <AuthContext.Provider value={{ user, login, loginWithGoogle, logout, changePassword, resetPassword, sendVerification, updateStudentEmail, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

@@ -191,6 +191,45 @@ app.put('/api/students/:id', async (req, res) => {
   }
 });
 
+// 2.6 Update student email & sync with Firebase Auth + Firestore
+app.put('/api/student/email', async (req, res) => {
+  try {
+    const { uid, studentId, newEmail } = req.body;
+    if (!uid || !newEmail || !newEmail.includes('@')) {
+      return res.status(400).json({ error: 'Valid email address is required' });
+    }
+
+    const formattedEmail = newEmail.trim().toLowerCase();
+
+    // 1. Update Firebase Auth user
+    await getAuth().updateUser(uid, {
+      email: formattedEmail,
+      emailVerified: false
+    });
+
+    // 2. Update Firestore users collection
+    await db.collection('users').doc(uid).update({
+      email: formattedEmail,
+      isDefaultEmail: false,
+      updatedAt: new Date().toISOString()
+    });
+
+    // 3. Update Firestore students collection if studentId is provided
+    if (studentId) {
+      await db.collection('students').doc(studentId).update({
+        email: formattedEmail,
+        isDefaultEmail: false,
+        updatedAt: new Date().toISOString()
+      });
+    }
+
+    res.json({ message: 'Email updated successfully', email: formattedEmail });
+  } catch (error) {
+    console.error('Error updating student email:', error);
+    res.status(500).json({ error: error.message || 'Failed to update student email' });
+  }
+});
+
 // 3. Scan QR code and mark attendance
 async function processAttendanceScan(studentId, classId) {
   if (!studentId) throw new Error('Student ID is required');

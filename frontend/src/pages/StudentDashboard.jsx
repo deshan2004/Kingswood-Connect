@@ -4,6 +4,7 @@ import axios from 'axios';
 import { format } from 'date-fns';
 import { QrCode, Calendar, Wallet, CheckCircle2, AlertCircle, BookOpen, Award } from 'lucide-react';
 import ChangePassword from '../components/ChangePassword';
+import VerifyEmail from '../components/VerifyEmail';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -81,7 +82,8 @@ const StudentDashboard = () => {
             </div>
           </div>
           
-          <div className="mt-8">
+          <div className="mt-8 space-y-6">
+            <VerifyEmail />
             <ChangePassword />
           </div>
         </div>
