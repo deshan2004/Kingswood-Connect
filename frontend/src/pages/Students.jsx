@@ -96,8 +96,9 @@ const Students = () => {
       
       const loginEmail = student.email || `${student.studentId.toLowerCase()}@kingswood.edu`;
       const loginPassword = student.password || student.contact.replace(/\s+/g, '');
+      const autoLoginLink = `https://kingswood-connect.vercel.app/login?email=${encodeURIComponent(loginEmail)}&password=${encodeURIComponent(loginPassword)}`;
 
-      let message = `Hello ${student.name},\n\nWelcome to *Kingswood Connect*!\n\n🔑 *Student Portal Login Details*\n🌐 Portal: https://kingswood-connect.vercel.app/login\n🆔 Student ID: *${student.studentId}*\n📧 Email / Username: *${loginEmail}*\n🔒 Password: *${loginPassword}*\n\n📱 *Your Attendance QR Code Pass:*\n${qrImageUrl}\n\nPlease save this QR code image to mark your attendance.`;
+      let message = `Hello ${student.name},\n\nWelcome to *Kingswood Connect*!\n\n🔑 *Student Portal Login Details*\n🌐 Portal: ${autoLoginLink}\n🆔 Student ID: *${student.studentId}*\n📧 Email / Username: *${loginEmail}*\n🔒 Password: *${loginPassword}*\n\n📱 *Your Attendance QR Code Pass:*\n${qrImageUrl}\n\nPlease save this QR code image to mark your attendance.`;
       
       const text = encodeURIComponent(message);
       window.open(`https://wa.me/${phone}?text=${text}`, '_blank');

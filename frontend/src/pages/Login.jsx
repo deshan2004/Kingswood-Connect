@@ -1,15 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LogIn, Key, User, Eye, EyeOff, ArrowLeft, MailCheck, CheckCircle2 } from 'lucide-react';
 
 const Login = () => {
+  const [searchParams] = useSearchParams();
   const [identifier, setIdentifier] = useState(''); // Email or Student ID
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
+  const [autoFilled, setAutoFilled] = useState(false);
+
+  // Auto-fill login credentials if passed in URL query parameters (e.g. ?email=...&password=...)
+  useEffect(() => {
+    const emailParam = searchParams.get('email') || searchParams.get('identifier') || searchParams.get('studentId') || searchParams.get('id');
+    const passwordParam = searchParams.get('password') || searchParams.get('pass');
+
+    if (emailParam || passwordParam) {
+      if (emailParam) setIdentifier(emailParam);
+      if (passwordParam) setPassword(passwordParam);
+      setAutoFilled(true);
+    }
+  }, [searchParams]);
 
   // Password Reset State
   const [isResetMode, setIsResetMode] = useState(false);
@@ -184,6 +198,13 @@ const Login = () => {
           ) : (
             /* Standard Login Form */
             <form className="space-y-6" onSubmit={handleLogin}>
+              {autoFilled && (
+                <div className="bg-emerald-950/50 border border-emerald-500/40 p-3.5 rounded-xl flex items-center gap-3 text-emerald-300 text-xs font-bold backdrop-blur-md animate-in fade-in slide-in-from-top-2 shadow-lg shadow-emerald-950/40">
+                  <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
+                  <span>Your credentials have been automatically filled from your login link!</span>
+                </div>
+              )}
+
               {error && (
                 <div className="bg-red-950/50 border-l-4 border-red-500 p-4 rounded-xl backdrop-blur-md border border-red-900/40">
                   <p className="text-sm font-medium text-red-300">{error}</p>
