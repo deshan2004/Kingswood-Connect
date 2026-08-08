@@ -45,6 +45,47 @@ const Login = () => {
     }
   }, [user, navigate]);
 
+  // Format Firebase Auth errors into clean, user-friendly messages
+  const formatAuthError = (err, fallbackMessage = 'Login failed. Please check your credentials.') => {
+    if (!err) return fallbackMessage;
+
+    const code = err.code || '';
+    const msg = err.message || '';
+
+    if (
+      code === 'auth/invalid-credential' || 
+      code === 'auth/wrong-password' || 
+      msg.includes('invalid-credential') || 
+      msg.includes('wrong-password')
+    ) {
+      return 'Incorrect Password or Email / Student ID. Please check your credentials and try again.';
+    }
+    if (code === 'auth/user-not-found' || msg.includes('user-not-found')) {
+      return 'No account found with this Email or Student ID. Please check your ID and try again.';
+    }
+    if (code === 'auth/invalid-email' || msg.includes('invalid-email')) {
+      return 'Invalid Email or Student ID format.';
+    }
+    if (code === 'auth/user-disabled' || msg.includes('user-disabled')) {
+      return 'This account has been disabled. Please contact system admin.';
+    }
+    if (code === 'auth/too-many-requests' || msg.includes('too-many-requests')) {
+      return 'Too many failed login attempts. Access temporarily locked for security. Please try again later or reset your password.';
+    }
+    if (code === 'auth/network-request-failed' || msg.includes('network-request-failed')) {
+      return 'Network connection error. Please check your internet connection.';
+    }
+    if (code === 'auth/popup-closed-by-user') {
+      return 'Google sign-in popup was closed.';
+    }
+
+    if (msg.startsWith('Firebase:')) {
+      return fallbackMessage;
+    }
+
+    return msg || fallbackMessage;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -59,7 +100,7 @@ const Login = () => {
 
       await login(loginEmail, password);
     } catch (err) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      setError(formatAuthError(err, 'Incorrect Password or Email / Student ID. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -71,7 +112,7 @@ const Login = () => {
     try {
       await loginWithGoogle();
     } catch (err) {
-      setError(err.message || 'Google login failed.');
+      setError(formatAuthError(err, 'Google login failed. Please try again.'));
     } finally {
       setGoogleLoading(false);
     }
@@ -93,7 +134,7 @@ const Login = () => {
       await resetPassword(resetIdentifier);
       setResetSuccess('Password reset link sent! Please check your email inbox and spam folder.');
     } catch (err) {
-      setResetError(err.message || 'Failed to send reset link. Please check your email address.');
+      setResetError(formatAuthError(err, 'No account found with this Email or Student ID. Please check and try again.'));
     } finally {
       setResetLoading(false);
     }

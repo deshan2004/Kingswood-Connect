@@ -38,7 +38,16 @@ const Signup = () => {
       }, 2000);
       
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Signup failed.');
+      const rawError = err.response?.data?.error || err.message || '';
+      if (rawError.includes('email-already-in-use') || rawError.includes('already-exists')) {
+        setError('An account with this email address already exists. Please login instead.');
+      } else if (rawError.includes('weak-password')) {
+        setError('Password should be at least 6 characters long.');
+      } else if (rawError.startsWith('Firebase:')) {
+        setError('Signup failed. Please check your information and try again.');
+      } else {
+        setError(rawError || 'Signup failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
