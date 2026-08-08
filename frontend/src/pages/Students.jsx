@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X, Edit2, Filter } from 'lucide-react';
+import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X, Edit2, Filter, UserMinus, RefreshCw } from 'lucide-react';
 import Select from 'react-select';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -9,6 +9,7 @@ const Students = () => {
   const [students, setStudents] = useState([]);
   const [classesList, setClassesList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cleanupLoading, setCleanupLoading] = useState(false);
 
   // Form State
   const [name, setName] = useState('');
@@ -67,6 +68,26 @@ const Students = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleCleanupInactive = async () => {
+    setCleanupLoading(true);
+    try {
+      const response = await axios.post(`${API_URL}/students/cleanup-inactive`);
+      const { removedEnrollmentsCount, updatedStudentsCount } = response.data;
+
+      if (removedEnrollmentsCount > 0) {
+        showToast('success', `Auto-cleaned ${removedEnrollmentsCount} inactive class enrollment(s) across ${updatedStudentsCount} student(s).`);
+      } else {
+        showToast('success', 'No inactive enrollments found! All student class registrations are active.');
+      }
+      fetchStudents();
+    } catch (err) {
+      console.error('Cleanup error:', err);
+      showToast('error', 'Failed to run inactive student cleanup.');
+    } finally {
+      setCleanupLoading(false);
+    }
   };
 
   const sendWhatsApp = async (student, dataUrl) => {
@@ -219,12 +240,24 @@ const Students = () => {
           <h2 className="text-3xl font-black text-slate-800 tracking-tight">Student Directory</h2>
           <p className="text-slate-500 font-medium mt-1">Manage enrollments and profiles</p>
         </div>
-        <button 
-          onClick={() => setShowRegisterModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-2"
-        >
-          <UserPlus size={20} /> Register Student
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button 
+            onClick={handleCleanupInactive}
+            disabled={cleanupLoading}
+            className="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold py-2.5 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm shadow-sm"
+            title="Auto-remove students from classes if inactive for 2+ months (no attendance & no payments)"
+          >
+            <RefreshCw size={16} className={cleanupLoading ? "animate-spin text-amber-600" : "text-amber-600"} />
+            {cleanupLoading ? 'Cleaning Up...' : 'Auto-Cleanup Inactive (2+ Months)'}
+          </button>
+
+          <button 
+            onClick={() => setShowRegisterModal(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-2"
+          >
+            <UserPlus size={20} /> Register Student
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden h-full flex flex-col">

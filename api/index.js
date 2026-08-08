@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const qrcode = require('qrcode');
-const { format } = require('date-fns');
+const { format, subMonths, subDays } = require('date-fns');
 require('dotenv').config();
 
 const app = express();
@@ -238,6 +238,94 @@ app.put('/api/student/email-verified', async (req, res) => {
   } catch (error) {
     console.error('Error syncing email verification:', error);
     res.status(500).json({ error: 'Failed to sync verification status' });
+  }
+});
+
+// 2.8 Auto-Cleanup Inactive Enrollments (No Attendance AND No Payment for 2+ months / 60 days)
+async function cleanupInactiveEnrollments() {
+  try {
+    const now = new Date();
+    const currentMonth = format(now, 'yyyy-MM');
+    const prevMonth = format(subMonths(now, 1), 'yyyy-MM');
+    const cutoffDate = format(subDays(now, 60), 'yyyy-MM-dd'); // 60 days ago
+
+    const studentsSnapshot = await db.collection('students').get();
+    let updatedStudentsCount = 0;
+    let removedEnrollmentsCount = 0;
+
+    for (const studentDoc of studentsSnapshot.docs) {
+      const student = studentDoc.data();
+      const studentId = studentDoc.id;
+      const enrolledClasses = student.enrolledClasses || [];
+
+      if (!enrolledClasses || enrolledClasses.length === 0) continue;
+
+      // Grace period: Skip students created within the last 60 days
+      if (student.createdAt) {
+        const createdDate = new Date(student.createdAt);
+        const daysSinceCreation = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+        if (daysSinceCreation < 60) {
+          continue;
+        }
+      }
+
+      let activeEnrolledClasses = [...enrolledClasses];
+      let hasChanges = false;
+
+      for (const classId of enrolledClasses) {
+        // Check 1: Attendance in the last 60 days
+        const attendanceSnap = await db.collection('attendance')
+          .where('studentId', '==', studentId)
+          .where('classId', '==', classId)
+          .where('date', '>=', cutoffDate)
+          .get();
+
+        const hasAttendance = !attendanceSnap.empty;
+
+        // Check 2: Payments in current month or previous month
+        const paymentsSnap = await db.collection('payments')
+          .where('studentId', '==', studentId)
+          .where('classId', '==', classId)
+          .where('month', 'in', [currentMonth, prevMonth])
+          .get();
+
+        const hasPayment = !paymentsSnap.empty;
+
+        // If NO attendance in 60 days AND NO payments in last 2 months -> Un-enroll from this class
+        if (!hasAttendance && !hasPayment) {
+          activeEnrolledClasses = activeEnrolledClasses.filter(c => c !== classId);
+          hasChanges = true;
+          removedEnrollmentsCount++;
+        }
+      }
+
+      if (hasChanges) {
+        await db.collection('students').doc(studentId).update({
+          enrolledClasses: activeEnrolledClasses,
+          updatedAt: new Date().toISOString()
+        });
+        updatedStudentsCount++;
+      }
+    }
+
+    return { updatedStudentsCount, removedEnrollmentsCount };
+  } catch (error) {
+    console.error('Error in cleanupInactiveEnrollments:', error);
+    throw error;
+  }
+}
+
+app.post('/api/students/cleanup-inactive', async (req, res) => {
+  try {
+    const result = await cleanupInactiveEnrollments();
+    res.json({ 
+      success: true, 
+      message: `Cleaned up ${result.removedEnrollmentsCount} inactive class enrollment(s) across ${result.updatedStudentsCount} student(s).`,
+      ...result 
+    });
+  } catch (error) {
+    console.error('Failed to cleanup inactive students:', error);
+    res.status(500).json({ error: 'Failed to cleanup inactive students' });
   }
 });
 
