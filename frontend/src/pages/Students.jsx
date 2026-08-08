@@ -84,7 +84,8 @@ const Students = () => {
       fetchStudents();
     } catch (err) {
       console.error('Cleanup error:', err);
-      showToast('error', 'Failed to run inactive student cleanup.');
+      const errMsg = err.response?.data?.error || err.message || 'Failed to run inactive student cleanup.';
+      showToast('error', errMsg);
     } finally {
       setCleanupLoading(false);
     }

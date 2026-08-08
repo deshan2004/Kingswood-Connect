@@ -249,6 +249,39 @@ async function cleanupInactiveEnrollments() {
     const prevMonth = format(subMonths(now, 1), 'yyyy-MM');
     const cutoffDate = format(subDays(now, 60), 'yyyy-MM-dd'); // 60 days ago
 
+    // 1. Fetch attendance records from last 60 days (Single field query - no index required!)
+    const activeAttendanceKeys = new Set();
+    const attendanceSnap = await db.collection('attendance')
+      .where('date', '>=', cutoffDate)
+      .get();
+
+    attendanceSnap.forEach(doc => {
+      const data = doc.data();
+      if (data.studentId && data.classId) {
+        activeAttendanceKeys.add(`${data.studentId}_${data.classId}`);
+      }
+    });
+
+    // 2. Fetch payment records for currentMonth & prevMonth (Single field queries - no index required!)
+    const activePaymentKeys = new Set();
+    
+    const pSnap1 = await db.collection('payments').where('month', '==', currentMonth).get();
+    pSnap1.forEach(doc => {
+      const data = doc.data();
+      if (data.studentId && data.classId) {
+        activePaymentKeys.add(`${data.studentId}_${data.classId}`);
+      }
+    });
+
+    const pSnap2 = await db.collection('payments').where('month', '==', prevMonth).get();
+    pSnap2.forEach(doc => {
+      const data = doc.data();
+      if (data.studentId && data.classId) {
+        activePaymentKeys.add(`${data.studentId}_${data.classId}`);
+      }
+    });
+
+    // 3. Scan all students in memory
     const studentsSnapshot = await db.collection('students').get();
     let updatedStudentsCount = 0;
     let removedEnrollmentsCount = 0;
@@ -260,7 +293,7 @@ async function cleanupInactiveEnrollments() {
 
       if (!enrolledClasses || enrolledClasses.length === 0) continue;
 
-      // Grace period: Skip students created within the last 60 days
+      // Grace period: Skip new students registered in the last 60 days
       if (student.createdAt) {
         const createdDate = new Date(student.createdAt);
         const daysSinceCreation = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
@@ -273,25 +306,11 @@ async function cleanupInactiveEnrollments() {
       let hasChanges = false;
 
       for (const classId of enrolledClasses) {
-        // Check 1: Attendance in the last 60 days
-        const attendanceSnap = await db.collection('attendance')
-          .where('studentId', '==', studentId)
-          .where('classId', '==', classId)
-          .where('date', '>=', cutoffDate)
-          .get();
+        const key = `${studentId}_${classId}`;
+        const hasAttendance = activeAttendanceKeys.has(key);
+        const hasPayment = activePaymentKeys.has(key);
 
-        const hasAttendance = !attendanceSnap.empty;
-
-        // Check 2: Payments in current month or previous month
-        const paymentsSnap = await db.collection('payments')
-          .where('studentId', '==', studentId)
-          .where('classId', '==', classId)
-          .where('month', 'in', [currentMonth, prevMonth])
-          .get();
-
-        const hasPayment = !paymentsSnap.empty;
-
-        // If NO attendance in 60 days AND NO payments in last 2 months -> Un-enroll from this class
+        // If NO attendance in 60 days AND NO payment in last 2 months -> Un-enroll!
         if (!hasAttendance && !hasPayment) {
           activeEnrolledClasses = activeEnrolledClasses.filter(c => c !== classId);
           hasChanges = true;
@@ -325,7 +344,7 @@ app.post('/api/students/cleanup-inactive', async (req, res) => {
     });
   } catch (error) {
     console.error('Failed to cleanup inactive students:', error);
-    res.status(500).json({ error: 'Failed to cleanup inactive students' });
+    res.status(500).json({ error: error.message || 'Failed to cleanup inactive students' });
   }
 });
 
