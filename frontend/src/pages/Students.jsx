@@ -120,7 +120,27 @@ const Students = () => {
       const loginPassword = student.password || student.contact.replace(/\s+/g, '');
       const autoLoginLink = `https://kingswood-connect.vercel.app/login?email=${encodeURIComponent(loginEmail)}&password=${encodeURIComponent(loginPassword)}`;
 
-      let message = `Hello ${student.name},\n\nWelcome to *Kingswood Connect*!\n\n🔑 *Student Portal Login Details*\n🌐 Portal: ${autoLoginLink}\n🆔 Student ID: *${student.studentId}*\n📧 Email / Username: *${loginEmail}*\n🔒 Password: *${loginPassword}*\n\n📱 *Your Attendance QR Code Pass:*\n${qrImageUrl}\n\nPlease save this QR code image to mark your attendance.`;
+      let message = `🎓 *KINGSWOOD CONNECT*
+───────────────────────────
+✨ *Welcome to Kingswood Connect!*
+
+Hello *${student.name}*,
+Your student account & digital pass have been created successfully.
+
+🔐 *STUDENT PORTAL LOGIN DETAILS*
+> 🆔 *Student ID:* \`${student.studentId}\`
+> 📧 *Username:* \`${loginEmail}\`
+> 🔒 *Password:* \`${loginPassword}\`
+
+🌐 *Direct One-Tap Login Portal:*
+${autoLoginLink}
+
+📱 *YOUR ATTENDANCE QR CODE PASS*
+> 📌 *QR Link:* ${qrImageUrl}
+
+💡 _Note: Please save your QR Code pass to your photo gallery. Show this QR code to mark attendance at every class session._
+───────────────────────────
+🏛 *Kingswood Connect Student Management System*`;
       
       const text = encodeURIComponent(message);
       window.open(`https://wa.me/${phone}?text=${text}`, '_blank');

@@ -149,7 +149,23 @@ const Finance = () => {
     if (window.confirm(`Are you sure you want to send reminders to ${unpaidStudents.length} students?\n\nPlease make sure to ALLOW POPUPS in your browser for this to work.`)) {
       unpaidStudents.forEach((student, index) => {
         setTimeout(() => {
-          const message = `Hello ${student.name},\n\nThis is a gentle reminder that the class fee for ${format(new Date(reportMonth), 'MMMM yyyy')} is pending.\n\nPlease complete your payment at the next class.\n\nThank you!\n- Kingswood Connect`;
+          const message = `📢 *FEE PAYMENT REMINDER*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+Hello *${student.name}*,
+
+This is a gentle reminder regarding your pending class fee.
+
+📌 *REMINDER DETAILS*
+> 📚 *Fee Month:* *${format(new Date(reportMonth), 'MMMM yyyy')}*
+> ⚠️ *Status:* Pending Payment
+
+Please complete your payment during your next class session. If you have already completed the payment, kindly ignore this message.
+
+Thank you for your cooperation!
+───────────────────────────
+🏛 *Kingswood Connect Finance Team*`;
           const whatsappUrl = `https://wa.me/${student.contact.replace(/^0/, '94')}?text=${encodeURIComponent(message)}`;
           window.open(whatsappUrl, '_blank');
         }, index * 1000);
@@ -384,7 +400,25 @@ const Finance = () => {
                           alert('No contact number available for this student.');
                           return;
                         }
-                        const message = `*Payment Receipt: Kingswood Connect*\n\nHello ${receipt.studentName},\n\nWe have received your payment.\n\n*Receipt No:* ${receipt.receiptNo}\n*Class:* ${receipt.className}\n*Amount:* Rs. ${receipt.amount.toLocaleString()}\n*Month:* ${format(new Date(receipt.month), 'MMMM yyyy')}\n*Date:* ${new Date(receipt.datePaid).toLocaleString()}\n\nThank you!`;
+                        const message = `🧾 *OFFICIAL PAYMENT RECEIPT*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+Hello *${receipt.studentName}*,
+We have successfully received your class fee payment. Details are below:
+
+📌 *PAYMENT SUMMARY*
+> 📑 *Receipt No:* \`#${receipt.receiptNo}\`
+> 📚 *Class Name:* *${receipt.className}*
+> 📅 *Fee Month:* *${format(new Date(receipt.month), 'MMMM yyyy')}*
+> 💰 *Amount Paid:* *Rs. ${receipt.amount.toLocaleString()}*
+> 🕒 *Date & Time:* ${new Date(receipt.datePaid).toLocaleString()}
+
+✅ *Status:* Payment Received & Verified
+
+Thank you for your prompt payment!
+───────────────────────────
+🏛 *Kingswood Connect Finance Team*`;
                         const whatsappUrl = `https://wa.me/${contact.replace(/^0/, '94')}?text=${encodeURIComponent(message)}`;
                         window.open(whatsappUrl, '_blank');
                       }}
@@ -508,7 +542,23 @@ const Finance = () => {
                               {reportFilter === 'unpaid' ? (
                                 <button
                                   onClick={() => {
-                                    const message = `Hello ${student.name},\n\nThis is a gentle reminder that the class fee for ${format(new Date(reportMonth), 'MMMM yyyy')} is pending.\n\nPlease complete your payment at the next class.\n\nThank you!\n- Kingswood Connect`;
+                                    const message = `📢 *FEE PAYMENT REMINDER*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+Hello *${student.name}*,
+
+This is a gentle reminder regarding your pending class fee.
+
+📌 *REMINDER DETAILS*
+> 📚 *Fee Month:* *${format(new Date(reportMonth), 'MMMM yyyy')}*
+> ⚠️ *Status:* Pending Payment
+
+Please complete your payment during your next class session. If you have already completed the payment, kindly ignore this message.
+
+Thank you for your cooperation!
+───────────────────────────
+🏛 *Kingswood Connect Finance Team*`;
                                     const whatsappUrl = `https://wa.me/${student.contact.replace(/^0/, '94')}?text=${encodeURIComponent(message)}`;
                                     window.open(whatsappUrl, '_blank');
                                   }}

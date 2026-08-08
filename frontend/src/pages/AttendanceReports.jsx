@@ -56,7 +56,25 @@ const AttendanceReports = () => {
 
   const handleWhatsAppWarning = (student) => {
     const className = classesList.find(c => c.classId === selectedClass)?.name || 'the class';
-    const message = `Kingswood Connect Alert: \nDear Parent, ${student.studentName}'s attendance for ${className} in ${selectedMonth} is low (${student.percentage}%). Please ensure regular attendance.`;
+    const message = `⚠️ *ATTENDANCE WARNING NOTICE*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+Dear Parent / Guardian,
+
+This is an attendance alert regarding student *${student.studentName}*.
+
+📊 *ATTENDANCE REPORT*
+> 👤 *Student:* *${student.studentName}*
+> 📚 *Class:* *${className}*
+> 📅 *Month:* *${selectedMonth}*
+> 📉 *Attendance Rate:* *${student.percentage}%*
+
+⚠️ *Notice:* Attendance for this period is below the required attendance threshold. Please ensure regular attendance for upcoming sessions.
+
+If you have any questions, feel free to contact the institute administration.
+───────────────────────────
+🏛 *Kingswood Connect Student Support*`;
     const encodedMessage = encodeURIComponent(message);
     let contact = student.contact;
     if (contact.startsWith('0')) {
