@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Mail, ShieldAlert, ShieldCheck, CheckCircle2, ArrowRight, RefreshCw, AlertCircle, ArrowLeft, Send, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ChangePassword from '../components/ChangePassword';
 
 const UpdateEmailPage = () => {
-  const { user, updateStudentEmail, sendVerification } = useAuth();
+  const { user, updateStudentEmail, sendVerification, checkVerificationStatus } = useAuth();
   
   const isDefaultEmail = user?.email?.endsWith('@kingswood.edu') || false;
   const isVerified = user?.emailVerified || false;
@@ -13,27 +13,101 @@ const UpdateEmailPage = () => {
   const [newEmail, setNewEmail] = useState(isDefaultEmail ? '' : (user?.email || ''));
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const [checkingLoading, setCheckingLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+
+  // Sync newEmail if user email changes
+  useEffect(() => {
+    if (!isDefaultEmail && user?.email) {
+      setNewEmail(user.email);
+    }
+  }, [user?.email, isDefaultEmail]);
+
+  // Poll for email verification in background if unverified
+  useEffect(() => {
+    if (isVerified) return;
+
+    // Check immediately on mount
+    checkVerificationStatus();
+
+    const interval = setInterval(async () => {
+      const verified = await checkVerificationStatus();
+      if (verified) {
+        setMessage({
+          type: 'success',
+          text: '🎉 Email verified successfully! Your account is now fully verified.'
+        });
+        clearInterval(interval);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isVerified]);
+
+  const handleCheckStatus = async () => {
+    setCheckingLoading(true);
+    setMessage({ type: '', text: '' });
+
+    try {
+      const verified = await checkVerificationStatus();
+      if (verified) {
+        setMessage({
+          type: 'success',
+          text: '🎉 Email verified successfully! Your account is now fully verified.'
+        });
+      } else {
+        setMessage({
+          type: 'error',
+          text: 'Email is not verified yet. Please check your email inbox and click the verification link, then click this button again.'
+        });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Failed to check verification status. Please try again.' });
+    } finally {
+      setCheckingLoading(false);
+    }
+  };
 
   const handleUpdateEmail = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage({ type: '', text: '' });
 
-    if (!newEmail || !newEmail.includes('@')) {
+    const trimmedEmail = newEmail.trim().toLowerCase();
+
+    if (!trimmedEmail || !trimmedEmail.includes('@')) {
       setMessage({ type: 'error', text: 'Please enter a valid personal email address.' });
       setLoading(false);
       return;
     }
 
-    if (newEmail.trim().toLowerCase().endsWith('@kingswood.edu')) {
+    if (trimmedEmail.endsWith('@kingswood.edu')) {
       setMessage({ type: 'error', text: 'Please enter a real personal email address (e.g. Gmail, Outlook, Yahoo).' });
       setLoading(false);
       return;
     }
 
+    // If user's account email is already equal to this email and just unverified, resend link
+    if (trimmedEmail === user?.email?.toLowerCase() && !isVerified) {
+      try {
+        await sendVerification();
+        setMessage({
+          type: 'success',
+          text: `Verification email resent to ${trimmedEmail}! Please check your inbox and spam folder.`
+        });
+      } catch (err) {
+        setMessage({
+          type: 'error',
+          text: err.message || 'Failed to send verification email. Try again later.'
+        });
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
-      await updateStudentEmail(newEmail);
+      await updateStudentEmail(trimmedEmail);
       setMessage({
         type: 'success',
         text: 'Your email address has been updated! A verification link has been sent to your new email inbox.'
@@ -110,7 +184,7 @@ const UpdateEmailPage = () => {
             </div>
           </div>
 
-          <div>
+          <div className="flex flex-wrap items-center gap-2">
             {isVerified ? (
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                 <ShieldCheck size={18} /> Verified Email
@@ -120,9 +194,20 @@ const UpdateEmailPage = () => {
                 <ShieldAlert size={18} /> System Default Email
               </span>
             ) : (
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
-                <AlertCircle size={18} /> Pending Verification
-              </span>
+              <>
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                  <AlertCircle size={18} /> Pending Verification
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCheckStatus}
+                  disabled={checkingLoading}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-all"
+                >
+                  <RefreshCw size={14} className={checkingLoading ? "animate-spin" : ""} />
+                  {checkingLoading ? 'Checking...' : 'Check Status'}
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -210,3 +295,4 @@ const UpdateEmailPage = () => {
 };
 
 export default UpdateEmailPage;
+

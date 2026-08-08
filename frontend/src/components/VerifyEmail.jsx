@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Mail, ShieldAlert, ShieldCheck, CheckCircle2, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
 
 const VerifyEmail = () => {
-  const { user, updateStudentEmail, sendVerification } = useAuth();
+  const { user, updateStudentEmail, sendVerification, checkVerificationStatus } = useAuth();
   
   const isDefaultEmail = user?.email?.endsWith('@kingswood.edu') || false;
   const isVerified = user?.emailVerified || false;
@@ -11,27 +11,99 @@ const VerifyEmail = () => {
   const [newEmail, setNewEmail] = useState(isDefaultEmail ? '' : (user?.email || ''));
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const [checkingLoading, setCheckingLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+
+  // Sync newEmail if user email changes
+  useEffect(() => {
+    if (!isDefaultEmail && user?.email) {
+      setNewEmail(user.email);
+    }
+  }, [user?.email, isDefaultEmail]);
+
+  // Poll for email verification status in background
+  useEffect(() => {
+    if (isVerified) return;
+
+    checkVerificationStatus();
+
+    const interval = setInterval(async () => {
+      const verified = await checkVerificationStatus();
+      if (verified) {
+        setMessage({
+          type: 'success',
+          text: '🎉 Email verified successfully!'
+        });
+        clearInterval(interval);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isVerified]);
+
+  const handleCheckStatus = async () => {
+    setCheckingLoading(true);
+    setMessage({ type: '', text: '' });
+
+    try {
+      const verified = await checkVerificationStatus();
+      if (verified) {
+        setMessage({
+          type: 'success',
+          text: '🎉 Email verified successfully!'
+        });
+      } else {
+        setMessage({
+          type: 'error',
+          text: 'Email is not verified yet. Please check your inbox and click the verification link first.'
+        });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Failed to check verification status.' });
+    } finally {
+      setCheckingLoading(false);
+    }
+  };
 
   const handleUpdateEmail = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage({ type: '', text: '' });
 
-    if (!newEmail || !newEmail.includes('@')) {
+    const trimmedEmail = newEmail.trim().toLowerCase();
+
+    if (!trimmedEmail || !trimmedEmail.includes('@')) {
       setMessage({ type: 'error', text: 'Please enter a valid personal email address.' });
       setLoading(false);
       return;
     }
 
-    if (newEmail.trim().toLowerCase().endsWith('@kingswood.edu')) {
+    if (trimmedEmail.endsWith('@kingswood.edu')) {
       setMessage({ type: 'error', text: 'Please enter a real personal email (e.g. Gmail, Outlook, Yahoo).' });
       setLoading(false);
       return;
     }
 
+    if (trimmedEmail === user?.email?.toLowerCase() && !isVerified) {
+      try {
+        await sendVerification();
+        setMessage({
+          type: 'success',
+          text: `Verification email resent to ${trimmedEmail}! Please check your inbox and spam folder.`
+        });
+      } catch (err) {
+        setMessage({
+          type: 'error',
+          text: err.message || 'Failed to send verification email. Try again later.'
+        });
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
-      await updateStudentEmail(newEmail);
+      await updateStudentEmail(trimmedEmail);
       setMessage({
         type: 'success',
         text: 'Your email has been updated! A verification link has been sent to your new email inbox.'
@@ -102,15 +174,26 @@ const VerifyEmail = () => {
           <span className="text-sm font-bold text-slate-700 truncate block">{user?.email || 'None'}</span>
         </div>
         {!isVerified && !isDefaultEmail && (
-          <button
-            type="button"
-            onClick={handleResendVerification}
-            disabled={resendLoading}
-            className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1 shrink-0 ml-2"
-          >
-            {resendLoading ? <RefreshCw size={12} className="animate-spin" /> : <RefreshCw size={12} />}
-            Resend Code
-          </button>
+          <div className="flex items-center gap-2 shrink-0 ml-2">
+            <button
+              type="button"
+              onClick={handleCheckStatus}
+              disabled={checkingLoading}
+              className="text-xs font-bold text-emerald-600 hover:text-emerald-800 transition-colors flex items-center gap-1"
+            >
+              <RefreshCw size={12} className={checkingLoading ? "animate-spin" : ""} />
+              {checkingLoading ? 'Checking...' : 'Check Status'}
+            </button>
+            <button
+              type="button"
+              onClick={handleResendVerification}
+              disabled={resendLoading}
+              className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1"
+            >
+              {resendLoading ? <RefreshCw size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+              Resend Code
+            </button>
+          </div>
         )}
       </div>
 

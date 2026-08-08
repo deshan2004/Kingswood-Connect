@@ -216,6 +216,31 @@ app.put('/api/student/email', async (req, res) => {
   }
 });
 
+// 2.7 Sync email verified status in Firestore
+app.put('/api/student/email-verified', async (req, res) => {
+  try {
+    const { uid, studentId } = req.body;
+    if (!uid) return res.status(400).json({ error: 'UID is required' });
+
+    await db.collection('users').doc(uid).update({
+      emailVerified: true,
+      updatedAt: new Date().toISOString()
+    });
+
+    if (studentId) {
+      await db.collection('students').doc(studentId).update({
+        emailVerified: true,
+        updatedAt: new Date().toISOString()
+      });
+    }
+
+    res.json({ message: 'Verification status synced successfully' });
+  } catch (error) {
+    console.error('Error syncing email verification:', error);
+    res.status(500).json({ error: 'Failed to sync verification status' });
+  }
+});
+
 // 3. Scan QR code and mark attendance
 async function processAttendanceScan(studentId, classId) {
   if (!studentId) throw new Error('Student ID is required');
