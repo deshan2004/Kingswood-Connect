@@ -11,6 +11,7 @@ const MobileScanner = () => {
   const { sessionId } = useParams();
   const [scanStatus, setScanStatus] = useState('Waiting for scan...');
   const [lastScanned, setLastScanned] = useState(null);
+  const [manualId, setManualId] = useState('');
 
   useEffect(() => {
     // Initialize Scanner without UI
@@ -54,6 +55,25 @@ const MobileScanner = () => {
     });
   }, [sessionId]);
 
+  const handleManualSubmit = async (e) => {
+    e.preventDefault();
+    if (!manualId.trim()) return;
+    setScanStatus('Sending...');
+    try {
+      await axios.post(`${API_URL}/mobile-scan`, {
+        sessionId: sessionId,
+        studentId: manualId.trim()
+      });
+      setLastScanned(manualId.trim());
+      setScanStatus('Sent successfully!');
+      setManualId('');
+    } catch (error) {
+      console.error("Error sending manual scan:", error);
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Error processing scan';
+      setScanStatus(`Error: ${errorMsg}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 p-4 flex flex-col">
       <div className="bg-white rounded-2xl shadow-sm p-6 mb-4 flex items-center justify-between">
@@ -67,7 +87,7 @@ const MobileScanner = () => {
       </div>
 
       <div className="flex-1 flex flex-col items-center">
-        <p className="text-slate-500 font-medium mb-4 text-center">Scan a student's ID card</p>
+        <p className="text-slate-500 font-medium mb-4 text-center">Scan QR code or enter Student ID manually</p>
         
         <div className="w-full max-w-sm bg-white p-4 rounded-3xl shadow-lg border border-slate-100 mb-6 relative">
           <style>{`
@@ -86,6 +106,24 @@ const MobileScanner = () => {
           `}</style>
           <div id="mobile-reader"></div>
         </div>
+
+        {/* Manual ID Input for Mobile Scanner */}
+        <form onSubmit={handleManualSubmit} className="w-full max-w-sm mb-6 flex gap-2">
+          <input 
+            type="text" 
+            value={manualId}
+            onChange={(e) => setManualId(e.target.value)}
+            placeholder="Type Student ID / Name..." 
+            className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm text-sm"
+          />
+          <button 
+            type="submit" 
+            disabled={!manualId.trim()}
+            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold px-5 py-3 rounded-xl transition-colors shadow-sm text-sm shrink-0"
+          >
+            Submit
+          </button>
+        </form>
 
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 w-full max-w-sm text-center">
           <p className="text-sm text-slate-500 uppercase tracking-wide font-bold mb-1">Status</p>
