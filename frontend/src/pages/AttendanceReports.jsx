@@ -80,7 +80,7 @@ If you have any questions, feel free to contact the institute administration.
     if (contact.startsWith('0')) {
       contact = '94' + contact.substring(1);
     }
-    window.open(`https://wa.me/${contact}?text=${encodedMessage}`, '_blank');
+    window.open(`https://api.whatsapp.com/send?phone=${contact}&text=${encodedMessage}`, '_blank');
   };
 
   return (

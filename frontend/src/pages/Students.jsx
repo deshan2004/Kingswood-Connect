@@ -143,7 +143,7 @@ ${autoLoginLink}
 🏛 *Kingswood Connect Student Management System*`;
       
       const text = encodeURIComponent(message);
-      window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+      window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${text}`, '_blank');
       
     } catch (error) {
       console.error("WhatsApp error", error);

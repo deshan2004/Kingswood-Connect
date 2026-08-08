@@ -166,7 +166,7 @@ Please complete your payment during your next class session. If you have already
 Thank you for your cooperation!
 ───────────────────────────
 🏛 *Kingswood Connect Finance Team*`;
-          const whatsappUrl = `https://wa.me/${student.contact.replace(/^0/, '94')}?text=${encodeURIComponent(message)}`;
+          const whatsappUrl = `https://api.whatsapp.com/send?phone=${student.contact.replace(/^0/, '94')}&text=${encodeURIComponent(message)}`;
           window.open(whatsappUrl, '_blank');
         }, index * 1000);
       });
@@ -419,7 +419,7 @@ We have successfully received your class fee payment. Details are below:
 Thank you for your prompt payment!
 ───────────────────────────
 🏛 *Kingswood Connect Finance Team*`;
-                        const whatsappUrl = `https://wa.me/${contact.replace(/^0/, '94')}?text=${encodeURIComponent(message)}`;
+                        const whatsappUrl = `https://api.whatsapp.com/send?phone=${contact.replace(/^0/, '94')}&text=${encodeURIComponent(message)}`;
                         window.open(whatsappUrl, '_blank');
                       }}
                       className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg text-sm transition-colors shadow-sm"
@@ -559,7 +559,7 @@ Please complete your payment during your next class session. If you have already
 Thank you for your cooperation!
 ───────────────────────────
 🏛 *Kingswood Connect Finance Team*`;
-                                    const whatsappUrl = `https://wa.me/${student.contact.replace(/^0/, '94')}?text=${encodeURIComponent(message)}`;
+                                    const whatsappUrl = `https://api.whatsapp.com/send?phone=${student.contact.replace(/^0/, '94')}&text=${encodeURIComponent(message)}`;
                                     window.open(whatsappUrl, '_blank');
                                   }}
                                   className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg text-xs transition-colors border border-rose-200"
