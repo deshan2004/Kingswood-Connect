@@ -109,35 +109,65 @@ const StudentDashboard = () => {
           {/* My Classes Summary */}
           {data.classesStatus && data.classesStatus.length > 0 && (
             <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-              <div className="p-6 border-b border-slate-100 flex items-center gap-3">
-                <div className="bg-blue-100 p-2 rounded-xl text-blue-600">
-                  <BookOpen size={20} />
+              <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-100 p-2 rounded-xl text-blue-600">
+                    <BookOpen size={20} />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800">My Enrolled Classes & Card Status</h3>
                 </div>
-                <h3 className="text-lg font-bold text-slate-800">My Classes & Fees</h3>
+                {data.studentCard?.cardType === 'free' && (
+                  <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    🎁 Free Card Holder
+                  </span>
+                )}
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {data.classesStatus.map(cls => (
                     <div key={cls.classId} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between">
                       <div>
-                        <h4 className="font-bold text-slate-800 text-lg">{cls.name}</h4>
-                        <p className="text-sm font-medium text-slate-500 mb-4">{cls.teacherName} • Rs. {cls.fee}</p>
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-bold text-slate-800 text-lg">{cls.name}</h4>
+                          {cls.isFreeCard ? (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                              🎁 Free Pass
+                            </span>
+                          ) : cls.isHalfCard ? (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-200">
+                              🌗 50% Card
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="text-xs font-medium text-slate-500 mb-3">{cls.teacherName}</p>
+                        <p className="text-xs font-bold text-slate-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200 inline-block">
+                          {cls.feeType === 'weekly' ? `🗓️ Weekly Fee: Rs. ${cls.fee}/session` : `📅 Monthly Fee: Rs. ${cls.fee}/month`}
+                        </p>
                       </div>
-                      <div className="flex items-center justify-between mt-2 pt-4 border-t border-slate-200 border-dashed">
+                      
+                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-200 border-dashed">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-slate-500 uppercase">Fee ({format(new Date(), 'MMM')})</span>
-                          {cls.isPaidThisMonth ? (
-                            <span className="flex items-center text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-md text-xs">
-                              <CheckCircle2 size={12} className="mr-1" /> Paid
+                          <span className="text-[10px] font-bold text-slate-400 uppercase">Status</span>
+                          {cls.isFreeCard ? (
+                            <span className="flex items-center text-emerald-700 font-extrabold bg-emerald-50 px-2 py-0.5 rounded-md text-xs border border-emerald-100">
+                              <CheckCircle2 size={12} className="mr-1" /> 100% Free
+                            </span>
+                          ) : cls.feeType === 'weekly' ? (
+                            <span className="flex items-center text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded-md text-xs border border-indigo-100">
+                              Pay per Session
+                            </span>
+                          ) : cls.isPaidThisMonth ? (
+                            <span className="flex items-center text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md text-xs border border-emerald-100">
+                              <CheckCircle2 size={12} className="mr-1" /> Monthly Paid
                             </span>
                           ) : (
-                            <span className="flex items-center text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md text-xs">
-                              Unpaid
+                            <span className="flex items-center text-rose-500 font-bold bg-rose-50 px-2 py-0.5 rounded-md text-xs border border-rose-100">
+                              Monthly Pending
                             </span>
                           )}
                         </div>
                         <div className="text-xs font-bold text-slate-500">
-                          {cls.attendanceThisMonth} Days
+                          {cls.attendanceThisMonth} Sessions
                         </div>
                       </div>
                     </div>

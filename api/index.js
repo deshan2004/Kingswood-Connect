@@ -1300,26 +1300,46 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
     payments.sort((a, b) => new Date(b.datePaid) - new Date(a.datePaid));
 
     // Calculate Classes Status
+    const cardType = student.cardType || 'normal';
+    const defaults = getStudentFeeDefaults(student.grade, student.feeType, student.defaultFee);
+    const feeType = student.feeType || defaults.feeBasis;
+    const defaultFee = typeof student.defaultFee === 'number' ? student.defaultFee : defaults.defaultFee;
+
     const classesStatus = [];
     for (const classId of enrolledClasses) {
       const classDoc = await db.collection('classes').doc(classId).get();
       if (!classDoc.exists) continue;
       const classData = classDoc.data();
       
-      const isPaidThisMonth = payments.some(p => p.classId === classId && p.month === currentMonth);
+      const isPaidThisMonth = cardType === 'free' || payments.some(p => p.classId === classId && p.month === currentMonth);
       const attendanceThisMonth = attendance.filter(a => a.classId === classId && a.date.startsWith(currentMonth)).length;
 
       classesStatus.push({
         classId: classData.classId,
         name: classData.name,
         teacherName: classData.teacherName,
-        fee: classData.fee,
+        fee: classData.fee || defaultFee,
+        cardType,
+        cardGrantedBy: student.cardGrantedBy || null,
+        feeType,
+        isFreeCard: cardType === 'free',
+        isHalfCard: cardType === 'half',
         isPaidThisMonth,
         attendanceThisMonth
       });
     }
 
-    res.json({ attendance, payments, classesStatus });
+    res.json({ 
+      attendance, 
+      payments, 
+      classesStatus,
+      studentCard: {
+        cardType,
+        cardGrantedBy: student.cardGrantedBy || null,
+        feeType,
+        defaultFee
+      }
+    });
   } catch (error) {
     console.error('Student dashboard error:', error);
     res.status(500).json({ error: 'Failed to load data' });
@@ -1462,7 +1482,26 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
       const cls = classDoc.data();
       const studentSnap = await db.collection('students').where('enrolledClasses', 'array-contains', classDoc.id).get();
       const studentCount = studentSnap.size;
-      const classIncome = studentCount * cls.fee * teacherData.commissionRate;
+      
+      let classIncome = 0;
+      const commissionRate = typeof teacherData.commissionRate === 'number' ? teacherData.commissionRate : 0.7;
+
+      studentSnap.forEach(sDoc => {
+        const s = sDoc.data();
+        const defaults = getStudentFeeDefaults(s.grade, s.feeType, s.defaultFee);
+        const fType = s.feeType || defaults.feeBasis;
+        let baseFee = typeof s.defaultFee === 'number' ? s.defaultFee : (cls.fee || defaults.defaultFee);
+
+        if (s.cardType === 'free') {
+          baseFee = 0;
+        } else if (s.cardType === 'half') {
+          baseFee = baseFee / 2;
+        }
+
+        // Multiply weekly session fee by 4 for estimated monthly class income
+        const monthlyStudentFee = fType === 'weekly' ? baseFee * 4 : baseFee;
+        classIncome += monthlyStudentFee * commissionRate;
+      });
       
       totalStudents += studentCount;
       expectedIncome += classIncome;
@@ -1471,7 +1510,7 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
         ...cls,
         classId: classDoc.id,
         studentsCount: studentCount,
-        expectedIncome: classIncome
+        expectedIncome: Math.round(classIncome)
       });
     }
 
