@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { Wallet, Users, BookOpen, Calculator } from 'lucide-react';
-import ChangePassword from '../components/ChangePassword';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -120,11 +119,6 @@ const TeacherDashboard = () => {
             </div>
           )}
         </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-        <h3 className="text-lg font-bold text-slate-800 mb-4">Security Settings</h3>
-        <ChangePassword />
       </div>
     </div>
   );
