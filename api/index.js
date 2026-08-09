@@ -77,12 +77,35 @@ app.get('/api/debug', (req, res) => {
   });
 });
 
+// Helper to determine feeBasis ('weekly' vs 'monthly') and default fee amount based on grade
+function getStudentFeeDefaults(grade, reqFeeType, reqDefaultFee) {
+  let feeBasis = reqFeeType;
+  let fee = reqDefaultFee;
+
+  if (!feeBasis) {
+    const g = String(grade || '').toLowerCase();
+    if (g.includes('12') || g.includes('13') || g.includes('a/l') || g.includes('al')) {
+      feeBasis = 'monthly';
+    } else {
+      feeBasis = 'weekly';
+    }
+  }
+
+  if (typeof fee !== 'number') {
+    fee = feeBasis === 'monthly' ? 3500 : 250;
+  }
+
+  return { feeBasis, defaultFee: fee };
+}
+
 // 1. Register a new student
 app.post('/api/students', async (req, res) => {
   try {
-    const { name, email: reqEmail, grade, contact, password: reqPassword, enrolledClasses, cardType, defaultFee } = req.body;
+    const { name, email: reqEmail, grade, contact, password: reqPassword, enrolledClasses, cardType, feeType: reqFeeType, defaultFee: reqDefaultFee } = req.body;
     const studentId = generateId('KWS');
     const qrCodeUrl = await qrcode.toDataURL(studentId);
+
+    const { feeBasis, defaultFee } = getStudentFeeDefaults(grade, reqFeeType, reqDefaultFee);
 
     // Create Firebase Auth User
     const email = (reqEmail && reqEmail.includes('@')) 
@@ -120,7 +143,8 @@ app.post('/api/students', async (req, res) => {
     const studentData = {
       studentId, name, grade, contact, qrCodeUrl, email,
       cardType: cardType || 'normal', // 'normal' (full pay), 'half' (50%), 'free' (100% free)
-      defaultFee: typeof defaultFee === 'number' ? defaultFee : 250,
+      feeType: feeBasis, // 'weekly' (Grade 6-11) or 'monthly' (Grade 12-13 A/L)
+      defaultFee,
       enrolledClasses: enrolledClasses || [], // Array of classIds
       createdAt: new Date().toISOString()
     };
@@ -146,9 +170,9 @@ app.get('/api/students', async (req, res) => {
       if (!data.cardType) {
         data.cardType = 'normal';
       }
-      if (typeof data.defaultFee !== 'number') {
-        data.defaultFee = 250;
-      }
+      const defaults = getStudentFeeDefaults(data.grade, data.feeType, data.defaultFee);
+      data.feeType = data.feeType || defaults.feeBasis;
+      data.defaultFee = typeof data.defaultFee === 'number' ? data.defaultFee : defaults.defaultFee;
       students.push(data);
     });
     res.json(students);
@@ -161,7 +185,7 @@ app.get('/api/students', async (req, res) => {
 app.put('/api/students/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, grade, contact, enrolledClasses, cardType, defaultFee } = req.body;
+    const { name, grade, contact, enrolledClasses, cardType, feeType, defaultFee } = req.body;
 
     const studentRef = db.collection('students').doc(id);
     const doc = await studentRef.get();
@@ -179,6 +203,7 @@ app.put('/api/students/:id', async (req, res) => {
     };
     
     if (cardType) updateData.cardType = cardType;
+    if (feeType) updateData.feeType = feeType;
     if (typeof defaultFee === 'number') updateData.defaultFee = defaultFee;
 
     await studentRef.update(updateData);
@@ -400,22 +425,13 @@ async function processAttendanceScan(studentId, classId, paidToday = false, amou
   }
 
   const cardType = student.cardType || 'normal'; // 'normal', 'half', 'free'
-  const defaultFee = typeof student.defaultFee === 'number' ? student.defaultFee : 250;
+  const defaults = getStudentFeeDefaults(student.grade, student.feeType, student.defaultFee);
+  const feeType = student.feeType || defaults.feeBasis; // 'weekly' or 'monthly'
+  const defaultFee = typeof student.defaultFee === 'number' ? student.defaultFee : defaults.defaultFee;
   
   let feeAmount = defaultFee;
   if (cardType === 'free') feeAmount = 0;
   else if (cardType === 'half') feeAmount = defaultFee / 2;
-
-  let feeStatus = 'Unpaid';
-  let feePaid = 0;
-
-  if (cardType === 'free') {
-    feeStatus = 'Free Card';
-    feePaid = 0;
-  } else if (paidToday || (typeof amountPaid === 'number' && amountPaid > 0)) {
-    feeStatus = 'Paid';
-    feePaid = typeof amountPaid === 'number' ? amountPaid : feeAmount;
-  }
 
   // Check Payments for this specific class for monthly check
   const paymentQuery = await db.collection('payments')
@@ -423,11 +439,39 @@ async function processAttendanceScan(studentId, classId, paidToday = false, amou
     .where('classId', '==', classId)
     .where('month', '==', currentMonth).get();
   
+  let monthlyPaid = !paymentQuery.empty || cardType === 'free';
+  let feeStatus = 'Unpaid';
+  let feePaid = 0;
+
+  if (cardType === 'free') {
+    feeStatus = 'Free Card';
+    feePaid = 0;
+    monthlyPaid = true;
+  } else if (feeType === 'monthly') {
+    if (monthlyPaid || paidToday || (typeof amountPaid === 'number' && amountPaid > 0)) {
+      feeStatus = 'Paid (Monthly)';
+      feePaid = monthlyPaid ? (paymentQuery.empty ? feeAmount : paymentQuery.docs[0].data().amount) : (amountPaid || feeAmount);
+      monthlyPaid = true;
+    } else {
+      feeStatus = 'Unpaid (Monthly)';
+      feePaid = 0;
+    }
+  } else {
+    // Weekly fee basis
+    if (paidToday || (typeof amountPaid === 'number' && amountPaid > 0)) {
+      feeStatus = 'Paid';
+      feePaid = typeof amountPaid === 'number' ? amountPaid : feeAmount;
+    } else {
+      feeStatus = 'Unpaid';
+      feePaid = 0;
+    }
+  }
+
   const todayDate = new Date();
   const dayOfMonth = todayDate.getDate();
   
   let paymentStatus = { outstanding: false, message: 'Fees up to date' };
-  if (cardType !== 'free' && paymentQuery.empty && feeStatus !== 'Paid') {
+  if (cardType !== 'free' && !monthlyPaid && feeStatus !== 'Paid') {
     if (dayOfMonth >= 15) {
       paymentStatus = { outstanding: true, message: `Fees pending for ${classData.name} (${currentMonth})` };
     } else {
@@ -442,7 +486,6 @@ async function processAttendanceScan(studentId, classId, paidToday = false, amou
     .where('classId', '==', classId)
     .where('date', '==', today).get();
   
-  let attendanceId = null;
   if (!attendanceQuery.empty) {
     const error = new Error('Attendance already marked for this class today');
     error.status = 400;
@@ -452,20 +495,23 @@ async function processAttendanceScan(studentId, classId, paidToday = false, amou
     throw error;
   }
 
-  // Record payment in payments collection if cash collected
-  if (feeStatus === 'Paid' && feePaid > 0) {
-    const receiptNo = generateId('REC');
-    await db.collection('payments').add({
-      studentId,
-      studentName: student.name,
-      classId,
-      className: classData.name,
-      amount: feePaid,
-      month: currentMonth,
-      datePaid: new Date().toISOString(),
-      receiptNo,
-      paymentType: 'Weekly Session Fee'
-    });
+  // Record payment in payments collection if cash collected right now
+  if ((paidToday || (typeof amountPaid === 'number' && amountPaid > 0)) && cardType !== 'free') {
+    if (feeType !== 'monthly' || paymentQuery.empty) {
+      const receiptNo = generateId('REC');
+      await db.collection('payments').add({
+        studentId,
+        studentName: student.name,
+        classId,
+        className: classData.name,
+        amount: feePaid || feeAmount,
+        month: currentMonth,
+        datePaid: new Date().toISOString(),
+        receiptNo,
+        paymentType: feeType === 'monthly' ? 'Monthly Class Fee' : 'Weekly Session Fee'
+      });
+      if (feeType === 'monthly') monthlyPaid = true;
+    }
   }
 
   // Mark Attendance
@@ -479,9 +525,11 @@ async function processAttendanceScan(studentId, classId, paidToday = false, amou
     timeIn, 
     status: 'Present',
     cardType,
+    feeType,
     feeStatus,
     feePaid,
-    feeAmount
+    feeAmount,
+    monthlyPaid
   });
 
   return { 
@@ -492,10 +540,12 @@ async function processAttendanceScan(studentId, classId, paidToday = false, amou
       name: student.name,
       grade: student.grade,
       cardType,
+      feeType,
       defaultFee,
       feeAmount,
       feeStatus,
-      feePaid
+      feePaid,
+      monthlyPaid
     }, 
     timeIn, 
     paymentAlert: paymentStatus 

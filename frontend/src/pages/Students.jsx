@@ -19,6 +19,7 @@ const Students = () => {
   const [password, setPassword] = useState('');
   const [enrolledClasses, setEnrolledClasses] = useState([]);
   const [cardType, setCardType] = useState('normal'); // 'normal', 'half', 'free'
+  const [feeType, setFeeType] = useState('weekly'); // 'weekly' (Grade 6-11) or 'monthly' (Grade 12-13 A/L)
   const [defaultFee, setDefaultFee] = useState(250);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
@@ -30,6 +31,7 @@ const Students = () => {
   const [editContact, setEditContact] = useState('');
   const [editEnrolledClasses, setEditEnrolledClasses] = useState([]);
   const [editCardType, setEditCardType] = useState('normal');
+  const [editFeeType, setEditFeeType] = useState('weekly');
   const [editDefaultFee, setEditDefaultFee] = useState(250);
   const [updating, setUpdating] = useState(false);
 
@@ -138,13 +140,25 @@ ${autoLoginLink}
     }
   };
 
+  const handleGradeChange = (val) => {
+    setGrade(val);
+    const g = String(val).toLowerCase();
+    if (g.includes('12') || g.includes('13') || g.includes('a/l') || g.includes('al')) {
+      setFeeType('monthly');
+      setDefaultFee(3500);
+    } else if (g) {
+      setFeeType('weekly');
+      setDefaultFee(250);
+    }
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
       const response = await axios.post(`${API_URL}/students`, { 
         name, email, grade, contact, password, enrolledClasses,
-        cardType, defaultFee: Number(defaultFee) || 250
+        cardType, feeType, defaultFee: Number(defaultFee) || (feeType === 'monthly' ? 3500 : 250)
       });
       const newStudent = response.data;
       
@@ -160,6 +174,7 @@ ${autoLoginLink}
       setPassword('');
       setEnrolledClasses([]);
       setCardType('normal');
+      setFeeType('weekly');
       setDefaultFee(250);
       setShowRegisterModal(false); // Close modal on success
       fetchData(); // Refresh list
@@ -185,7 +200,12 @@ ${autoLoginLink}
     setEditContact(student.contact || '');
     setEditEnrolledClasses(student.enrolledClasses || []);
     setEditCardType(student.cardType || 'normal');
-    setEditDefaultFee(student.defaultFee || 250);
+    
+    const g = String(student.grade || '').toLowerCase();
+    const isAL = g.includes('12') || g.includes('13') || g.includes('a/l') || g.includes('al');
+    const fType = student.feeType || (isAL ? 'monthly' : 'weekly');
+    setEditFeeType(fType);
+    setEditDefaultFee(student.defaultFee || (fType === 'monthly' ? 3500 : 250));
   };
 
   const handleUpdateStudent = async (e) => {
@@ -198,7 +218,8 @@ ${autoLoginLink}
         contact: editContact,
         enrolledClasses: editEnrolledClasses,
         cardType: editCardType,
-        defaultFee: Number(editDefaultFee) || 250
+        feeType: editFeeType,
+        defaultFee: Number(editDefaultFee) || (editFeeType === 'monthly' ? 3500 : 250)
       });
       showToast('success', 'Student updated successfully!');
       setEditingStudent(null);
@@ -377,19 +398,24 @@ ${autoLoginLink}
                           {student.grade}
                         </td>
                         <td className="py-4 px-6">
-                          {student.cardType === 'free' ? (
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                              🎁 Free Card (නොමිලේ)
+                          <div className="flex flex-col gap-1 items-start">
+                            {student.cardType === 'free' ? (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                🎁 Free Card
+                              </span>
+                            ) : student.cardType === 'half' ? (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                🌗 Half Card (50%)
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                💳 Normal
+                              </span>
+                            )}
+                            <span className="text-[11px] font-bold text-slate-500">
+                              {student.feeType === 'monthly' ? `📅 Monthly: Rs. ${student.defaultFee || 3500}` : `🗓️ Weekly: Rs. ${student.defaultFee || 250}`}
                             </span>
-                          ) : student.cardType === 'half' ? (
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                              🌗 Half Card (Rs. {student.defaultFee ? student.defaultFee / 2 : 125})
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                              💳 Normal (Rs. {student.defaultFee || 250})
-                            </span>
-                          )}
+                          </div>
                         </td>
                         <td className="py-4 px-6 text-sm font-bold text-slate-700 max-w-[150px]">
                           {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
@@ -490,9 +516,9 @@ ${autoLoginLink}
                       type="text" 
                       required
                       value={grade}
-                      onChange={(e) => setGrade(e.target.value)}
+                      onChange={(e) => handleGradeChange(e.target.value)}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800 text-sm"
-                      placeholder="e.g. 10-A"
+                      placeholder="e.g. Grade 10 or Grade 12 (A/L)"
                     />
                   </div>
                   <div>
@@ -508,27 +534,42 @@ ${autoLoginLink}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Card Type (කාඩ්පත් වර්ගය)</label>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Card Type</label>
                     <select
                       value={cardType}
                       onChange={(e) => setCardType(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-sm cursor-pointer"
+                      className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-xs cursor-pointer"
                     >
-                      <option value="normal">💳 Normal Card (Full Fee)</option>
-                      <option value="half">🌗 Half Card (50% Fee)</option>
-                      <option value="free">🎁 Free Card (100% Free / නොමිලේ)</option>
+                      <option value="normal">💳 Normal</option>
+                      <option value="half">🌗 Half (50%)</option>
+                      <option value="free">🎁 Free Card</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Weekly Fee (Rs.)</label>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Fee Model</label>
+                    <select
+                      value={feeType}
+                      onChange={(e) => {
+                        setFeeType(e.target.value);
+                        if (e.target.value === 'monthly') setDefaultFee(3500);
+                        else setDefaultFee(250);
+                      }}
+                      className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-xs cursor-pointer"
+                    >
+                      <option value="weekly">🗓️ Weekly (Gr 6-11)</option>
+                      <option value="monthly">📅 Monthly (Gr 12-13)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Fee Amount (Rs.)</label>
                     <input 
                       type="number" 
                       value={defaultFee}
                       onChange={(e) => setDefaultFee(e.target.value)}
                       disabled={cardType === 'free'}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800 text-sm disabled:opacity-50"
+                      className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-xs disabled:opacity-50"
                       placeholder="250"
                     />
                   </div>
@@ -642,27 +683,42 @@ ${autoLoginLink}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Card Type (කාඩ්පත් වර්ගය)</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Card Type</label>
                     <select
                       value={editCardType}
                       onChange={(e) => setEditCardType(e.target.value)}
-                      className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+                      className="w-full bg-slate-50 border-0 rounded-xl px-3 py-3 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
                     >
-                      <option value="normal">💳 Normal Card (Full Fee)</option>
-                      <option value="half">🌗 Half Card (50% Fee)</option>
-                      <option value="free">🎁 Free Card (100% Free / නොමිලේ)</option>
+                      <option value="normal">💳 Normal</option>
+                      <option value="half">🌗 Half (50%)</option>
+                      <option value="free">🎁 Free Card</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Weekly Fee (Rs.)</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fee Model</label>
+                    <select
+                      value={editFeeType}
+                      onChange={(e) => {
+                        setEditFeeType(e.target.value);
+                        if (e.target.value === 'monthly') setEditDefaultFee(3500);
+                        else setEditDefaultFee(250);
+                      }}
+                      className="w-full bg-slate-50 border-0 rounded-xl px-3 py-3 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+                    >
+                      <option value="weekly">🗓️ Weekly (Gr 6-11)</option>
+                      <option value="monthly">📅 Monthly (Gr 12-13)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fee Amount (Rs.)</label>
                     <input
                       type="number"
                       value={editDefaultFee}
                       onChange={(e) => setEditDefaultFee(e.target.value)}
                       disabled={editCardType === 'free'}
-                      className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-50"
+                      className="w-full bg-slate-50 border-0 rounded-xl px-3 py-3 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-50"
                       placeholder="250"
                     />
                   </div>

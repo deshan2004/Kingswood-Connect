@@ -391,7 +391,25 @@ const Scanner = () => {
                 <div className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 self-start md:self-auto">
                   <Check size={16} /> Free Card - Rs. 0 Fee Logged
                 </div>
+              ) : scanResult.student?.feeType === 'monthly' ? (
+                <div className="flex items-center gap-2 self-start md:self-auto pt-2 md:pt-0 border-t md:border-t-0 border-emerald-200 w-full md:w-auto">
+                  {scanResult.student?.monthlyPaid || scanResult.student?.feeStatus === 'Paid (Monthly)' ? (
+                    <span className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold shadow-md flex items-center gap-1.5">
+                      <Check size={16} /> Monthly Fee Paid ({format(new Date(), 'MMMM')})
+                    </span>
+                  ) : (
+                    <div className="flex items-center gap-2 w-full md:w-auto">
+                      <button
+                        onClick={() => handlePaymentToggle(true)}
+                        className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-extrabold shadow-lg shadow-amber-500/30 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <Check size={16} /> Collect Monthly Fee (Rs. {scanResult.student?.feeAmount || 3500})
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
+                /* WEEKLY SESSION FEE */
                 <div className="flex items-center gap-2 self-start md:self-auto pt-2 md:pt-0 border-t md:border-t-0 border-emerald-200 w-full md:w-auto">
                   {scanResult.student?.feeStatus === 'Paid' ? (
                     <div className="flex items-center gap-2">
@@ -400,7 +418,7 @@ const Scanner = () => {
                       </span>
                       <button
                         onClick={() => handlePaymentToggle(false)}
-                        className="text-xs font-bold text-slate-500 hover:text-rose-600 underline"
+                        className="text-xs font-bold text-slate-500 hover:text-rose-600 underline cursor-pointer"
                       >
                         Change to Unpaid
                       </button>
@@ -411,7 +429,7 @@ const Scanner = () => {
                         onClick={() => handlePaymentToggle(true)}
                         className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-lg shadow-emerald-600/30 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
                       >
-                        <Check size={16} /> Collect Rs. {scanResult.student?.feeAmount || 250} Cash Today
+                        <Check size={16} /> Collect Weekly Fee (Rs. {scanResult.student?.feeAmount || 250})
                       </button>
                       <button
                         onClick={() => handlePaymentToggle(false)}
