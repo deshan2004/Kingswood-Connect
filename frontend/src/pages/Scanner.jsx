@@ -132,7 +132,7 @@ const Scanner = () => {
     };
   }, [isScannerActive, activeTab]);
 
-  const processScan = async (studentId) => {
+  const processScan = async (studentId, paidToday = false) => {
     if (!studentId || !activeClass) return;
 
     const now = Date.now();
@@ -147,19 +147,53 @@ const Scanner = () => {
     setError(null);
 
     try {
-      const response = await axios.post(`${API_URL}/attendance/scan`, { studentId, classId: activeClass });
+      const response = await axios.post(`${API_URL}/attendance/scan`, { studentId, classId: activeClass, paidToday });
       setScanResult({
         success: true,
+        attendanceId: response.data.attendanceId,
         message: response.data.message,
-        student: response.data.student,
+        student: response.data.student, // Object with { name, studentId, cardType, defaultFee, feeAmount, feeStatus, feePaid }
         paymentAlert: response.data.paymentAlert
       });
-      setTimeout(() => setScanResult(null), 5000);
+      setTimeout(() => setScanResult(null), 12000); // 12 seconds so operator has time to collect cash
     } catch (err) {
       setError(err.response?.data?.message || err.response?.data?.error || 'Failed to scan student');
-      setTimeout(() => setError(null), 4000);
+      if (err.response?.data?.student) {
+        setScanResult({
+          alreadyMarked: true,
+          attendanceId: err.response.data.attendanceId,
+          student: err.response.data.existingData || { name: err.response.data.student, studentId }
+        });
+      }
+      setTimeout(() => setError(null), 5000);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePaymentToggle = async (paidToday) => {
+    if (!scanResult || !scanResult.student) return;
+    const sId = typeof scanResult.student === 'object' ? scanResult.student.studentId : manualId;
+    if (!sId) return;
+
+    try {
+      const res = await axios.post(`${API_URL}/attendance/payment-toggle`, {
+        attendanceId: scanResult.attendanceId,
+        studentId: sId,
+        classId: activeClass,
+        paidToday
+      });
+
+      setScanResult(prev => prev ? {
+        ...prev,
+        student: typeof prev.student === 'object' ? {
+          ...prev.student,
+          feeStatus: res.data.feeStatus,
+          feePaid: res.data.feePaid
+        } : { name: prev.student, feeStatus: res.data.feeStatus, feePaid: res.data.feePaid }
+      } : null);
+    } catch (err) {
+      console.error('Failed to update payment status:', err);
     }
   };
 
@@ -322,27 +356,83 @@ const Scanner = () => {
       <div className="min-h-[100px]">
         {scanResult && (
           <div className="space-y-4 animate-in slide-in-from-top-4 fade-in duration-300">
-            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-6 py-5 rounded-2xl relative flex items-center shadow-lg shadow-emerald-100/50">
-              <CheckCircle2 className="w-8 h-8 text-emerald-500 mr-4 shrink-0" />
-              <div>
-                <strong className="font-bold text-lg block text-emerald-900">Attendance Marked!</strong>
-                <span className="block text-emerald-700">{scanResult.student} is marked present for {activeClassName}.</span>
-              </div>
-            </div>
-            
-            {/* FEE ALERT UI */}
-            {scanResult.paymentAlert?.outstanding ? (
-              <div className="bg-rose-600 border border-rose-700 text-white px-6 py-5 rounded-2xl relative flex items-start shadow-xl shadow-rose-500/30 animate-pulse">
-                <XOctagon className="w-8 h-8 text-white mr-4 shrink-0" />
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-6 py-5 rounded-2xl relative flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-emerald-100/50">
+              <div className="flex items-center">
+                <CheckCircle2 className="w-8 h-8 text-emerald-500 mr-4 shrink-0" />
                 <div>
-                  <strong className="font-bold text-xl block mb-1">OUTSTANDING DUES</strong>
-                  <span className="block text-rose-100 font-medium">{scanResult.paymentAlert.message}. Please direct the student to the cashier.</span>
+                  <div className="flex items-center gap-2">
+                    <strong className="font-bold text-lg text-emerald-900">
+                      {typeof scanResult.student === 'object' ? scanResult.student.name : scanResult.student}
+                    </strong>
+                    
+                    {/* CARD TYPE BADGE */}
+                    {scanResult.student?.cardType === 'free' ? (
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-600 text-white shadow-sm">
+                        🎁 FREE CARD (නොමිලේ)
+                      </span>
+                    ) : scanResult.student?.cardType === 'half' ? (
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-500 text-white shadow-sm">
+                        🌗 HALF CARD (50% Fee)
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-indigo-600 text-white shadow-sm">
+                        💳 NORMAL CARD
+                      </span>
+                    )}
+                  </div>
+                  <span className="block text-emerald-700 text-sm mt-0.5">
+                    Attendance marked present for {activeClassName}.
+                  </span>
                 </div>
               </div>
-            ) : (
-              <div className="bg-slate-50 border border-slate-200 text-slate-600 px-6 py-4 rounded-2xl flex items-center shadow-sm">
-                <CheckCircle2 className="w-5 h-5 mr-3 text-slate-400" />
-                <span className="font-medium">Account status: Fees are up to date.</span>
+
+              {/* INSTANT FEE COLLECTION BAR */}
+              {scanResult.student?.cardType === 'free' ? (
+                <div className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 self-start md:self-auto">
+                  <Check size={16} /> Free Card - Rs. 0 Fee Logged
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 self-start md:self-auto pt-2 md:pt-0 border-t md:border-t-0 border-emerald-200 w-full md:w-auto">
+                  {scanResult.student?.feeStatus === 'Paid' ? (
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-extrabold shadow-md flex items-center gap-1">
+                        <Check size={16} /> Paid Rs. {scanResult.student?.feePaid || scanResult.student?.feeAmount || 250} Today
+                      </span>
+                      <button
+                        onClick={() => handlePaymentToggle(false)}
+                        className="text-xs font-bold text-slate-500 hover:text-rose-600 underline"
+                      >
+                        Change to Unpaid
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 w-full md:w-auto">
+                      <button
+                        onClick={() => handlePaymentToggle(true)}
+                        className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-lg shadow-emerald-600/30 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <Check size={16} /> Collect Rs. {scanResult.student?.feeAmount || 250} Cash Today
+                      </button>
+                      <button
+                        onClick={() => handlePaymentToggle(false)}
+                        className="px-3 py-2.5 rounded-xl bg-rose-100 text-rose-700 hover:bg-rose-200 text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        Unpaid (ණය)
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            {/* FEE ALERT UI FOR MONTHLY DUES */}
+            {scanResult.paymentAlert?.outstanding && (
+              <div className="bg-rose-600 border border-rose-700 text-white px-6 py-4 rounded-2xl relative flex items-start shadow-xl shadow-rose-500/30">
+                <XOctagon className="w-7 h-7 text-white mr-4 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="font-bold text-lg block mb-0.5">MONTHLY OVERDUE ALERT</strong>
+                  <span className="block text-rose-100 text-xs font-medium">{scanResult.paymentAlert.message}. Please check monthly fee card.</span>
+                </div>
               </div>
             )}
           </div>

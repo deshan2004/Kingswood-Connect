@@ -18,6 +18,8 @@ const Students = () => {
   const [contact, setContact] = useState('');
   const [password, setPassword] = useState('');
   const [enrolledClasses, setEnrolledClasses] = useState([]);
+  const [cardType, setCardType] = useState('normal'); // 'normal', 'half', 'free'
+  const [defaultFee, setDefaultFee] = useState(250);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
 
@@ -27,6 +29,8 @@ const Students = () => {
   const [editGrade, setEditGrade] = useState('');
   const [editContact, setEditContact] = useState('');
   const [editEnrolledClasses, setEditEnrolledClasses] = useState([]);
+  const [editCardType, setEditCardType] = useState('normal');
+  const [editDefaultFee, setEditDefaultFee] = useState(250);
   const [updating, setUpdating] = useState(false);
 
   // Modals
@@ -81,7 +85,7 @@ const Students = () => {
       } else {
         showToast('success', 'No inactive enrollments found! All student class registrations are active.');
       }
-      fetchStudents();
+      fetchData();
     } catch (err) {
       console.error('Cleanup error:', err);
       const errMsg = err.response?.data?.error || err.message || 'Failed to run inactive student cleanup.';
@@ -98,34 +102,18 @@ const Students = () => {
     }
     
     try {
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
+      const loginEmail = student.email || `${student.studentId.toLowerCase()}@kingswood.edu`;
+      const loginPassword = student.password || student.contact.replace(/\s+/g, '');
+      const qrImageUrl = `${window.location.origin}/images/QR-${student.studentId}.png`;
+      const autoLoginLink = `${window.location.origin}/login?email=${encodeURIComponent(loginEmail)}&password=${encodeURIComponent(loginPassword)}`;
       
-      try {
-        const item = new ClipboardItem({ "image/png": blob });
-        await navigator.clipboard.write([item]);
-        showToast('success', "QR Image copied to clipboard! Just press Paste (Ctrl+V) in the WhatsApp chat to send it.");
-      } catch (clipboardErr) {
-        console.warn("Clipboard copy failed, downloading fallback", clipboardErr);
-        downloadQR(student.studentId, dataUrl);
-      }
-
-      let phone = student.contact.replace(/\D/g, '');
+      let phone = student.contact.replace(/[^0-9]/g, '');
       if (phone.startsWith('0')) {
         phone = '94' + phone.substring(1);
       }
-      const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${student.studentId}`;
-      
-      const loginEmail = student.email || `${student.studentId.toLowerCase()}@kingswood.edu`;
-      const loginPassword = student.password || student.contact.replace(/\s+/g, '');
-      const autoLoginLink = `https://kingswood-connect.vercel.app/login?email=${encodeURIComponent(loginEmail)}&password=${encodeURIComponent(loginPassword)}`;
 
-      let message = `🎓 *KINGSWOOD CONNECT*
-───────────────────────────
-✨ *Welcome to Kingswood Connect!*
-
-Hello *${student.name}*,
-Your student account & digital pass have been created successfully.
+      const message = `🎓 *KINGSWOOD CONNECT STUDENT ADMISSION PASS*
+Dear ${student.name}, welcome to Kingswood Connect Education!
 
 🔐 *STUDENT PORTAL LOGIN DETAILS*
 > 🆔 *Student ID:* \`${student.studentId}\`
@@ -154,7 +142,10 @@ ${autoLoginLink}
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await axios.post(`${API_URL}/students`, { name, email, grade, contact, password, enrolledClasses });
+      const response = await axios.post(`${API_URL}/students`, { 
+        name, email, grade, contact, password, enrolledClasses,
+        cardType, defaultFee: Number(defaultFee) || 250
+      });
       const newStudent = response.data;
       
       if (newStudent.qrCodeUrl) {
@@ -168,6 +159,8 @@ ${autoLoginLink}
       setContact('');
       setPassword('');
       setEnrolledClasses([]);
+      setCardType('normal');
+      setDefaultFee(250);
       setShowRegisterModal(false); // Close modal on success
       fetchData(); // Refresh list
     } catch (error) {
@@ -191,6 +184,8 @@ ${autoLoginLink}
     setEditGrade(student.grade || '');
     setEditContact(student.contact || '');
     setEditEnrolledClasses(student.enrolledClasses || []);
+    setEditCardType(student.cardType || 'normal');
+    setEditDefaultFee(student.defaultFee || 250);
   };
 
   const handleUpdateStudent = async (e) => {
@@ -201,7 +196,9 @@ ${autoLoginLink}
         name: editName,
         grade: editGrade,
         contact: editContact,
-        enrolledClasses: editEnrolledClasses
+        enrolledClasses: editEnrolledClasses,
+        cardType: editCardType,
+        defaultFee: Number(editDefaultFee) || 250
       });
       showToast('success', 'Student updated successfully!');
       setEditingStudent(null);
@@ -359,6 +356,7 @@ ${autoLoginLink}
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Student</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">ID</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Grade</th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Card Type</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Classes</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
                     </tr>
@@ -377,6 +375,21 @@ ${autoLoginLink}
                         </td>
                         <td className="py-4 px-6 text-sm font-bold text-slate-700">
                           {student.grade}
+                        </td>
+                        <td className="py-4 px-6">
+                          {student.cardType === 'free' ? (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                              🎁 Free Card (නොමිලේ)
+                            </span>
+                          ) : student.cardType === 'half' ? (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                              🌗 Half Card (Rs. {student.defaultFee ? student.defaultFee / 2 : 125})
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                              💳 Normal (Rs. {student.defaultFee || 250})
+                            </span>
+                          )}
                         </td>
                         <td className="py-4 px-6 text-sm font-bold text-slate-700 max-w-[150px]">
                           {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
@@ -494,6 +507,33 @@ ${autoLoginLink}
                     />
                   </div>
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Card Type (කාඩ්පත් වර්ගය)</label>
+                    <select
+                      value={cardType}
+                      onChange={(e) => setCardType(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-sm cursor-pointer"
+                    >
+                      <option value="normal">💳 Normal Card (Full Fee)</option>
+                      <option value="half">🌗 Half Card (50% Fee)</option>
+                      <option value="free">🎁 Free Card (100% Free / නොමිලේ)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Weekly Fee (Rs.)</label>
+                    <input 
+                      type="number" 
+                      value={defaultFee}
+                      onChange={(e) => setDefaultFee(e.target.value)}
+                      disabled={cardType === 'free'}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-800 text-sm disabled:opacity-50"
+                      placeholder="250"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Password (Optional)</label>
                   <input 
@@ -598,6 +638,32 @@ ${autoLoginLink}
                       onChange={(e) => setEditContact(e.target.value)}
                       required
                       className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Card Type (කාඩ්පත් වර්ගය)</label>
+                    <select
+                      value={editCardType}
+                      onChange={(e) => setEditCardType(e.target.value)}
+                      className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+                    >
+                      <option value="normal">💳 Normal Card (Full Fee)</option>
+                      <option value="half">🌗 Half Card (50% Fee)</option>
+                      <option value="free">🎁 Free Card (100% Free / නොමිලේ)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Weekly Fee (Rs.)</label>
+                    <input
+                      type="number"
+                      value={editDefaultFee}
+                      onChange={(e) => setEditDefaultFee(e.target.value)}
+                      disabled={editCardType === 'free'}
+                      className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-50"
+                      placeholder="250"
                     />
                   </div>
                 </div>

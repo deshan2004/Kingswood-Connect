@@ -194,11 +194,17 @@ If you have any questions, feel free to contact the institute administration.
                       )}
                     </td>
                     <td className="py-4 px-6 text-center">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold ${
-                        student.feesPaid ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                      }`}>
-                        {student.feesPaid ? 'Paid' : 'Pending'}
-                      </span>
+                      {student.cardType === 'free' ? (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                          🎁 Free Card
+                        </span>
+                      ) : (
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold ${
+                          student.feesPaid ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        }`}>
+                          {student.feesPaid ? 'Paid' : 'Pending'}
+                        </span>
+                      )}
                     </td>
                     <td className="py-4 px-6 text-right">
                       {(student.percentage < 50 && student.totalClassDays > 0) ? (

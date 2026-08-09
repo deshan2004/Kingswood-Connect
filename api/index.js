@@ -80,7 +80,7 @@ app.get('/api/debug', (req, res) => {
 // 1. Register a new student
 app.post('/api/students', async (req, res) => {
   try {
-    const { name, email: reqEmail, grade, contact, password: reqPassword, enrolledClasses } = req.body;
+    const { name, email: reqEmail, grade, contact, password: reqPassword, enrolledClasses, cardType, defaultFee } = req.body;
     const studentId = generateId('KWS');
     const qrCodeUrl = await qrcode.toDataURL(studentId);
 
@@ -119,6 +119,8 @@ app.post('/api/students', async (req, res) => {
     // Store in students collection
     const studentData = {
       studentId, name, grade, contact, qrCodeUrl, email,
+      cardType: cardType || 'normal', // 'normal' (full pay), 'half' (50%), 'free' (100% free)
+      defaultFee: typeof defaultFee === 'number' ? defaultFee : 250,
       enrolledClasses: enrolledClasses || [], // Array of classIds
       createdAt: new Date().toISOString()
     };
@@ -141,6 +143,12 @@ app.get('/api/students', async (req, res) => {
       if (!data.email) {
         data.email = `${data.studentId.toLowerCase()}@kingswood.edu`;
       }
+      if (!data.cardType) {
+        data.cardType = 'normal';
+      }
+      if (typeof data.defaultFee !== 'number') {
+        data.defaultFee = 250;
+      }
       students.push(data);
     });
     res.json(students);
@@ -153,7 +161,7 @@ app.get('/api/students', async (req, res) => {
 app.put('/api/students/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, grade, contact, enrolledClasses } = req.body;
+    const { name, grade, contact, enrolledClasses, cardType, defaultFee } = req.body;
 
     const studentRef = db.collection('students').doc(id);
     const doc = await studentRef.get();
@@ -162,13 +170,18 @@ app.put('/api/students/:id', async (req, res) => {
       return res.status(404).json({ error: 'Student not found' });
     }
 
-    await studentRef.update({
+    const updateData = {
       name,
       grade,
       contact,
       enrolledClasses: enrolledClasses || [],
       updatedAt: new Date().toISOString()
-    });
+    };
+    
+    if (cardType) updateData.cardType = cardType;
+    if (typeof defaultFee === 'number') updateData.defaultFee = defaultFee;
+
+    await studentRef.update(updateData);
 
     res.json({ message: 'Student updated successfully' });
   } catch (error) {
@@ -349,7 +362,7 @@ app.post('/api/students/cleanup-inactive', async (req, res) => {
 });
 
 // 3. Scan QR code and mark attendance
-async function processAttendanceScan(studentId, classId) {
+async function processAttendanceScan(studentId, classId, paidToday = false, amountPaid = null) {
   if (!studentId) throw new Error('Student ID is required');
   if (!classId) {
     const err = new Error('Class ID is required');
@@ -386,7 +399,25 @@ async function processAttendanceScan(studentId, classId) {
     throw error;
   }
 
-  // Check Payments for this specific class
+  const cardType = student.cardType || 'normal'; // 'normal', 'half', 'free'
+  const defaultFee = typeof student.defaultFee === 'number' ? student.defaultFee : 250;
+  
+  let feeAmount = defaultFee;
+  if (cardType === 'free') feeAmount = 0;
+  else if (cardType === 'half') feeAmount = defaultFee / 2;
+
+  let feeStatus = 'Unpaid';
+  let feePaid = 0;
+
+  if (cardType === 'free') {
+    feeStatus = 'Free Card';
+    feePaid = 0;
+  } else if (paidToday || (typeof amountPaid === 'number' && amountPaid > 0)) {
+    feeStatus = 'Paid';
+    feePaid = typeof amountPaid === 'number' ? amountPaid : feeAmount;
+  }
+
+  // Check Payments for this specific class for monthly check
   const paymentQuery = await db.collection('payments')
     .where('studentId', '==', studentId)
     .where('classId', '==', classId)
@@ -396,7 +427,7 @@ async function processAttendanceScan(studentId, classId) {
   const dayOfMonth = todayDate.getDate();
   
   let paymentStatus = { outstanding: false, message: 'Fees up to date' };
-  if (paymentQuery.empty) {
+  if (cardType !== 'free' && paymentQuery.empty && feeStatus !== 'Paid') {
     if (dayOfMonth >= 15) {
       paymentStatus = { outstanding: true, message: `Fees pending for ${classData.name} (${currentMonth})` };
     } else {
@@ -405,47 +436,176 @@ async function processAttendanceScan(studentId, classId) {
     }
   }
 
-  // Check Attendance for this specific class
+  // Check Attendance for this specific class today
   const attendanceQuery = await db.collection('attendance')
     .where('studentId', '==', studentId)
     .where('classId', '==', classId)
     .where('date', '==', today).get();
   
+  let attendanceId = null;
   if (!attendanceQuery.empty) {
     const error = new Error('Attendance already marked for this class today');
     error.status = 400;
     error.studentName = student.name;
+    error.attendanceId = attendanceQuery.docs[0].id;
+    error.existingData = attendanceQuery.docs[0].data();
     throw error;
+  }
+
+  // Record payment in payments collection if cash collected
+  if (feeStatus === 'Paid' && feePaid > 0) {
+    const receiptNo = generateId('REC');
+    await db.collection('payments').add({
+      studentId,
+      studentName: student.name,
+      classId,
+      className: classData.name,
+      amount: feePaid,
+      month: currentMonth,
+      datePaid: new Date().toISOString(),
+      receiptNo,
+      paymentType: 'Weekly Session Fee'
+    });
   }
 
   // Mark Attendance
   const timeIn = new Date().toISOString();
-  await db.collection('attendance').add({
+  const attendanceDocRef = await db.collection('attendance').add({
     studentId, 
     studentName: student.name, 
     classId,
     className: classData.name,
     date: today, 
     timeIn, 
-    status: 'Present'
+    status: 'Present',
+    cardType,
+    feeStatus,
+    feePaid,
+    feeAmount
   });
 
-  return { message: `Attendance marked for ${classData.name}`, student: student.name, timeIn, paymentAlert: paymentStatus };
+  return { 
+    attendanceId: attendanceDocRef.id,
+    message: `Attendance marked for ${classData.name}`, 
+    student: {
+      studentId: student.studentId,
+      name: student.name,
+      grade: student.grade,
+      cardType,
+      defaultFee,
+      feeAmount,
+      feeStatus,
+      feePaid
+    }, 
+    timeIn, 
+    paymentAlert: paymentStatus 
+  };
 }
 
 // 3. Scan QR code and mark attendance (Direct from Admin Laptop)
 app.post('/api/attendance/scan', async (req, res) => {
   try {
-    const { studentId, classId } = req.body;
-    const result = await processAttendanceScan(studentId, classId);
+    const { studentId, classId, paidToday, amountPaid } = req.body;
+    const result = await processAttendanceScan(studentId, classId, paidToday, amountPaid);
     return res.status(200).json(result);
   } catch (error) {
     console.error('Scan error:', error);
     if (error.status === 400 || error.status === 403) {
-      return res.status(error.status).json({ message: error.message, student: error.studentName });
+      return res.status(error.status).json({ 
+        message: error.message, 
+        student: error.studentName,
+        attendanceId: error.attendanceId,
+        existingData: error.existingData 
+      });
     }
     const status = error.status || 500;
     res.status(status).json({ error: error.message || 'Failed to process scan' });
+  }
+});
+
+// 3.5 Toggle or update payment status for today's attendance
+app.post('/api/attendance/payment-toggle', async (req, res) => {
+  try {
+    const { attendanceId, studentId, classId, paidToday, amountPaid } = req.body;
+    
+    if (!studentId || !classId) {
+      return res.status(400).json({ error: 'Missing studentId or classId' });
+    }
+
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const currentMonth = format(new Date(), 'yyyy-MM');
+
+    // Fetch Attendance doc
+    let targetDocId = attendanceId;
+    if (!targetDocId) {
+      const attQuery = await db.collection('attendance')
+        .where('studentId', '==', studentId)
+        .where('classId', '==', classId)
+        .where('date', '==', today).get();
+      if (!attQuery.empty) {
+        targetDocId = attQuery.docs[0].id;
+      }
+    }
+
+    if (!targetDocId) {
+      return res.status(404).json({ error: 'Today attendance record not found' });
+    }
+
+    const attDocRef = db.collection('attendance').doc(targetDocId);
+    const attSnap = await attDocRef.get();
+    if (!attSnap.exists) {
+      return res.status(404).json({ error: 'Attendance document not found' });
+    }
+
+    const attData = attSnap.data();
+    const studentDoc = await db.collection('students').doc(studentId).get();
+    const studentData = studentDoc.exists ? studentDoc.data() : {};
+    
+    const cardType = studentData.cardType || attData.cardType || 'normal';
+    const defaultFee = typeof studentData.defaultFee === 'number' ? studentData.defaultFee : 250;
+    
+    let feeAmount = defaultFee;
+    if (cardType === 'free') feeAmount = 0;
+    else if (cardType === 'half') feeAmount = defaultFee / 2;
+
+    const newFeeStatus = cardType === 'free' ? 'Free Card' : (paidToday ? 'Paid' : 'Unpaid');
+    const newFeePaid = cardType === 'free' ? 0 : (paidToday ? (amountPaid || feeAmount) : 0);
+
+    // Update Attendance Doc
+    await attDocRef.update({
+      cardType,
+      feeStatus: newFeeStatus,
+      feePaid: newFeePaid,
+      feeAmount,
+      updatedAt: new Date().toISOString()
+    });
+
+    // Record payment if changed to Paid
+    if (paidToday && newFeePaid > 0 && attData.feeStatus !== 'Paid') {
+      const receiptNo = generateId('REC');
+      await db.collection('payments').add({
+        studentId,
+        studentName: attData.studentName || studentData.name,
+        classId,
+        className: attData.className || 'Class Fee',
+        amount: newFeePaid,
+        month: currentMonth,
+        datePaid: new Date().toISOString(),
+        receiptNo,
+        paymentType: 'Weekly Session Fee'
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      feeStatus: newFeeStatus, 
+      feePaid: newFeePaid, 
+      cardType,
+      message: `Payment status updated to ${newFeeStatus}` 
+    });
+  } catch (error) {
+    console.error('Error toggling attendance payment:', error);
+    res.status(500).json({ error: error.message || 'Failed to update payment status' });
   }
 });
 
