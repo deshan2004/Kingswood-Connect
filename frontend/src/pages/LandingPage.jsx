@@ -15,7 +15,6 @@ import {
   MapPin, 
   Phone, 
   Mail, 
-  ArrowRight, 
   Clock, 
   Target, 
   Compass, 
@@ -27,7 +26,6 @@ import {
   School,
   FileText,
   Video,
-  CreditCard,
   Send,
   Zap,
   Check
@@ -64,7 +62,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white relative overflow-hidden">
 
-      {/* Decorative Gradient Glow Backdrops */}
+      {/* Decorative Background Glow Filters */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-3xl pointer-events-none -z-0" />
       <div className="absolute top-[400px] right-10 w-[500px] h-[500px] bg-blue-600/15 rounded-full blur-3xl pointer-events-none -z-0" />
       <div className="absolute top-[1800px] left-10 w-[600px] h-[600px] bg-violet-600/15 rounded-full blur-3xl pointer-events-none -z-0" />
@@ -91,25 +89,25 @@ const LandingPage = () => {
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center space-x-8">
             <button onClick={() => scrollToSection('home')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
-              මුල් පිටුව
+              Home
             </button>
             <button onClick={() => scrollToSection('about-sir')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
-              සර් ගැන (About Sir)
+              About Sir
             </button>
             <button onClick={() => scrollToSection('vision-mission')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
-              දැක්ම සහ මෙහෙවර
+              Vision & Mission
             </button>
             <button onClick={() => scrollToSection('results')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
-              ප්‍රතිඵල (Results)
+              Exam Results
             </button>
             <button onClick={() => scrollToSection('courses')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
-              පාඨමාලා
+              Courses
             </button>
             <button onClick={() => scrollToSection('features')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
-              පහසුකම්
+              LMS Features
             </button>
             <button onClick={() => scrollToSection('contact')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
-              සම්බන්ධ වන්න
+              Contact Us
             </button>
           </nav>
 
@@ -124,7 +122,7 @@ const LandingPage = () => {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle Button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -135,50 +133,50 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-slate-900/95 border-b border-slate-800 px-4 pt-3 pb-6 space-y-3 backdrop-blur-2xl">
             <button 
               onClick={() => scrollToSection('home')} 
               className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
             >
-              මුල් පිටුව (Home)
+              Home
             </button>
             <button 
               onClick={() => scrollToSection('about-sir')} 
               className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
             >
-              සර් ගැන (About Sir)
+              About Sir
             </button>
             <button 
               onClick={() => scrollToSection('vision-mission')} 
               className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
             >
-              දැක්ම සහ මෙහෙවර (Vision & Mission)
+              Vision & Mission
             </button>
             <button 
               onClick={() => scrollToSection('results')} 
               className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
             >
-              පන්ති ප්‍රතිඵල (Results)
+              Exam Results
             </button>
             <button 
               onClick={() => scrollToSection('courses')} 
               className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
             >
-              පාඨමාලා (Courses)
+              Courses & Schedule
             </button>
             <button 
               onClick={() => scrollToSection('features')} 
               className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
             >
-              ඩිජිටල් පහසුකම් (LMS Features)
+              LMS Features
             </button>
             <button 
               onClick={() => scrollToSection('contact')} 
               className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
             >
-              සම්බන්ධ වන්න (Contact)
+              Contact Us
             </button>
             <div className="pt-2">
               <Link 
@@ -207,14 +205,14 @@ const LandingPage = () => {
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight sm:leading-tight">
-                අනාගතයේ විශිෂ්ටතම ජයග්‍රහණ කරා... <br className="hidden sm:inline" />
+                Empowering Academic Excellence & <br className="hidden sm:inline" />
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-sky-300 to-emerald-400">
-                  Kingswood Connect Education
+                  Future Leaders
                 </span>
               </h1>
 
               <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                A/L විද්‍යා සහ ගණිත අංශයේ විෂය කරුණු සංකල්පනාත්මකව (Conceptually), සරලව සහ ගැඹුරින් ඉගෙනගෙන දිවයිනේ ඉහළම ශ්‍රේණිගත කිරීම් (Island Ranks) ලබාගැනීමට අප හා එක්වන්න.
+                Master G.C.E. Advanced Level Physics & Combined Mathematics with deep conceptual clarity, structured learning, real-time analytics, and island-top rankers' guidance.
               </p>
 
               {/* Action Buttons */}
@@ -224,7 +222,7 @@ const LandingPage = () => {
                   className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 transition-all transform hover:-translate-y-0.5 flex items-center justify-center"
                 >
                   <Users className="w-5 h-5 mr-2" />
-                  සර්ගේ විස්තර (About Sir)
+                  About Sir
                 </button>
 
                 <button
@@ -232,11 +230,11 @@ const LandingPage = () => {
                   className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold text-slate-200 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 transition-all flex items-center justify-center"
                 >
                   <Award className="w-5 h-5 mr-2 text-amber-400" />
-                  පන්ති ප්‍රතිඵල (Results)
+                  View Exam Results
                 </button>
               </div>
 
-              {/* Stat Highlights Bar */}
+              {/* Stat Highlights Grid */}
               <div className="pt-8 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-6">
                 <div>
                   <div className="text-3xl font-extrabold text-white">150+</div>
@@ -252,13 +250,13 @@ const LandingPage = () => {
                 </div>
                 <div>
                   <div className="text-3xl font-extrabold text-emerald-400">12+ Years</div>
-                  <div className="text-xs text-slate-400 mt-1 font-medium">Academic Excellence</div>
+                  <div className="text-xs text-slate-400 mt-1 font-medium">Academic Mastery</div>
                 </div>
               </div>
 
             </div>
 
-            {/* Right Column: Hero Visual Graphic */}
+            {/* Right Column: Visual Graphic Banner */}
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-md lg:max-w-none">
                 
@@ -267,7 +265,7 @@ const LandingPage = () => {
                   <div className="rounded-2xl overflow-hidden bg-slate-950 relative">
                     <img 
                       src="/images/sir_lecture.png" 
-                      alt="Sir conducting lecture at Kingswood Connect" 
+                      alt="Eng. Kasun Perera conducting interactive lecture" 
                       className="w-full h-[420px] object-cover object-center transform hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
@@ -276,7 +274,7 @@ const LandingPage = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Advanced Learning Environment</p>
-                          <p className="text-sm font-bold text-white mt-0.5">සංකල්පීය අවබෝධය සහ ඩිජිටල් ඉගෙනුම් ක්‍රමවේද</p>
+                          <p className="text-sm font-bold text-white mt-0.5">Conceptual Understanding & Digital Pedagogy</p>
                         </div>
                         <div className="w-10 h-10 rounded-lg bg-indigo-600/40 border border-indigo-400/30 flex items-center justify-center">
                           <Zap className="w-5 h-5 text-amber-300" />
@@ -293,7 +291,7 @@ const LandingPage = () => {
                   </div>
                   <div>
                     <div className="text-sm font-bold text-white">#1 Rated Institute</div>
-                    <div className="text-xs text-slate-400">Physical & Online LMS</div>
+                    <div className="text-xs text-slate-400">Auditorium & Online LMS</div>
                   </div>
                 </div>
 
@@ -303,7 +301,7 @@ const LandingPage = () => {
                     <ShieldCheck className="w-6 h-6 text-emerald-400" />
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-white">Real-Time QR Attendance</div>
+                    <div className="text-sm font-bold text-white">Real-Time Attendance</div>
                     <div className="text-xs text-slate-400">Instant Parent SMS</div>
                   </div>
                 </div>
@@ -316,26 +314,26 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 2: Teacher Profile & Sir's Photo (සර්ගේ විස්තර) */}
+      {/* Section 2: Teacher Profile & Sir's Photo (About Sir) */}
       <section id="about-sir" className="py-20 bg-slate-950/60 border-y border-slate-800/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
               <School className="w-4 h-4 mr-1" />
-              අපගේ ගුරු මණ්ඩලය (Meet Your Educator)
+              MEET YOUR LEAD EDUCATOR
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              ප්‍රමුඛ පෙළේ විෂය දේශක <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-sky-400">Eng. Kasun Perera</span> සර්
+              Eng. Kasun Perera <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-sky-400">(Senior Lecturer)</span>
             </h2>
             <p className="text-slate-400 text-base sm:text-lg">
-              වසර 12කට වැඩි අත්දැකීම් සම්භාරයක් සහිතව දහස් සංඛ්‍යාත සිසු සිසුවියන් විශ්වවිද්‍යාල සිහිනය කරා මෙහෙයවූ ප්‍රමුඛතම දේශකතුමන්.
+              With over 12 years of teaching excellence, Eng. Kasun Perera has guided thousands of high school students to top university admissions and prestigious national ranks.
             </p>
           </div>
 
           <div className="grid lg:grid-cols-12 gap-12 items-center">
             
-            {/* Sir's Photo */}
+            {/* Sir's Photo Card */}
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-sm lg:max-w-none">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-violet-600 rounded-3xl blur-2xl opacity-20 transform -rotate-3" />
@@ -348,7 +346,7 @@ const LandingPage = () => {
                   />
                   <div className="p-6 bg-slate-900/95 border-t border-slate-800">
                     <h3 className="text-xl font-bold text-white">Eng. Kasun Perera</h3>
-                    <p className="text-sm text-indigo-400 font-medium">B.Sc. Engineering (Hons) - Peradeniya</p>
+                    <p className="text-sm text-indigo-400 font-medium">B.Sc. Engineering (Hons) - University of Peradeniya</p>
                     <div className="mt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80 pt-3">
                       <span>12+ Years Experience</span>
                       <span className="text-emerald-400 font-semibold">150+ Island Ranks Produced</span>
@@ -358,28 +356,28 @@ const LandingPage = () => {
               </div>
             </div>
 
-            {/* Sir's Details & Academic Philosophy */}
+            {/* Sir's Credentials & Academic Philosophy */}
             <div className="lg:col-span-7 space-y-8">
               
               <div className="space-y-4">
                 <h3 className="text-2xl font-bold text-white flex items-center">
                   <GraduationCap className="w-6 h-6 mr-3 text-indigo-400" />
-                  අධ්‍යාපනික සුදුසුකම් සහ අත්දැකීම් (Qualifications & Mastery)
+                  Academic Excellence & Background
                 </h3>
                 <p className="text-slate-300 leading-relaxed text-base">
-                  පේරාදෙණිය විශ්වවිද්‍යාලයේ ඉංජිනේරු පීඨයෙන් ප්‍රථම පන්තියේ ගෞරව සාමාර්ථයක් (B.Sc. Eng. Hons) සහිතව උපාධිය ලබාගත් Eng. Kasun Perera සර්, A/L Combined Mathematics සහ Physics විෂයන් උගන්වන ශ්‍රී ලංකාවේ ජනප්‍රියතම සහ ප්‍රතිඵල සහිත ගුරුවරයෙකි.
+                  Graduating with First Class Honors from the Faculty of Engineering, University of Peradeniya, Eng. Kasun Perera is renowned across Sri Lanka for transforming how students learn Combined Mathematics and Physics. His structured methodology bridges complex theoretical concepts with intuitive problem-solving strategies.
                 </p>
               </div>
 
-              {/* Key Features Grid */}
+              {/* Key Strengths Grid */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
                   <div className="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
                     01
                   </div>
-                  <h4 className="text-base font-bold text-white">සංකල්පීය පැහැදිලි බව (Conceptual Clarity)</h4>
+                  <h4 className="text-base font-bold text-white">Conceptual Mastery</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    සූත්‍ර කටපාඩම් කිරීම වෙනුවට මූලික සංකල්ප ගැඹුරින් සහ සරල රූපසටහන් මගින් සිසුන්ගේ මනසට ධාරණය කරවීම.
+                    Replacing rote memorization with deep conceptual intuition, clean visual diagrams, and practical applications.
                   </p>
                 </div>
 
@@ -387,9 +385,9 @@ const LandingPage = () => {
                   <div className="w-9 h-9 rounded-lg bg-violet-500/20 text-violet-400 flex items-center justify-center font-bold">
                     02
                   </div>
-                  <h4 className="text-base font-bold text-white">සතියේ ප්‍රශ්න පත්‍ර (Weekly Model Papers)</h4>
+                  <h4 className="text-base font-bold text-white">Weekly Model Papers</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    විභාග රටාවට අනුව සකස් කළ අනුමාන ප්‍රශ්න පත්‍ර සාකච්ඡාව සහ ක්ෂණික ලකුණු විශ්ලේෂණය (Mark Analytics).
+                    Curated exam-oriented papers with instant score analytics, district ranks, and step-by-step marking discussions.
                   </p>
                 </div>
 
@@ -397,9 +395,9 @@ const LandingPage = () => {
                   <div className="w-9 h-9 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold">
                     03
                   </div>
-                  <h4 className="text-base font-bold text-white">තනි තනිව මගපෙන්වීම (Personalized Mentoring)</h4>
+                  <h4 className="text-base font-bold text-white">Personalized Mentorship</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    දුර්වල විෂය කොටස් හඳුනාගෙන ඒවා නැවත ගොඩනැගීමට විශේෂ අවධානය ලබාදීම.
+                    Identifying student weaknesses early to build customized recovery plans and individualized attention.
                   </p>
                 </div>
 
@@ -407,9 +405,9 @@ const LandingPage = () => {
                   <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
                     04
                   </div>
-                  <h4 className="text-base font-bold text-white">Kingswood Connect Digital LMS</h4>
+                  <h4 className="text-base font-bold text-white">Kingswood LMS Platform</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Recording නැරඹීම, Quiz සූදානම් වීම සහ QR Attendance සේවාවන් එක්ම පද්ධතියකින්.
+                    Seamless 24/7 access to HD video recordings, quiz preparations, tutes, and smart QR attendance logs.
                   </p>
                 </div>
               </div>
@@ -417,7 +415,7 @@ const LandingPage = () => {
               {/* Quote Banner */}
               <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-950/60 to-slate-900 border border-indigo-500/30 relative">
                 <p className="text-indigo-200 italic font-medium text-sm sm:text-base">
-                  "අපගේ එකම අරමුණ විභාගය ජයගැනීම පමණක් නොව, විද්‍යාත්මක සහ තාර්කික චින්තනයෙන් පරිපූර්ණ අනාගත පරපුරක් නිර්මාණය කිරීමයි."
+                  "Our mission goes beyond preparing students for exams — we cultivate scientific thinking, analytical intelligence, and unwavering confidence that lasts a lifetime."
                 </p>
                 <div className="mt-2 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
                   — Eng. Kasun Perera
@@ -432,20 +430,20 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 3: Vision & Mission (දැක්ම සහ මෙහෙවර) */}
+      {/* Section 3: Vision & Mission */}
       <section id="vision-mission" className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold uppercase tracking-wider">
               <Compass className="w-4 h-4 mr-1" />
-              අපගේ පරමාර්ථ (Our Core Purpose)
+              OUR CORE PURPOSE
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              දැක්ම සහ මෙහෙවර <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-300">(Vision & Mission)</span>
+              Vision & <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-300">Mission</span>
             </h2>
             <p className="text-slate-400 text-base sm:text-lg">
-              Kingswood Connect ආයතනයේ සෑම ක්‍රියාකාරකමක්ම මෙහෙයවනු ලබන්නේ මෙම පැහැදිලි අරමුණු පදනම් කරගනිමිනි.
+              Every initiative at Kingswood Connect is guided by an unyielding commitment to student transformation and academic integrity.
             </p>
           </div>
 
@@ -460,16 +458,16 @@ const LandingPage = () => {
               </div>
 
               <h3 className="text-2xl font-bold text-white mb-3 flex items-center">
-                අපගේ දැක්ම <span className="text-sm font-normal text-indigo-400 ml-2 uppercase tracking-wide">(Our Vision)</span>
+                Our Vision <span className="text-sm font-normal text-indigo-400 ml-2 uppercase tracking-wide">(Future Outlook)</span>
               </h3>
 
               <p className="text-slate-300 leading-relaxed text-base">
-                ශ්‍රී ලාංකේය අධ්‍යාපන ක්ෂේත්‍රය තුළ තාක්ෂණික සහ විද්‍යාත්මක විශිෂ්ටත්වයෙන් හෙබි, ප්‍රඥාවන්ත, විශ්ලේෂණාත්මක සින්තනයෙන් සහ සදාචාරාත්මක අගයන්ගෙන් පිරි පරපුරක් නිර්මාණය කරමින් උසස් පෙළ විභාගයේ ඉහළම ප්‍රතිඵල වාර්තා කරන ප්‍රමුඛතම අධ්‍යාපන පද්ධතිය බවට පත්වීම.
+                To become Sri Lanka's benchmark educational institute, empowering a generation of analytical thinkers, problem solvers, and visionary leaders who excel in G.C.E. Advanced Level examinations and lead future frontiers in engineering, medicine, and technology.
               </p>
 
               <div className="mt-8 pt-6 border-t border-slate-800 flex items-center space-x-3 text-sm text-indigo-300 font-medium">
                 <CheckCircle2 className="w-5 h-5 text-indigo-400" />
-                <span>විශිෂ්ටත්වයේ සහ නวัตන අධ්‍යාපනයේ පෙරගමන්කරු</span>
+                <span>Pioneering Innovation & Educational Integrity</span>
               </div>
             </div>
 
@@ -482,16 +480,16 @@ const LandingPage = () => {
               </div>
 
               <h3 className="text-2xl font-bold text-white mb-3 flex items-center">
-                අපගේ මෙහෙවර <span className="text-sm font-normal text-violet-400 ml-2 uppercase tracking-wide">(Our Mission)</span>
+                Our Mission <span className="text-sm font-normal text-violet-400 ml-2 uppercase tracking-wide">(Daily Commitment)</span>
               </h3>
 
               <p className="text-slate-300 leading-relaxed text-base">
-                සෑම ශිෂ්‍යයෙකුගේම උපරිම හැකියාවන් හඳුනාගෙන, නූතන ඩිජිටල් තාක්ෂණය, විධිමත් පන්ති ක්‍රමවේද, අනුමාන ප්‍රශ්න පත්‍ර සහ තනි තනිව ලබාදෙන මගපෙන්වීම් මගින් උසස් පෙළ විභාගයෙන් A සාමාර්ථ සහ ඉහළම Z-Score ලකුණු ලබාගැනීමට අවශ්‍ය වටපිටාව සැකසීම.
+                To unlock every student's highest potential by combining modern digital technology, rigorous paper series, clear concept delivery, and individual mentorship that guarantee outstanding Z-Scores and Island Ranks.
               </p>
 
               <div className="mt-8 pt-6 border-t border-slate-800 flex items-center space-x-3 text-sm text-violet-300 font-medium">
                 <CheckCircle2 className="w-5 h-5 text-violet-400" />
-                <span>නිරන්තර මගපෙන්වීම සහ උපරිම ප්‍රතිඵල සහතිකය</span>
+                <span>Continuous Guidance & Uncompromising Quality</span>
               </div>
             </div>
 
@@ -501,20 +499,20 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 4: Class Results & Top Achievers (පන්ති ප්‍රතිඵල) */}
+      {/* Section 4: Exam Results & Top Achievers */}
       <section id="results" className="py-20 bg-slate-950/70 border-y border-slate-800/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-wider">
               <Award className="w-4 h-4 mr-1" />
-              පන්ති ප්‍රතිඵල (Exam Results & Success Stories)
+              PROVEN EXCELLENCE
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              අපගේ ශිෂ්‍ය ශිෂ්‍යාවන්ගේ <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-400">විශිෂ්ට සාර්ථකත්වය</span>
+              Celebrating Our <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-400">Top Island Rankers</span>
             </h2>
             <p className="text-slate-400 text-base sm:text-lg">
-              ගමනක සාර්ථකත්වය මැනිය හැක්කේ ප්‍රතිඵලවලිනි. පසුගිය වසරවල අප ලබාගත් ඉහළම දිවයිනේ ශ්‍රේණිගත කිරීම් (Island Ranks) කිහිපයක්.
+              True success is measured by consistent results. Highlighting our outstanding performers in recent G.C.E. A/L examinations.
             </p>
           </div>
 
@@ -605,17 +603,17 @@ const LandingPage = () => {
 
           </div>
 
-          {/* Results Summary Box */}
+          {/* Call-to-action Banner */}
           <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-indigo-900/40 via-slate-900 to-slate-900 border border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-2 text-center md:text-left">
-              <h3 className="text-xl font-bold text-white">ඔබත් මීළඟ A/L පරපුරේ ජයග්‍රාහකයෙකු වන්න!</h3>
-              <p className="text-sm text-slate-300">අපගේ Kingswood Connect LMS පද්ධතිය හරහා අදම ලියාපදිංචි වී ඔබේ විෂය කටයුතු ආරම්භ කරන්න.</p>
+              <h3 className="text-xl font-bold text-white">Be the Next A/L Success Story!</h3>
+              <p className="text-sm text-slate-300">Enroll today and gain instant access to Kingswood Connect LMS video portal, tutes, and exam schedules.</p>
             </div>
             <Link 
               to="/login"
               className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm whitespace-nowrap shadow-lg shadow-indigo-600/30 transition-all"
             >
-              LMS Portal එකට ඇතුළු වන්න
+              Access Student Portal
             </Link>
           </div>
 
@@ -623,20 +621,20 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 5: Available Courses & Schedule (පාඨමාලා) */}
+      {/* Section 5: Courses & Class Schedule */}
       <section id="courses" className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold uppercase tracking-wider">
               <BookOpen className="w-4 h-4 mr-1" />
-              පන්ති කාලසටහන (Available Courses & Schedule)
+              ACADEMIC PROGRAMMING
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              ඔබට ගැලපෙන <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-400">පන්ති සහ පාඨමාලා</span>
+              Courses & <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-400">Class Schedule</span>
             </h2>
             <p className="text-slate-400 text-base sm:text-lg">
-              Physical මෙන්ම Online සජීවී ලෙස සහභාගී විය හැකි 2025 සහ 2026 A/L පන්ති මාලාව.
+              Flexible physical auditorium lectures in Kandy coupled with HD live stream options for remote learners.
             </p>
           </div>
 
@@ -650,20 +648,20 @@ const LandingPage = () => {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">2026 A/L Theory Class</h3>
                 <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-                  සංකල්ප මුල සිට සරලව සාකච්ඡා කෙරෙන අතර සෑම සතියකම නිබන්ධන සහ ප්‍රායෝගික ගැටළු විසඳීම සිදුකෙරේ.
+                  Building fundamental concepts from scratch with weekly tute discussions, real-world examples, and problem solving.
                 </p>
                 <div className="space-y-3 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2 text-indigo-400" />
-                    <span>සෑම සෙනසුරාදාම (Saturdays)</span>
+                    <span>Every Saturday</span>
                   </div>
                   <div className="flex items-center">
                     <Clock className="w-4 h-4 mr-2 text-indigo-400" />
-                    <span>පෙ.ව. 8.00 - ප.ව. 1.00</span>
+                    <span>8:00 AM - 1:00 PM</span>
                   </div>
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-2 text-indigo-400" />
-                    <span>Kandy Hall & Live LMS HD Stream</span>
+                    <span>Kandy Auditorium & HD LMS Live</span>
                   </div>
                 </div>
               </div>
@@ -673,7 +671,7 @@ const LandingPage = () => {
                   onClick={() => scrollToSection('contact')}
                   className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-indigo-600 text-white font-semibold text-xs transition-colors flex items-center justify-center"
                 >
-                  ලියාපදිංචි වන්න <ChevronRight className="w-4 h-4 ml-1" />
+                  Register Now <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
               </div>
             </div>
@@ -689,16 +687,16 @@ const LandingPage = () => {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">2025 A/L Revision & Theory</h3>
                 <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-                  සම්පූර්ණ විෂය නිර්දේශය සීඝ්‍රයෙන් ආවරණය කිරීම සහ පසුගිය විභාග ප්‍රශ්න පත්‍ර (Past Papers) ගැඹුරින් සාකච්ඡාව.
+                  Rapid syllabus coverage, past paper breakdowns, and high-yield exam strategies designed for top scores.
                 </p>
                 <div className="space-y-3 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2 text-violet-400" />
-                    <span>සෑම ඉරිදාම (Sundays)</span>
+                    <span>Every Sunday</span>
                   </div>
                   <div className="flex items-center">
                     <Clock className="w-4 h-4 mr-2 text-violet-400" />
-                    <span>පෙ.ව. 8.00 - ප.ව. 1.30</span>
+                    <span>8:00 AM - 1:30 PM</span>
                   </div>
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-2 text-violet-400" />
@@ -712,7 +710,7 @@ const LandingPage = () => {
                   onClick={() => scrollToSection('contact')}
                   className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors flex items-center justify-center shadow-lg shadow-indigo-600/30"
                 >
-                  ලියාපදිංචි වන්න <ChevronRight className="w-4 h-4 ml-1" />
+                  Register Now <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
               </div>
             </div>
@@ -725,16 +723,16 @@ const LandingPage = () => {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Paper Class & Speed Revision</h3>
                 <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-                  නියමිත කාලයට ප්‍රශ්න පත්‍ර ලිවීමේ හැකියාව වර්ධනය කිරීම සහ Rank Index ලකුණු විශ්ලේෂණය.
+                  Timed exam condition practice, instant mark distribution analysis, and detailed marking scheme breakdowns.
                 </p>
                 <div className="space-y-3 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2 text-sky-400" />
-                    <span>සෑම බදාදාම (Wednesdays)</span>
+                    <span>Every Wednesday</span>
                   </div>
                   <div className="flex items-center">
                     <Clock className="w-4 h-4 mr-2 text-sky-400" />
-                    <span>ප.ව. 2.30 - ප.ව. 6.00</span>
+                    <span>2:30 PM - 6:00 PM</span>
                   </div>
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-2 text-sky-400" />
@@ -748,7 +746,7 @@ const LandingPage = () => {
                   onClick={() => scrollToSection('contact')}
                   className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-sky-600 text-white font-semibold text-xs transition-colors flex items-center justify-center"
                 >
-                  ලියාපදිංචි වන්න <ChevronRight className="w-4 h-4 ml-1" />
+                  Register Now <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
               </div>
             </div>
@@ -759,20 +757,20 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 6: Digital LMS Ecosystem Features (පහසුකම්) */}
+      {/* Section 6: Kingswood LMS Ecosystem Features */}
       <section id="features" className="py-20 bg-slate-950/80 border-y border-slate-800/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
               <Zap className="w-4 h-4 mr-1" />
-              Kingswood Connect Digital Ecosystem
+              DIGITAL LEARNING ECOSYSTEM
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              නවීන ඩිජිටල් <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-300">තාක්ෂණික පහසුකම්</span>
+              Cutting-Edge <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-300">Technology Features</span>
             </h2>
             <p className="text-slate-400 text-base sm:text-lg">
-              අපගේ සිසුන් සහ දෙමාපියන් වෙනුවෙන්ම සකස් කළ modern web application එක හරහා ලබාදෙන විශේෂ පහසුකම්.
+              Engineered specifically to maximize student productivity and keep parents informed in real-time.
             </p>
           </div>
 
@@ -784,7 +782,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-lg font-bold text-white">Smart QR Attendance</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                ශිෂ්‍යයා පන්තියට පැමිණි විගස QR කේතය මගින් පැමිණීම සටහන් වන අතර දෙමාපියන්ට ක්ෂණික SMS මගින් දැනුම් දේ.
+                Instant QR code scanning upon class entry automatically logs attendance and dispatches instant SMS alerts to parents.
               </p>
             </div>
 
@@ -794,7 +792,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-lg font-bold text-white">Exam Analytics & Ranks</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                සෑම පරීක්ෂණයකම ලකුණු, දිස්ත්‍රික් මට්ටමේ ශ්‍රේණිගත කිරීම සහ ප්‍රගති වාර්තා instant dashboard එකෙන් බලාගත හැක.
+                Instant score dashboards, district-level rank indices, and progress trend graphs available right after evaluation.
               </p>
             </div>
 
@@ -804,7 +802,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-lg font-bold text-white">HD Class Recordings</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                මගහැරුණු පන්ති හෝ නැවත අධ්‍යයනය කිරීමට අවශ්‍ය පාඩම් කොටස් HD වීඩියෝ ලෙස ඕනෑම වේලාවක නැරඹීමේ හැකියාව.
+                On-demand access to high-definition recordings of missed or previous lectures anytime on student dashboards.
               </p>
             </div>
 
@@ -812,9 +810,9 @@ const LandingPage = () => {
               <div className="w-12 h-12 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
                 <FileText className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">Digital Tutes & Materials</h3>
+              <h3 className="text-lg font-bold text-white">Digital Materials & Notes</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                සෑම පඩමකටම අදාළ PDF tutes, පසුගිය ප්‍රශ්න පත්‍ර සහ Marking Schemes LMS එකෙන් ලබාගත හැක.
+                Downloadable PDF tutes, lesson summaries, past paper marking schemes, and speed revision guides.
               </p>
             </div>
 
@@ -824,17 +822,17 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 7: Student Testimonials (සිසුන්ගේ අදහස්) */}
+      {/* Section 7: Student & Parent Testimonials */}
       <section className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
               <MessageSquare className="w-4 h-4 mr-1" />
-              සිසුන්ගේ සහ දෙමාපියන්ගේ අදහස්
+              STUDENT & PARENT REVIEWS
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              අප කෙරෙහි තැබූ <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-sky-300">විශ්වාසය</span>
+              Trusted by <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-sky-300">Thousands</span>
             </h2>
           </div>
 
@@ -847,7 +845,7 @@ const LandingPage = () => {
                 ))}
               </div>
               <p className="text-slate-300 text-xs sm:text-sm leading-relaxed italic">
-                "Combined Maths ගැන ලොකු බයක් තිබුණේ. Kasun Sir ගේ සංකල්පීය පැහැදිලි කිරීම් නිසා පන්ති ගිය පළමු මාසයේදීම මට විෂය ගැන ලොකු උනන්දුවක් ආවා. A/L වලින් Island Rank 01 ගන්න පුළුවන් වුනේ සර්ගේ නිවැරදි මගපෙන්වීම නිසාමයි."
+                "Combined Maths felt overwhelming until I joined Kasun Sir's class. His visual problem-solving techniques gave me immense clarity, leading directly to my Island Rank 01 achievement."
               </p>
               <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
                 <div>
@@ -865,7 +863,7 @@ const LandingPage = () => {
                 ))}
               </div>
               <p className="text-slate-300 text-xs sm:text-sm leading-relaxed italic">
-                "Kingswood Connect Web LMS එක ඉතාම පහසුයි. මට මගහැරුණු පන්තිවල HD recording බලන්න වගේම Paper results instant දකින්න ලැබීමෙන් මගේ ලකුණු වර්ධනය කරගන්න ලොකු සහයක් වුණා."
+                "The Kingswood Connect LMS made studying so effortless. Being able to rewatch HD recordings and check paper results instantly boosted my overall Z-Score tremendously."
               </p>
               <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
                 <div>
@@ -883,12 +881,12 @@ const LandingPage = () => {
                 ))}
               </div>
               <p className="text-slate-300 text-xs sm:text-sm leading-relaxed italic">
-                "දෙමාපියෙක් විදියට මගේ ළමයා පන්තියට ගිය ගමන් SMS දැනුම්දීම ලැබෙන එක ලොකු සහනයක්. ඒ වගේම ළමයාගේ ධෛර්යය වැඩි කරන්න සර් ලබාදෙන පෞද්ගලික අවධානය අගය කළ යුතුයි."
+                "As a parent, receiving real-time QR attendance SMS alerts gave us peace of mind. Sir's personal dedication and continuous mentorship are truly commendable."
               </p>
               <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
                 <div>
                   <span className="font-bold text-white block">N. Jayasinghe</span>
-                  <span className="text-slate-400">Parent of Nipuna (District 01)</span>
+                  <span className="text-slate-400">Parent of Nipuna (District Rank 01)</span>
                 </div>
                 <span className="text-indigo-400 font-semibold">Parent Review</span>
               </div>
@@ -900,24 +898,24 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 8: Contact Us & Location (අපව සම්බන්ධ කර ගන්න) */}
+      {/* Section 8: Contact Us & Location */}
       <section id="contact" className="py-20 bg-slate-950/90 border-t border-slate-800/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="grid lg:grid-cols-12 gap-12">
             
-            {/* Contact Info & Details */}
+            {/* Contact Details */}
             <div className="lg:col-span-5 space-y-8">
               <div className="space-y-4">
                 <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
                   <Phone className="w-4 h-4 mr-1" />
-                  සම්බන්ධතා විස්තර (Contact & Location)
+                  GET IN TOUCH
                 </div>
                 <h2 className="text-3xl font-extrabold text-white">
-                  අප හා <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-violet-400">සම්බන්ධ වන්න</span>
+                  Contact Us & <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-violet-400">Enrollment</span>
                 </h2>
                 <p className="text-slate-400 text-sm leading-relaxed">
-                  නව පන්ති සදහා ලියාපදිංචි වීමට හෝ වැඩිදුර විස්තර දැනගැනීමට පහත දුරකථන අංක මගින් හෝ පණිවිඩයක් එවන්න.
+                  Have questions regarding upcoming batches or online LMS registration? Send us an inquiry or reach out to our hotlines directly.
                 </p>
               </div>
 
@@ -925,7 +923,7 @@ const LandingPage = () => {
                 <div className="flex items-start space-x-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
                   <MapPin className="w-6 h-6 text-indigo-400 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-bold text-white">පන්ති පැවැත්වෙන ස්ථානය</h4>
+                    <h4 className="font-bold text-white">Class Location & Auditorium</h4>
                     <p className="text-xs text-slate-400 mt-0.5">Kingswood Education Complex, Peradeniya Road, Kandy, Sri Lanka</p>
                   </div>
                 </div>
@@ -933,7 +931,7 @@ const LandingPage = () => {
                 <div className="flex items-start space-x-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
                   <Phone className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-bold text-white">දුරකථන අංක (Hotline)</h4>
+                    <h4 className="font-bold text-white">Inquiry Hotlines</h4>
                     <p className="text-xs text-slate-400 mt-0.5">+94 81 222 3456 / +94 77 123 4567</p>
                   </div>
                 </div>
@@ -941,7 +939,7 @@ const LandingPage = () => {
                 <div className="flex items-start space-x-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
                   <Mail className="w-6 h-6 text-sky-400 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-bold text-white">විද්‍යුත් තැපෑල (Email)</h4>
+                    <h4 className="font-bold text-white">Official Email</h4>
                     <p className="text-xs text-slate-400 mt-0.5">info@kingswoodconnect.lk</p>
                   </div>
                 </div>
@@ -952,31 +950,31 @@ const LandingPage = () => {
             <div className="lg:col-span-7">
               <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative">
                 
-                <h3 className="text-xl font-bold text-white mb-2">පන්ති සදහා ලියාපදිංචි වීමට හෝ විමසීම් කිරීමට</h3>
-                <p className="text-xs text-slate-400 mb-6">පහත ෆෝරමය පුරවා එවන්න. අපගේ කණ්ඩායම කෙටි වේලාවකින් ඔබව සම්බන්ධ කර ගනු ඇත.</p>
+                <h3 className="text-xl font-bold text-white mb-2">Send an Instant Inquiry</h3>
+                <p className="text-xs text-slate-400 mb-6">Fill out your details below and our counseling team will get back to you within 24 hours.</p>
 
                 {contactSubmitted ? (
                   <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-center space-y-2">
                     <Check className="w-10 h-10 mx-auto text-emerald-400" />
-                    <h4 className="font-bold text-lg text-white">ඔබගේ පණිවිඩය සාර්ථකව ලැබුණි!</h4>
-                    <p className="text-xs text-slate-300">ඉක්මනින්ම අප ඔබව සම්බන්ධ කර ගනු ඇත. ස්තූතියි!</p>
+                    <h4 className="font-bold text-lg text-white">Inquiry Sent Successfully!</h4>
+                    <p className="text-xs text-slate-300">Thank you for reaching out. Our team will contact you shortly.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleContactSubmit} className="space-y-4">
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1">ඔබගේ නම (Full Name)</label>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
                         <input 
                           type="text" 
                           required
                           value={formData.name}
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
-                          placeholder="උදා: කවීන් පෙරේරා" 
+                          placeholder="e.g. Kaveen Perera" 
                           className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-sm"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1">දුරකථන අංකය (WhatsApp Number)</label>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1">WhatsApp / Phone Number</label>
                         <input 
                           type="tel" 
                           required
@@ -990,19 +988,19 @@ const LandingPage = () => {
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1">A/L කණ්ඩායම (Batch)</label>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1">A/L Batch</label>
                         <select 
                           value={formData.batch}
                           onChange={(e) => setFormData({...formData, batch: e.target.value})}
                           className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-sm"
                         >
-                          <option value="2026 A/L">2026 A/L</option>
+                          <option value="2026 A/L">2026 A/L Theory</option>
                           <option value="2025 A/L">2025 A/L Revision</option>
                           <option value="Paper Class">Paper Class</option>
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1">විෂය (Subject)</label>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1">Subject Preference</label>
                         <select 
                           value={formData.subject}
                           onChange={(e) => setFormData({...formData, subject: e.target.value})}
@@ -1016,12 +1014,12 @@ const LandingPage = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1">ඔබගේ පණිවිඩය (Message)</label>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">Your Message</label>
                       <textarea 
                         rows="3" 
                         value={formData.message}
                         onChange={(e) => setFormData({...formData, message: e.target.value})}
-                        placeholder="ඔබට දැනගැනීමට අවශ්‍ය විස්තර මෙහි සඳහන් කරන්න..." 
+                        placeholder="Write any specific questions or details you would like to know..." 
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-sm"
                       />
                     </div>
@@ -1031,7 +1029,7 @@ const LandingPage = () => {
                       className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold text-sm shadow-xl shadow-indigo-600/30 transition-all flex items-center justify-center"
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      පණිවිඩය යොමු කරන්න (Send Inquiry)
+                      Submit Inquiry
                     </button>
                   </form>
                 )}
@@ -1058,11 +1056,11 @@ const LandingPage = () => {
             </div>
 
             <div className="flex flex-wrap justify-center gap-6 text-slate-400 font-medium">
-              <button onClick={() => scrollToSection('home')} className="hover:text-indigo-400 transition-colors">මුල් පිටුව</button>
-              <button onClick={() => scrollToSection('about-sir')} className="hover:text-indigo-400 transition-colors">සර් ගැන</button>
-              <button onClick={() => scrollToSection('vision-mission')} className="hover:text-indigo-400 transition-colors">දැක්ම සහ මෙහෙවර</button>
-              <button onClick={() => scrollToSection('results')} className="hover:text-indigo-400 transition-colors">ප්‍රතිඵල</button>
-              <button onClick={() => scrollToSection('courses')} className="hover:text-indigo-400 transition-colors">පාඨමාලා</button>
+              <button onClick={() => scrollToSection('home')} className="hover:text-indigo-400 transition-colors">Home</button>
+              <button onClick={() => scrollToSection('about-sir')} className="hover:text-indigo-400 transition-colors">About Sir</button>
+              <button onClick={() => scrollToSection('vision-mission')} className="hover:text-indigo-400 transition-colors">Vision & Mission</button>
+              <button onClick={() => scrollToSection('results')} className="hover:text-indigo-400 transition-colors">Results</button>
+              <button onClick={() => scrollToSection('courses')} className="hover:text-indigo-400 transition-colors">Courses</button>
               <Link to="/login" className="text-indigo-400 font-semibold hover:underline">LMS Portal Log In</Link>
             </div>
 
