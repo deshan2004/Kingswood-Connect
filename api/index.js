@@ -883,10 +883,13 @@ app.get('/api/attendance/reports', async (req, res) => {
         studentId: student.studentId,
         studentName: student.name,
         contact: student.contact,
+        cardType: student.cardType || 'normal',
+        cardGrantedBy: student.cardGrantedBy || null,
+        feeType: student.feeType || 'weekly',
         daysPresent,
         totalClassDays,
         percentage,
-        feesPaid
+        feesPaid: student.cardType === 'free' ? true : feesPaid
       };
     });
 

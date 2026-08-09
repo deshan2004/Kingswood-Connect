@@ -54,6 +54,20 @@ const AttendanceReports = () => {
     }
   };
 
+  const handleCardTypeUpdate = async (studentId, cardType) => {
+    try {
+      const teacherName = user?.name ? `${user.name}` : 'Teacher';
+      await axios.post(`${API_URL}/teacher/update-card-type`, {
+        studentId,
+        cardType,
+        teacherName
+      });
+      fetchReports();
+    } catch (err) {
+      console.error('Failed to update student card type:', err);
+    }
+  };
+
   const handleWhatsAppWarning = (student) => {
     const className = classesList.find(c => c.classId === selectedClass)?.name || 'the class';
     const message = `⚠️ *ATTENDANCE WARNING NOTICE*
@@ -194,23 +208,33 @@ If you have any questions, feel free to contact the institute administration.
                       )}
                     </td>
                     <td className="py-4 px-6 text-center">
-                      {student.cardType === 'free' ? (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                          🎁 Free Card
-                        </span>
-                      ) : (
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold ${
-                          student.feesPaid ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                        }`}>
-                          {student.feesPaid ? 'Paid' : 'Pending'}
-                        </span>
-                      )}
+                      <div className="flex flex-col items-center gap-1">
+                        <select
+                          value={student.cardType || 'normal'}
+                          onChange={(e) => handleCardTypeUpdate(student.studentId, e.target.value)}
+                          className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                        >
+                          <option value="normal">💳 Normal Card</option>
+                          <option value="half">🌗 Half Card (50%)</option>
+                          <option value="free">🎁 Free Card (100%)</option>
+                        </select>
+
+                        {student.cardType === 'free' ? (
+                          <span className="text-[10px] font-bold text-emerald-600">
+                            {student.cardGrantedBy ? `By: ${student.cardGrantedBy}` : 'Free Scholarship'}
+                          </span>
+                        ) : (
+                          <span className={`text-[10px] font-extrabold ${student.feesPaid ? 'text-emerald-600' : 'text-rose-500'}`}>
+                            {student.feesPaid ? '✓ Fee Paid' : '✗ Fee Pending'}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-4 px-6 text-right">
                       {(student.percentage < 50 && student.totalClassDays > 0) ? (
                         <button 
                           onClick={() => handleWhatsAppWarning(student)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 font-bold text-sm rounded-lg transition-colors border border-green-200"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 font-bold text-sm rounded-lg transition-colors border border-green-200 cursor-pointer"
                         >
                           <MessageCircle size={16} /> Warning
                         </button>
