@@ -152,6 +152,18 @@ ${autoLoginLink}
     }
   };
 
+  const handleEditGradeChange = (val) => {
+    setEditGrade(val);
+    const g = String(val).toLowerCase();
+    if (g.includes('12') || g.includes('13') || g.includes('a/l') || g.includes('al')) {
+      setEditFeeType('monthly');
+      setEditDefaultFee(3500);
+    } else if (g) {
+      setEditFeeType('weekly');
+      setEditDefaultFee(250);
+    }
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -534,42 +546,29 @@ ${autoLoginLink}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Card Type</label>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Card Type (කාඩ්පත් වර්ගය)</label>
                     <select
                       value={cardType}
                       onChange={(e) => setCardType(e.target.value)}
-                      className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-xs cursor-pointer"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-sm cursor-pointer"
                     >
-                      <option value="normal">💳 Normal</option>
-                      <option value="half">🌗 Half (50%)</option>
-                      <option value="free">🎁 Free Card</option>
+                      <option value="normal">💳 Normal Card (Full Fee)</option>
+                      <option value="half">🌗 Half Card (50% Fee)</option>
+                      <option value="free">🎁 Free Card (100% Free / නොමිලේ)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Fee Model</label>
-                    <select
-                      value={feeType}
-                      onChange={(e) => {
-                        setFeeType(e.target.value);
-                        if (e.target.value === 'monthly') setDefaultFee(3500);
-                        else setDefaultFee(250);
-                      }}
-                      className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-xs cursor-pointer"
-                    >
-                      <option value="weekly">🗓️ Weekly (Gr 6-11)</option>
-                      <option value="monthly">📅 Monthly (Gr 12-13)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Fee Amount (Rs.)</label>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">
+                      Fee Amount (Rs.) <span className="text-[10px] text-indigo-600 font-bold ml-1">({feeType === 'monthly' ? 'Auto: Monthly' : 'Auto: Weekly'})</span>
+                    </label>
                     <input 
                       type="number" 
                       value={defaultFee}
                       onChange={(e) => setDefaultFee(e.target.value)}
                       disabled={cardType === 'free'}
-                      className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-xs disabled:opacity-50"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-800 text-sm disabled:opacity-50"
                       placeholder="250"
                     />
                   </div>
@@ -666,9 +665,10 @@ ${autoLoginLink}
                     <input
                       type="text"
                       value={editGrade}
-                      onChange={(e) => setEditGrade(e.target.value)}
+                      onChange={(e) => handleEditGradeChange(e.target.value)}
                       required
                       className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 transition-all"
+                      placeholder="e.g. Grade 10 or Grade 12 (A/L)"
                     />
                   </div>
                   <div>
@@ -683,42 +683,29 @@ ${autoLoginLink}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Card Type</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Card Type (කාඩ්පත් වර්ගය)</label>
                     <select
                       value={editCardType}
                       onChange={(e) => setEditCardType(e.target.value)}
-                      className="w-full bg-slate-50 border-0 rounded-xl px-3 py-3 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+                      className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
                     >
-                      <option value="normal">💳 Normal</option>
-                      <option value="half">🌗 Half (50%)</option>
-                      <option value="free">🎁 Free Card</option>
+                      <option value="normal">💳 Normal Card (Full Fee)</option>
+                      <option value="half">🌗 Half Card (50% Fee)</option>
+                      <option value="free">🎁 Free Card (100% Free / නොමිලේ)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fee Model</label>
-                    <select
-                      value={editFeeType}
-                      onChange={(e) => {
-                        setEditFeeType(e.target.value);
-                        if (e.target.value === 'monthly') setEditDefaultFee(3500);
-                        else setEditDefaultFee(250);
-                      }}
-                      className="w-full bg-slate-50 border-0 rounded-xl px-3 py-3 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
-                    >
-                      <option value="weekly">🗓️ Weekly (Gr 6-11)</option>
-                      <option value="monthly">📅 Monthly (Gr 12-13)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fee Amount (Rs.)</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                      Fee Amount (Rs.) <span className="text-[10px] text-indigo-600 font-bold ml-1">({editFeeType === 'monthly' ? 'Auto: Monthly' : 'Auto: Weekly'})</span>
+                    </label>
                     <input
                       type="number"
                       value={editDefaultFee}
                       onChange={(e) => setEditDefaultFee(e.target.value)}
                       disabled={editCardType === 'free'}
-                      className="w-full bg-slate-50 border-0 rounded-xl px-3 py-3 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-50"
+                      className="w-full bg-slate-50 border-0 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 transition-all disabled:opacity-50"
                       placeholder="250"
                     />
                   </div>
