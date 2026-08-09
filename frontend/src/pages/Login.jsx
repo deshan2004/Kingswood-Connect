@@ -39,7 +39,7 @@ const Login = () => {
   useEffect(() => {
     if (user) {
       const currentRole = user.role ? user.role.toLowerCase() : 'student';
-      if (currentRole === 'admin') navigate('/');
+      if (currentRole === 'admin') navigate('/admin');
       else if (currentRole === 'teacher') navigate('/teacher');
       else navigate('/student');
     }

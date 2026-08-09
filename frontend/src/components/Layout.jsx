@@ -15,13 +15,13 @@ const Layout = () => {
   };
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Scanner', href: '/scanner', icon: QrCode },
-    { name: 'Students', href: '/students', icon: Users },
-    { name: 'Attendance', href: '/attendance', icon: ClipboardList },
-    { name: 'Fees & Payments', href: '/finance', icon: CreditCard },
-    { name: 'Faculty', href: '/teachers', icon: UserCog },
-    { name: 'Schedule', href: '/schedule', icon: Calendar },
+    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    { name: 'Scanner', href: '/admin/scanner', icon: QrCode },
+    { name: 'Students', href: '/admin/students', icon: Users },
+    { name: 'Attendance', href: '/admin/attendance', icon: ClipboardList },
+    { name: 'Fees & Payments', href: '/admin/finance', icon: CreditCard },
+    { name: 'Faculty', href: '/admin/teachers', icon: UserCog },
+    { name: 'Schedule', href: '/admin/schedule', icon: Calendar },
   ];
 
   return (

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
+import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import Scanner from './pages/Scanner';
 import Students from './pages/Students';
@@ -32,7 +33,7 @@ const ProtectedRoute = ({ children, allowedRole }) => {
     const currentRole = user.role ? user.role.toLowerCase() : 'student';
     if (currentRole !== allowedRole.toLowerCase()) {
       // Redirect to their respective dashboard if they try to access the wrong area
-      return <Navigate to={currentRole === 'admin' ? '/' : currentRole === 'teacher' ? '/teacher' : '/student'} replace />;
+      return <Navigate to={currentRole === 'admin' ? '/admin' : currentRole === 'teacher' ? '/teacher' : '/student'} replace />;
     }
   }
   
@@ -45,11 +46,13 @@ function App() {
       <Router>
         <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/mobile-scan/:sessionId" element={<MobileScanner />} />
 
           {/* Admin Routes */}
-          <Route path="/" element={
+          <Route path="/admin" element={
             <ProtectedRoute allowedRole="admin">
               <Layout />
             </ProtectedRoute>
