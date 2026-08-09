@@ -285,11 +285,6 @@ const UpdateEmailPage = () => {
           </div>
         </form>
       </div>
-
-      {/* Change Password Card Section */}
-      <div>
-        <ChangePassword />
-      </div>
     </div>
   );
 };

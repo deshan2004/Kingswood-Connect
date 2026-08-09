@@ -19,6 +19,7 @@ import TeacherLayout from './components/TeacherLayout';
 import TeacherDashboard from './pages/TeacherDashboard';
 import Materials from './pages/Materials';
 import UpdateEmailPage from './pages/UpdateEmailPage';
+import SettingsPage from './pages/SettingsPage';
 
 const ProtectedRoute = ({ children, allowedRole }) => {
   const { user, loading } = useAuth();
@@ -64,6 +65,7 @@ function App() {
             <Route path="finance" element={<Finance />} />
             <Route path="teachers" element={<Teachers />} />
             <Route path="schedule" element={<Schedule />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           {/* Student Routes */}
@@ -75,6 +77,7 @@ function App() {
             <Route index element={<StudentDashboard />} />
             <Route path="materials" element={<Materials />} />
             <Route path="update-email" element={<UpdateEmailPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           {/* Teacher Routes */}
@@ -87,6 +90,7 @@ function App() {
             <Route path="exams" element={<Exams />} />
             <Route path="attendance" element={<AttendanceReports />} />
             <Route path="materials" element={<Materials />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Routes>
       </Router>

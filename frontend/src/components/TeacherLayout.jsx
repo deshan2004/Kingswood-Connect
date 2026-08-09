@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { Briefcase, LogOut, Menu, X, LayoutDashboard, Award, ClipboardList, BookOpen } from 'lucide-react';
+import { Briefcase, LogOut, Menu, X, LayoutDashboard, Award, ClipboardList, BookOpen, Settings } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const TeacherLayout = () => {
@@ -115,6 +115,25 @@ const TeacherLayout = () => {
               <>
                 <BookOpen size={20} className={`mr-3 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110 group-hover:text-blue-400'}`} />
                 <span className="font-medium">Study Materials</span>
+              </>
+            )}
+          </NavLink>
+
+          <NavLink
+            to="/teacher/settings"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center px-4 py-3 rounded-xl transition-all duration-300 group ${
+                isActive 
+                  ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-900/50 translate-x-1' 
+                  : 'text-indigo-200 hover:bg-indigo-900/50 hover:text-white hover:translate-x-1'
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <Settings size={20} className={`mr-3 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110 group-hover:text-blue-400'}`} />
+                <span className="font-medium">Settings & Security</span>
               </>
             )}
           </NavLink>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, QrCode, Users, CreditCard, UserCog, Calendar, Award, LogOut, Menu, X, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, QrCode, Users, CreditCard, UserCog, Calendar, Award, LogOut, Menu, X, ClipboardList, Settings } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Layout = () => {
@@ -22,6 +22,7 @@ const Layout = () => {
     { name: 'Fees & Payments', href: '/admin/finance', icon: CreditCard },
     { name: 'Faculty', href: '/admin/teachers', icon: UserCog },
     { name: 'Schedule', href: '/admin/schedule', icon: Calendar },
+    { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
   return (
