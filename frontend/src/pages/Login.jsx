@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, Key, User, Eye, EyeOff, ArrowLeft, MailCheck, CheckCircle2 } from 'lucide-react';
+import { LogIn, Key, User, Eye, EyeOff, ArrowLeft, MailCheck, CheckCircle2, X, Home } from 'lucide-react';
 
 const Login = () => {
   const [searchParams] = useSearchParams();
@@ -146,13 +146,38 @@ const Login = () => {
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/25 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/25 rounded-full blur-[120px] pointer-events-none"></div>
 
+      {/* Floating Back to Home & Close Buttons */}
+      <div className="absolute top-6 left-6 z-20">
+        <Link 
+          to="/" 
+          className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-sm font-semibold text-slate-300 hover:text-white transition-all shadow-lg backdrop-blur-md group"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
+          Back to Home
+        </Link>
+      </div>
+
+      <div className="absolute top-6 right-6 z-20">
+        <Link 
+          to="/" 
+          className="inline-flex items-center justify-center p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-slate-400 hover:text-white transition-all shadow-lg backdrop-blur-md"
+          title="Return to Landing Page"
+        >
+          <X className="w-5 h-5" />
+        </Link>
+      </div>
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center mb-6">
-          <div className="h-16 w-16 bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-900/60 border border-indigo-400/30">
-            <span className="text-white font-black text-3xl tracking-tighter">KC</span>
-          </div>
+          <Link to="/" title="Go to Kingswood Connect Home">
+            <div className="h-16 w-16 bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-900/60 border border-indigo-400/30 transform hover:scale-105 transition-transform">
+              <span className="text-white font-black text-3xl tracking-tighter">KC</span>
+            </div>
+          </Link>
         </div>
-        <h2 className="text-center text-3xl font-black text-white tracking-tight">Kingswood Connect</h2>
+        <Link to="/" className="block text-center group">
+          <h2 className="text-3xl font-black text-white tracking-tight group-hover:text-indigo-300 transition-colors">Kingswood Connect</h2>
+        </Link>
         <p className="mt-2 text-center text-sm font-medium text-indigo-200/80">
           {isResetMode ? 'Reset your account password' : 'Enter your credentials to access your portal'}
         </p>

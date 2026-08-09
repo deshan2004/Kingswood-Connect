@@ -92,7 +92,7 @@ const LandingPage = () => {
               Home
             </button>
             <button onClick={() => scrollToSection('about-sir')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
-              About Sir
+              Faculty (Our Sirs)
             </button>
             <button onClick={() => scrollToSection('vision-mission')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
               Vision & Mission
@@ -222,7 +222,7 @@ const LandingPage = () => {
                   className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 transition-all transform hover:-translate-y-0.5 flex items-center justify-center"
                 >
                   <Users className="w-5 h-5 mr-2" />
-                  About Sir
+                  Meet Our Faculty (Sirs)
                 </button>
 
                 <button
@@ -314,114 +314,165 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 2: Teacher Profile & Sir's Photo (About Sir) */}
+      {/* Section 2: Faculty Panel & Teachers' Profiles (Meet Our Sirs) */}
       <section id="about-sir" className="py-20 bg-slate-950/60 border-y border-slate-800/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
               <School className="w-4 h-4 mr-1" />
-              MEET YOUR LEAD EDUCATOR
+              MEET OUR PANEL OF EXPERT SIRS
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Eng. Kasun Perera <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-sky-400">(Senior Lecturer)</span>
+              Distinguished Faculty <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-sky-400">& Subject Specialists</span>
             </h2>
             <p className="text-slate-400 text-base sm:text-lg">
-              With over 12 years of teaching excellence, Eng. Kasun Perera has guided thousands of high school students to top university admissions and prestigious national ranks.
+              Our institute brings together Sri Lanka's top-tier lecturers, engineers, and scientists dedicated to producing island ranks in A/L Science & Mathematics streams.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
+          {/* Faculty Cards Grid */}
+          <div className="grid md:grid-cols-3 gap-8">
             
-            {/* Sir's Photo Card */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative mx-auto max-w-sm lg:max-w-none">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-violet-600 rounded-3xl blur-2xl opacity-20 transform -rotate-3" />
-                
-                <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 bg-slate-900 shadow-2xl">
+            {/* Sir 1: Combined Maths */}
+            <div className="rounded-3xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 transition-all duration-300 shadow-xl overflow-hidden group flex flex-col justify-between">
+              <div>
+                <div className="relative h-72 overflow-hidden bg-slate-950">
                   <img 
                     src="/images/sir_portrait.png" 
-                    alt="Eng. Kasun Perera - Senior Lecturer"
-                    className="w-full h-[480px] object-cover object-top hover:scale-105 transition-transform duration-500"
+                    alt="Eng. Kasun Perera - Combined Mathematics"
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="p-6 bg-slate-900/95 border-t border-slate-800">
-                    <h3 className="text-xl font-bold text-white">Eng. Kasun Perera</h3>
-                    <p className="text-sm text-indigo-400 font-medium">B.Sc. Engineering (Hons) - University of Peradeniya</p>
-                    <div className="mt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80 pt-3">
-                      <span>12+ Years Experience</span>
-                      <span className="text-emerald-400 font-semibold">150+ Island Ranks Produced</span>
+                  <div className="absolute top-3 right-3 bg-indigo-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-indigo-400/30">
+                    Combined Mathematics
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors">Eng. Kasun Perera</h3>
+                    <p className="text-xs text-indigo-400 font-semibold mt-1">B.Sc. Engineering (Hons) - Peradeniya</p>
+                  </div>
+
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Graduating with First Class Honors from Peradeniya Engineering, Eng. Kasun Perera is renowned for simplifying complex calculus, vectors, and mechanics into intuitive visual concepts.
+                  </p>
+
+                  <div className="pt-3 border-t border-slate-800/80 space-y-2 text-xs text-slate-400">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-amber-400" /> Teaching Experience:</span>
+                      <strong className="text-white">12+ Years</strong>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-emerald-400" /> Top Island Ranks:</span>
+                      <strong className="text-emerald-400">150+ Ranks</strong>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <div className="p-6 pt-0">
+                <button 
+                  onClick={() => scrollToSection('courses')}
+                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-indigo-600 text-white font-semibold text-xs transition-colors flex items-center justify-center"
+                >
+                  View Maths Classes <ChevronRight className="w-4 h-4 ml-1" />
+                </button>
+              </div>
             </div>
 
-            {/* Sir's Credentials & Academic Philosophy */}
-            <div className="lg:col-span-7 space-y-8">
-              
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-white flex items-center">
-                  <GraduationCap className="w-6 h-6 mr-3 text-indigo-400" />
-                  Academic Excellence & Background
-                </h3>
-                <p className="text-slate-300 leading-relaxed text-base">
-                  Graduating with First Class Honors from the Faculty of Engineering, University of Peradeniya, Eng. Kasun Perera is renowned across Sri Lanka for transforming how students learn Combined Mathematics and Physics. His structured methodology bridges complex theoretical concepts with intuitive problem-solving strategies.
-                </p>
-              </div>
-
-              {/* Key Strengths Grid */}
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-                  <div className="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
-                    01
+            {/* Sir 2: Physics */}
+            <div className="rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 transition-all duration-300 shadow-xl overflow-hidden group flex flex-col justify-between">
+              <div>
+                <div className="relative h-72 overflow-hidden bg-slate-950">
+                  <img 
+                    src="/images/sir_physics.png" 
+                    alt="Dr. Nimal Wickramasinghe - Physics"
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 right-3 bg-sky-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-sky-400/30">
+                    Physics Specialist
                   </div>
-                  <h4 className="text-base font-bold text-white">Conceptual Mastery</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Replacing rote memorization with deep conceptual intuition, clean visual diagrams, and practical applications.
-                  </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-                  <div className="w-9 h-9 rounded-lg bg-violet-500/20 text-violet-400 flex items-center justify-center font-bold">
-                    02
+                <div className="p-6 space-y-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white group-hover:text-sky-300 transition-colors">Dr. Nimal Wickramasinghe</h3>
+                    <p className="text-xs text-sky-400 font-semibold mt-1">Ph.D., B.Sc. Physics Special (Hons) - Colombo</p>
                   </div>
-                  <h4 className="text-base font-bold text-white">Weekly Model Papers</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Curated exam-oriented papers with instant score analytics, district ranks, and step-by-step marking discussions.
-                  </p>
-                </div>
 
-                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-                  <div className="w-9 h-9 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold">
-                    03
-                  </div>
-                  <h4 className="text-base font-bold text-white">Personalized Mentorship</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Identifying student weaknesses early to build customized recovery plans and individualized attention.
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Senior Physics lecturer specializing in theoretical mechanics, waves, and electronics. Known for visual lab experiments and speed past-paper analytical techniques.
                   </p>
-                </div>
 
-                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-                  <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                    04
+                  <div className="pt-3 border-t border-slate-800/80 space-y-2 text-xs text-slate-400">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-amber-400" /> Teaching Experience:</span>
+                      <strong className="text-white">14+ Years</strong>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-sky-400" /> Top Island Ranks:</span>
+                      <strong className="text-sky-400">120+ Ranks</strong>
+                    </div>
                   </div>
-                  <h4 className="text-base font-bold text-white">Kingswood LMS Platform</h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Seamless 24/7 access to HD video recordings, quiz preparations, tutes, and smart QR attendance logs.
-                  </p>
                 </div>
               </div>
 
-              {/* Quote Banner */}
-              <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-950/60 to-slate-900 border border-indigo-500/30 relative">
-                <p className="text-indigo-200 italic font-medium text-sm sm:text-base">
-                  "Our mission goes beyond preparing students for exams — we cultivate scientific thinking, analytical intelligence, and unwavering confidence that lasts a lifetime."
-                </p>
-                <div className="mt-2 text-xs text-indigo-400 font-semibold uppercase tracking-wider">
-                  — Eng. Kasun Perera
+              <div className="p-6 pt-0">
+                <button 
+                  onClick={() => scrollToSection('courses')}
+                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-sky-600 text-white font-semibold text-xs transition-colors flex items-center justify-center"
+                >
+                  View Physics Classes <ChevronRight className="w-4 h-4 ml-1" />
+                </button>
+              </div>
+            </div>
+
+            {/* Sir 3: Chemistry */}
+            <div className="rounded-3xl bg-slate-900 border border-slate-800 hover:border-violet-500/50 transition-all duration-300 shadow-xl overflow-hidden group flex flex-col justify-between">
+              <div>
+                <div className="relative h-72 overflow-hidden bg-slate-950">
+                  <img 
+                    src="/images/sir_chemistry.png" 
+                    alt="Eng. Chamara Rathnayake - Chemistry"
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 right-3 bg-violet-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-violet-400/30">
+                    Chemistry Specialist
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white group-hover:text-violet-300 transition-colors">Eng. Chamara Rathnayake</h3>
+                    <p className="text-xs text-violet-400 font-semibold mt-1">B.Sc. Eng., M.Sc. Industrial Chemistry</p>
+                  </div>
+
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Master educator in Organic, Inorganic & Physical Chemistry. Simplifies reaction pathways using logical flowcharts and high-yield memory techniques.
+                  </p>
+
+                  <div className="pt-3 border-t border-slate-800/80 space-y-2 text-xs text-slate-400">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-amber-400" /> Teaching Experience:</span>
+                      <strong className="text-white">10+ Years</strong>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-violet-400" /> Top Island Ranks:</span>
+                      <strong className="text-violet-400">95+ Ranks</strong>
+                    </div>
+                  </div>
                 </div>
               </div>
 
+              <div className="p-6 pt-0">
+                <button 
+                  onClick={() => scrollToSection('courses')}
+                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-violet-600 text-white font-semibold text-xs transition-colors flex items-center justify-center"
+                >
+                  View Chemistry Classes <ChevronRight className="w-4 h-4 ml-1" />
+                </button>
+              </div>
             </div>
 
           </div>
