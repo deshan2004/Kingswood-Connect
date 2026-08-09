@@ -368,11 +368,11 @@ const Scanner = () => {
                     {/* CARD TYPE BADGE */}
                     {scanResult.student?.cardType === 'free' ? (
                       <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-600 text-white shadow-sm">
-                        🎁 FREE CARD (නොමිලේ)
+                        🎁 FREE CARD {scanResult.student?.cardGrantedBy ? `(Approved by ${scanResult.student.cardGrantedBy})` : '(නොමිලේ)'}
                       </span>
                     ) : scanResult.student?.cardType === 'half' ? (
                       <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-500 text-white shadow-sm">
-                        🌗 HALF CARD (50% Fee)
+                        🌗 HALF CARD {scanResult.student?.cardGrantedBy ? `(Approved by ${scanResult.student.cardGrantedBy})` : '(50% Fee)'}
                       </span>
                     ) : (
                       <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-indigo-600 text-white shadow-sm">

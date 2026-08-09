@@ -215,6 +215,42 @@ app.put('/api/students/:id', async (req, res) => {
   }
 });
 
+// 2.6 Allow Teachers (Sir / Lecturers) to grant/update student card type
+app.post('/api/teacher/update-card-type', async (req, res) => {
+  try {
+    const { studentId, cardType, teacherName } = req.body;
+    if (!studentId || !cardType) {
+      return res.status(400).json({ error: 'studentId and cardType are required' });
+    }
+
+    const studentRef = db.collection('students').doc(studentId);
+    const doc = await studentRef.get();
+    if (!doc.exists) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    const grantedBy = teacherName || 'Teacher';
+    const updateData = {
+      cardType, // 'free', 'half', 'normal'
+      cardGrantedBy: cardType !== 'normal' ? grantedBy : null,
+      cardGrantedAt: cardType !== 'normal' ? new Date().toISOString() : null,
+      updatedAt: new Date().toISOString()
+    };
+
+    await studentRef.update(updateData);
+
+    res.json({
+      success: true,
+      message: `Card type updated to ${cardType.toUpperCase()} by ${grantedBy}`,
+      cardType,
+      cardGrantedBy: updateData.cardGrantedBy
+    });
+  } catch (error) {
+    console.error('Error updating card type:', error);
+    res.status(500).json({ error: 'Failed to update student card type' });
+  }
+});
+
 // 2.6 Update student email & sync with Firebase Auth + Firestore
 app.put('/api/student/email', async (req, res) => {
   try {
@@ -540,6 +576,7 @@ async function processAttendanceScan(studentId, classId, paidToday = false, amou
       name: student.name,
       grade: student.grade,
       cardType,
+      cardGrantedBy: student.cardGrantedBy || null,
       feeType,
       defaultFee,
       feeAmount,
