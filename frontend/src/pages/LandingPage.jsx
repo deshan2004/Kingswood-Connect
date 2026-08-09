@@ -285,7 +285,7 @@ const LandingPage = () => {
                 </div>
 
                 {/* Floating Badge 1 */}
-                <div className="absolute -top-6 -left-6 bg-slate-800/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-xl flex items-center space-x-3">
+                <div className="hidden sm:flex absolute -top-6 -left-6 bg-slate-800/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-xl items-center space-x-3">
                   <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
                     <Award className="w-6 h-6 text-amber-400" />
                   </div>
@@ -296,7 +296,7 @@ const LandingPage = () => {
                 </div>
 
                 {/* Floating Badge 2 */}
-                <div className="absolute -bottom-6 -right-6 bg-slate-800/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-xl flex items-center space-x-3">
+                <div className="hidden sm:flex absolute -bottom-6 -right-6 bg-slate-800/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-xl items-center space-x-3">
                   <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
                     <ShieldCheck className="w-6 h-6 text-emerald-400" />
                   </div>
@@ -999,7 +999,7 @@ const LandingPage = () => {
 
             {/* Direct Inquiry Form */}
             <div className="lg:col-span-7">
-              <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative">
+              <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative">
                 
                 <h3 className="text-xl font-bold text-white mb-2">Send an Instant Inquiry</h3>
                 <p className="text-xs text-slate-400 mb-6">Fill out your details below and our counseling team will get back to you within 24 hours.</p>
@@ -1021,7 +1021,7 @@ const LandingPage = () => {
                           value={formData.name}
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
                           placeholder="e.g. Kaveen Perera" 
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-sm"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-base sm:text-sm"
                         />
                       </div>
                       <div>
@@ -1032,7 +1032,7 @@ const LandingPage = () => {
                           value={formData.phone}
                           onChange={(e) => setFormData({...formData, phone: e.target.value})}
                           placeholder="0771234567" 
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-sm"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-base sm:text-sm"
                         />
                       </div>
                     </div>
@@ -1043,7 +1043,7 @@ const LandingPage = () => {
                         <select 
                           value={formData.batch}
                           onChange={(e) => setFormData({...formData, batch: e.target.value})}
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-sm"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-base sm:text-sm"
                         >
                           <option value="2026 A/L">2026 A/L Theory</option>
                           <option value="2025 A/L">2025 A/L Revision</option>
@@ -1055,7 +1055,7 @@ const LandingPage = () => {
                         <select 
                           value={formData.subject}
                           onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-sm"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-base sm:text-sm"
                         >
                           <option value="Combined Mathematics">Combined Mathematics</option>
                           <option value="Physics">Physics</option>
@@ -1071,7 +1071,7 @@ const LandingPage = () => {
                         value={formData.message}
                         onChange={(e) => setFormData({...formData, message: e.target.value})}
                         placeholder="Write any specific questions or details you would like to know..." 
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-sm"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-base sm:text-sm"
                       />
                     </div>
 
