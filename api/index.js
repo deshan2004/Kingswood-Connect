@@ -1540,6 +1540,7 @@ const defaultLandingSettings = {
   missionText: 'To unlock every student\'s highest potential by combining modern digital technology, rigorous paper series, clear concept delivery, and individual mentorship that guarantee outstanding Z-Scores and Island Ranks.',
   address: 'Kingswood Education Complex, Peradeniya Road, Kandy, Sri Lanka',
   phone: '+94 81 222 3456 / +94 77 123 4567',
+  whatsapp: '+94 77 123 4567',
   email: 'info@kingswoodconnect.lk'
 };
 

@@ -312,12 +312,12 @@ const SettingsPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Official Email</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp Hotline / Support Number</label>
                       <input
-                        type="email"
-                        value={cmsData.email}
-                        onChange={(e) => setCmsData({ ...cmsData, email: e.target.value })}
-                        placeholder="info@kingswoodconnect.lk"
+                        type="text"
+                        value={cmsData.whatsapp}
+                        onChange={(e) => setCmsData({ ...cmsData, whatsapp: e.target.value })}
+                        placeholder="+94 77 123 4567"
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium focus:outline-none focus:border-indigo-600 focus:bg-white"
                       />
                     </div>

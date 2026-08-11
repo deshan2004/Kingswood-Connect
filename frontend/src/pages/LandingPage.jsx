@@ -88,6 +88,29 @@ const LandingPage = () => {
     }, 4000);
   };
 
+  const handleWhatsAppInquiry = (e) => {
+    if (e) e.preventDefault();
+    const rawWa = cmsSettings?.whatsapp || '+94771234567';
+    let cleanWa = rawWa.replace(/[^0-9]/g, '');
+    if (cleanWa.startsWith('0')) {
+      cleanWa = '94' + cleanWa.substring(1);
+    }
+    if (!cleanWa.startsWith('94') && cleanWa.length === 9) {
+      cleanWa = '94' + cleanWa;
+    }
+
+    const name = formData.name || 'Student';
+    const phone = formData.phone || '';
+    const batch = formData.batch || '';
+    const subject = formData.subject || '';
+    const msg = formData.message || '';
+
+    const text = `Hello Kingswood Connect! 👋\n\nI would like to inquire / join tuition classes:\n• *Name:* ${name}\n• *Phone:* ${phone}\n• *Class/Batch:* ${batch}\n• *Subject:* ${subject}${msg ? `\n• *Message:* ${msg}` : ''}`;
+    
+    const waUrl = `https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, '_blank');
+  };
+
   const scrollToSection = (id) => {
     setMobileMenuOpen(false);
     const element = document.getElementById(id);
@@ -968,11 +991,27 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4 p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                  <Mail className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-slate-900">Official Email</h4>
-                    <p className="text-xs text-slate-600 mt-0.5">{cmsSettings?.email || 'info@kingswoodconnect.lk'}</p>
+                <div className="flex items-start space-x-4 p-4 rounded-xl bg-white border border-emerald-200/90 shadow-sm hover:border-emerald-400 transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0 mt-0.5">
+                    <MessageSquare className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-bold text-slate-900">WhatsApp Official Support</h4>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        INSTANT CHAT
+                      </span>
+                    </div>
+                    <p className="text-xs font-bold text-emerald-700 mt-0.5">
+                      {cmsSettings?.whatsapp || '+94 77 123 4567'}
+                    </p>
+                    <button
+                      onClick={handleWhatsAppInquiry}
+                      type="button"
+                      className="inline-flex items-center text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 hover:underline focus:outline-none"
+                    >
+                      Click to Join / Chat on WhatsApp <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -983,13 +1022,13 @@ const LandingPage = () => {
               <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl relative">
 
                 <h3 className="text-xl font-bold text-slate-900 mb-2">Send an Instant Inquiry</h3>
-                <p className="text-xs text-slate-600 mb-6">Fill out your details below and our counseling team will get back to you within 24 hours.</p>
+                <p className="text-xs text-slate-600 mb-6">Fill out your details below to submit or join directly via WhatsApp.</p>
 
                 {contactSubmitted ? (
                   <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-center space-y-2">
                     <Check className="w-10 h-10 mx-auto text-emerald-600" />
                     <h4 className="font-bold text-lg text-slate-900">Inquiry Sent Successfully!</h4>
-                    <p className="text-xs text-slate-700">Thank you for reaching out. Our team will contact you shortly.</p>
+                    <p className="text-xs text-slate-700">Thank you for reaching out. Our counseling team will contact you shortly.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleContactSubmit} className="space-y-4">
@@ -1059,13 +1098,24 @@ const LandingPage = () => {
                       />
                     </div>
 
-                    <button
-                      type="submit"
-                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center"
-                    >
-                      <Send className="w-4 h-4 mr-2 text-indigo-100" />
-                      Submit Inquiry
-                    </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                      <button
+                        type="submit"
+                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/20 transition-all flex items-center justify-center"
+                      >
+                        <Send className="w-4 h-4 mr-2 text-indigo-100" />
+                        Submit Inquiry
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleWhatsAppInquiry}
+                        className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center"
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2 text-emerald-100" />
+                        Join / Chat on WhatsApp
+                      </button>
+                    </div>
                   </form>
                 )}
 
