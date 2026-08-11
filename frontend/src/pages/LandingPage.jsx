@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { 
+import {
   Trophy,
-  GraduationCap, 
-  Award, 
-  BookOpen, 
-  Users, 
-  CheckCircle2, 
-  Star, 
-  TrendingUp, 
-  Sparkles, 
-  ShieldCheck, 
-  Calendar, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Clock, 
-  Target, 
-  Compass, 
-  ChevronRight, 
-  Menu, 
-  X, 
-  LogIn, 
+  GraduationCap,
+  Award,
+  BookOpen,
+  Users,
+  CheckCircle2,
+  Star,
+  TrendingUp,
+  Sparkles,
+  ShieldCheck,
+  Calendar,
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  Target,
+  Compass,
+  ChevronRight,
+  Menu,
+  X,
+  LogIn,
   MessageSquare,
   School,
   FileText,
@@ -38,10 +38,11 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [contactSubmitted, setContactSubmitted] = useState(false);
-  
+
   // Dynamic Admin Panel Data State
   const [classesList, setClassesList] = useState([]);
   const [teachersList, setTeachersList] = useState([]);
+  const [cmsSettings, setCmsSettings] = useState(null);
   const [loadingData, setLoadingData] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -55,15 +56,19 @@ const LandingPage = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const [classesRes, teachersRes] = await Promise.all([
+        const [classesRes, teachersRes, cmsRes] = await Promise.all([
           axios.get(`${API_URL}/classes`),
-          axios.get(`${API_URL}/teachers`)
+          axios.get(`${API_URL}/teachers`),
+          axios.get(`${API_URL}/landing-settings`)
         ]);
         if (Array.isArray(classesRes.data) && classesRes.data.length > 0) {
           setClassesList(classesRes.data);
         }
         if (Array.isArray(teachersRes.data) && teachersRes.data.length > 0) {
           setTeachersList(teachersRes.data);
+        }
+        if (cmsRes.data) {
+          setCmsSettings(cmsRes.data);
         }
       } catch (err) {
         console.log('Using default landing page data:', err?.message);
@@ -180,7 +185,7 @@ const LandingPage = () => {
       {/* Navigation Bar */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/90 border-b border-slate-200/80 shadow-xs transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          
+
           {/* Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-800 flex items-center justify-center shadow-md shadow-indigo-950/20 border border-indigo-700/30 group-hover:scale-105 transition-transform duration-300">
@@ -223,12 +228,12 @@ const LandingPage = () => {
 
           {/* Login Action Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
+            <Link
               to="/login"
               className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/25 border border-indigo-400/20 transition-all duration-200 transform hover:-translate-y-0.5"
             >
               <LogIn className="w-4 h-4 mr-2 text-indigo-100" />
-              Student & Teacher Portal
+              Student Portal
             </Link>
           </div>
 
@@ -246,50 +251,50 @@ const LandingPage = () => {
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-white/95 border-b border-slate-200 px-4 pt-3 pb-6 space-y-3 backdrop-blur-2xl">
-            <button 
-              onClick={() => scrollToSection('home')} 
+            <button
+              onClick={() => scrollToSection('home')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Home
             </button>
-            <button 
-              onClick={() => scrollToSection('about-sir')} 
+            <button
+              onClick={() => scrollToSection('about-sir')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               About Sir
             </button>
-            <button 
-              onClick={() => scrollToSection('vision-mission')} 
+            <button
+              onClick={() => scrollToSection('vision-mission')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Vision & Mission
             </button>
-            <button 
-              onClick={() => scrollToSection('results')} 
+            <button
+              onClick={() => scrollToSection('results')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Exam Results
             </button>
-            <button 
-              onClick={() => scrollToSection('classes')} 
+            <button
+              onClick={() => scrollToSection('classes')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Classes & Schedule
             </button>
-            <button 
-              onClick={() => scrollToSection('features')} 
+            <button
+              onClick={() => scrollToSection('features')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Key Features
             </button>
-            <button 
-              onClick={() => scrollToSection('contact')} 
+            <button
+              onClick={() => scrollToSection('contact')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Contact Us
             </button>
             <div className="pt-2">
-              <Link 
+              <Link
                 to="/login"
                 className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30"
               >
@@ -305,24 +310,25 @@ const LandingPage = () => {
       <section id="home" className="relative pt-12 pb-20 lg:pt-24 lg:pb-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            
+
             {/* Left Column: Text & CTA */}
             <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
-              
+
               <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs sm:text-sm font-bold shadow-xs">
                 <Sparkles className="w-4 h-4 text-amber-500 fill-amber-400" />
-                <span>🏆 Premier A/L Physics & Combined Maths Institute</span>
+                <span>{cmsSettings?.heroTagline || '🏆 Premier A/L Physics & Combined Maths Institute'}</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight sm:leading-tight">
-                Empowering Academic Excellence & <br className="hidden sm:inline" />
+                {cmsSettings?.heroTitleLine1 || 'Empowering Academic Excellence &'}{' '}
+                <br className="hidden sm:inline" />
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-900 via-indigo-600 to-blue-600">
-                  Future Leaders
+                  {cmsSettings?.heroTitleGradient || 'Future Leaders'}
                 </span>
               </h1>
 
               <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-                Master G.C.E. Advanced Level Physics & Combined Mathematics with deep conceptual clarity, structured tuition classes, real-time attendance, and island-top rankers' guidance.
+                {cmsSettings?.heroSubtitle || "Master G.C.E. Advanced Level Physics & Combined Mathematics with deep conceptual clarity, structured tuition classes, real-time attendance, and island-top rankers' guidance."}
               </p>
 
               {/* Action Buttons */}
@@ -347,19 +353,19 @@ const LandingPage = () => {
               {/* Stat Highlights Grid */}
               <div className="pt-8 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-6">
                 <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center lg:text-left">
-                  <div className="text-3xl font-black text-indigo-600">150+</div>
+                  <div className="text-3xl font-black text-indigo-600">{cmsSettings?.statsRanks || '150+'}</div>
                   <div className="text-xs text-slate-600 mt-1 font-semibold">Island Ranks</div>
                 </div>
                 <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center lg:text-left">
-                  <div className="text-3xl font-black text-blue-600">98%</div>
+                  <div className="text-3xl font-black text-blue-600">{cmsSettings?.statsPassRate || '98%'}</div>
                   <div className="text-xs text-slate-600 mt-1 font-semibold">A/B Grade Pass Rate</div>
                 </div>
                 <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center lg:text-left">
-                  <div className="text-3xl font-black text-slate-900">5,000+</div>
+                  <div className="text-3xl font-black text-slate-900">{cmsSettings?.statsStudents || '5,000+'}</div>
                   <div className="text-xs text-slate-600 mt-1 font-semibold">Active Students</div>
                 </div>
                 <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center lg:text-left">
-                  <div className="text-3xl font-black text-emerald-600">12+ Years</div>
+                  <div className="text-3xl font-black text-emerald-600">{cmsSettings?.statsExperience || '12+ Years'}</div>
                   <div className="text-xs text-slate-600 mt-1 font-semibold">Academic Mastery</div>
                 </div>
               </div>
@@ -369,17 +375,17 @@ const LandingPage = () => {
             {/* Right Column: Visual Graphic Banner */}
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-md lg:max-w-none">
-                
+
                 {/* Main Graphic Container with Glow */}
                 <div className="relative rounded-3xl overflow-hidden p-2.5 bg-gradient-to-tr from-indigo-950 via-indigo-600 to-blue-500 shadow-2xl shadow-indigo-950/20">
                   <div className="rounded-2xl overflow-hidden bg-slate-900 relative">
-                    <img 
-                      src="/images/sir_lecture.png" 
-                      alt="Eng. Kasun Perera conducting interactive lecture" 
+                    <img
+                      src="/images/sir_lecture.png"
+                      alt="Eng. Kasun Perera conducting interactive lecture"
                       className="w-full h-[420px] object-cover object-center transform hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
-                    
+
                     <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl backdrop-blur-md bg-white/90 border border-white/60 shadow-lg">
                       <div className="flex items-center justify-between">
                         <div>
@@ -427,7 +433,7 @@ const LandingPage = () => {
       {/* Section 2: Faculty Panel & Teachers' Profiles (Meet Our Sirs) */}
       <section id="about-sir" className="py-20 bg-slate-100/70 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <School className="w-4 h-4 mr-1 text-indigo-600" />
@@ -452,8 +458,8 @@ const LandingPage = () => {
                 <div key={teacher.teacherId || idx} className="rounded-3xl bg-white border border-slate-200/90 hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
                   <div>
                     <div className="relative h-72 overflow-hidden bg-slate-900">
-                      <img 
-                        src={teacherImg} 
+                      <img
+                        src={teacherImg}
                         alt={`${teacher.name} - ${teacher.subject}`}
                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
@@ -486,7 +492,7 @@ const LandingPage = () => {
                   </div>
 
                   <div className="p-6 pt-0">
-                    <button 
+                    <button
                       onClick={() => scrollToSection('classes')}
                       className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
                     >
@@ -505,7 +511,7 @@ const LandingPage = () => {
       {/* Section 3: Vision & Mission */}
       <section id="vision-mission" className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-100 border border-blue-200 text-blue-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <Compass className="w-4 h-4 mr-1 text-blue-600" />
@@ -520,11 +526,11 @@ const LandingPage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            
+
             {/* Vision Card */}
             <div className="relative group rounded-3xl p-8 bg-white border border-slate-200 hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/5 rounded-full blur-2xl group-hover:bg-indigo-600/10 transition-all" />
-              
+
               <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center mb-6">
                 <Target className="w-8 h-8 text-indigo-600" />
               </div>
@@ -534,7 +540,7 @@ const LandingPage = () => {
               </h3>
 
               <p className="text-slate-600 leading-relaxed text-base">
-                To become Sri Lanka's benchmark educational institute, empowering a generation of analytical thinkers, problem solvers, and visionary leaders who excel in G.C.E. Advanced Level examinations and lead future frontiers in engineering, medicine, and technology.
+                {cmsSettings?.visionText || "To become Sri Lanka's benchmark educational institute, empowering a generation of analytical thinkers, problem solvers, and visionary leaders who excel in G.C.E. Advanced Level examinations and lead future frontiers in engineering, medicine, and technology."}
               </p>
 
               <div className="mt-8 pt-6 border-t border-slate-200 flex items-center space-x-3 text-sm text-indigo-900 font-bold">
@@ -546,7 +552,7 @@ const LandingPage = () => {
             {/* Mission Card */}
             <div className="relative group rounded-3xl p-8 bg-white border border-slate-200 hover:border-blue-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-2xl group-hover:bg-blue-600/10 transition-all" />
-              
+
               <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center mb-6">
                 <Sparkles className="w-8 h-8 text-blue-600" />
               </div>
@@ -556,7 +562,7 @@ const LandingPage = () => {
               </h3>
 
               <p className="text-slate-600 leading-relaxed text-base">
-                To unlock every student's highest potential by combining modern digital technology, rigorous paper series, clear concept delivery, and individual mentorship that guarantee outstanding Z-Scores and Island Ranks.
+                {cmsSettings?.missionText || "To unlock every student's highest potential by combining modern digital technology, rigorous paper series, clear concept delivery, and individual mentorship that guarantee outstanding Z-Scores and Island Ranks."}
               </p>
 
               <div className="mt-8 pt-6 border-t border-slate-200 flex items-center space-x-3 text-sm text-blue-900 font-bold">
@@ -574,7 +580,7 @@ const LandingPage = () => {
       {/* Section 4: Exam Results & Top Achievers */}
       <section id="results" className="py-20 bg-slate-100/80 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold uppercase tracking-wider shadow-xs">
               <Award className="w-4 h-4 mr-1 text-amber-600" />
@@ -590,12 +596,12 @@ const LandingPage = () => {
 
           {/* Rank Showcase Cards Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
+
             {/* Achiever 1 */}
             <div className="rounded-2xl bg-white border border-slate-200 hover:border-amber-400 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-xl group">
               <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-900 h-56">
-                <img 
-                  src="/images/top_student_male.png" 
+                <img
+                  src="/images/top_student_male.png"
                   alt="Kaveen Perera - Island Rank 01"
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
@@ -614,8 +620,8 @@ const LandingPage = () => {
             {/* Achiever 2 */}
             <div className="rounded-2xl bg-white border border-slate-200 hover:border-indigo-300 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-xl group">
               <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-900 h-56">
-                <img 
-                  src="/images/top_student_female.png" 
+                <img
+                  src="/images/top_student_female.png"
                   alt="Shenali Fernando - Island Rank 04"
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
@@ -681,7 +687,7 @@ const LandingPage = () => {
               <h3 className="text-xl font-extrabold text-white">Be the Next A/L Success Story!</h3>
               <p className="text-sm text-indigo-100">Enroll today and gain instant access to Kingswood Connect student portal, tutes, and exam schedules.</p>
             </div>
-            <Link 
+            <Link
               to="/login"
               className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-black text-sm whitespace-nowrap shadow-lg shadow-indigo-500/30 transition-all flex items-center"
             >
@@ -696,7 +702,7 @@ const LandingPage = () => {
       {/* Section 5: Classes & Schedule (Synced with Admin Panel Data) */}
       <section id="classes" className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <BookOpen className="w-4 h-4 mr-1 text-indigo-600" />
@@ -716,13 +722,12 @@ const LandingPage = () => {
               const formattedFee = typeof cls.fee === 'number' ? `Rs. ${cls.fee.toLocaleString()}` : (cls.fee || 'Rs. 3,500');
 
               return (
-                <div 
-                  key={cls.classId || idx} 
-                  className={`rounded-3xl bg-white p-6 flex flex-col justify-between transition-all relative group ${
-                    isPopularClass 
-                      ? 'border-2 border-indigo-600 shadow-xl' 
+                <div
+                  key={cls.classId || idx}
+                  className={`rounded-3xl bg-white p-6 flex flex-col justify-between transition-all relative group ${isPopularClass
+                      ? 'border-2 border-indigo-600 shadow-xl'
                       : 'border border-slate-200/90 shadow-md hover:shadow-xl hover:border-indigo-300'
-                  }`}
+                    }`}
                 >
                   {isPopularClass && (
                     <div className="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md">
@@ -765,13 +770,12 @@ const LandingPage = () => {
                   </div>
 
                   <div className="mt-8 pt-4 border-t border-slate-200">
-                    <button 
+                    <button
                       onClick={() => scrollToSection('contact')}
-                      className={`w-full py-2.5 rounded-xl text-white font-bold text-xs transition-all flex items-center justify-center ${
-                        isPopularClass 
-                          ? 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30' 
+                      className={`w-full py-2.5 rounded-xl text-white font-bold text-xs transition-all flex items-center justify-center ${isPopularClass
+                          ? 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30'
                           : 'bg-slate-900 hover:bg-indigo-600'
-                      }`}
+                        }`}
                     >
                       Register Now <ChevronRight className="w-4 h-4 ml-1" />
                     </button>
@@ -788,7 +792,7 @@ const LandingPage = () => {
       {/* Section 6: Tuition Class Technology & Features */}
       <section id="features" className="py-20 bg-slate-100/80 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold uppercase tracking-wider shadow-xs">
               <Zap className="w-4 h-4 mr-1 text-emerald-600" />
@@ -803,7 +807,7 @@ const LandingPage = () => {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
+
             <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-emerald-400 transition-all space-y-3 shadow-md hover:shadow-xl">
               <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
                 <ShieldCheck className="w-6 h-6" />
@@ -853,7 +857,7 @@ const LandingPage = () => {
       {/* Section 7: Student & Parent Testimonials */}
       <section className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <MessageSquare className="w-4 h-4 mr-1 text-indigo-600" />
@@ -865,7 +869,7 @@ const LandingPage = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            
+
             <div className="p-6 rounded-2xl bg-white border border-slate-200/90 relative space-y-4 shadow-md hover:shadow-xl transition-all">
               <div className="flex text-amber-400">
                 {[...Array(5)].map((_, i) => (
@@ -929,9 +933,9 @@ const LandingPage = () => {
       {/* Section 8: Contact Us & Location */}
       <section id="contact" className="py-20 bg-slate-100/90 border-t border-slate-200 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="grid lg:grid-cols-12 gap-12">
-            
+
             {/* Contact Details */}
             <div className="lg:col-span-5 space-y-8">
               <div className="space-y-4">
@@ -952,7 +956,7 @@ const LandingPage = () => {
                   <MapPin className="w-6 h-6 text-indigo-600 shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-bold text-slate-900">Class Location & Auditorium</h4>
-                    <p className="text-xs text-slate-600 mt-0.5">Kingswood Education Complex, Peradeniya Road, Kandy, Sri Lanka</p>
+                    <p className="text-xs text-slate-600 mt-0.5">{cmsSettings?.address || 'Kingswood Education Complex, Peradeniya Road, Kandy, Sri Lanka'}</p>
                   </div>
                 </div>
 
@@ -960,7 +964,7 @@ const LandingPage = () => {
                   <Phone className="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-bold text-slate-900">Inquiry Hotlines</h4>
-                    <p className="text-xs text-slate-600 mt-0.5">+94 81 222 3456 / +94 77 123 4567</p>
+                    <p className="text-xs text-slate-600 mt-0.5">{cmsSettings?.phone || '+94 81 222 3456 / +94 77 123 4567'}</p>
                   </div>
                 </div>
 
@@ -968,7 +972,7 @@ const LandingPage = () => {
                   <Mail className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-bold text-slate-900">Official Email</h4>
-                    <p className="text-xs text-slate-600 mt-0.5">info@kingswoodconnect.lk</p>
+                    <p className="text-xs text-slate-600 mt-0.5">{cmsSettings?.email || 'info@kingswoodconnect.lk'}</p>
                   </div>
                 </div>
               </div>
@@ -977,7 +981,7 @@ const LandingPage = () => {
             {/* Direct Inquiry Form */}
             <div className="lg:col-span-7">
               <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl relative">
-                
+
                 <h3 className="text-xl font-bold text-slate-900 mb-2">Send an Instant Inquiry</h3>
                 <p className="text-xs text-slate-600 mb-6">Fill out your details below and our counseling team will get back to you within 24 hours.</p>
 
@@ -992,23 +996,23 @@ const LandingPage = () => {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           required
                           value={formData.name}
-                          onChange={(e) => setFormData({...formData, name: e.target.value})}
-                          placeholder="e.g. Kaveen Perera" 
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="e.g. Kaveen Perera"
                           className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
                         />
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Phone Number</label>
-                        <input 
-                          type="tel" 
+                        <input
+                          type="tel"
                           required
                           value={formData.phone}
-                          onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                          placeholder="0771234567" 
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          placeholder="0771234567"
                           className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
                         />
                       </div>
@@ -1017,9 +1021,9 @@ const LandingPage = () => {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">Select Tuition Class</label>
-                        <select 
+                        <select
                           value={formData.batch}
-                          onChange={(e) => setFormData({...formData, batch: e.target.value})}
+                          onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
                           className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
                         >
                           {activeClasses.map((cls, i) => (
@@ -1031,9 +1035,9 @@ const LandingPage = () => {
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">Subject Preference</label>
-                        <select 
+                        <select
                           value={formData.subject}
-                          onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                          onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                           className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
                         >
                           <option value="Combined Mathematics">Combined Mathematics</option>
@@ -1046,16 +1050,16 @@ const LandingPage = () => {
 
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">Your Message</label>
-                      <textarea 
-                        rows="3" 
+                      <textarea
+                        rows="3"
                         value={formData.message}
-                        onChange={(e) => setFormData({...formData, message: e.target.value})}
-                        placeholder="Write any specific questions or details you would like to know..." 
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        placeholder="Write any specific questions or details you would like to know..."
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
                       />
                     </div>
 
-                    <button 
+                    <button
                       type="submit"
                       className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center"
                     >
@@ -1078,7 +1082,7 @@ const LandingPage = () => {
       <footer className="bg-indigo-950 border-t border-indigo-900 py-12 text-xs text-slate-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            
+
             <div className="flex items-center space-x-3">
               <div className="h-9 w-9 bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-900/60 border border-indigo-400/20">
                 <span className="text-white font-black text-sm tracking-tighter">KC</span>

@@ -1526,6 +1526,52 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
   }
 });
 
+// 7. Landing Page CMS Settings Endpoints
+const defaultLandingSettings = {
+  heroTagline: '🏆 Premier A/L Physics & Combined Maths Institute',
+  heroTitleLine1: 'Empowering Academic Excellence &',
+  heroTitleGradient: 'Future Leaders',
+  heroSubtitle: 'Master G.C.E. Advanced Level Physics & Combined Mathematics with deep conceptual clarity, structured tuition classes, real-time attendance, and island-top rankers\' guidance.',
+  statsRanks: '150+',
+  statsPassRate: '98%',
+  statsStudents: '5,000+',
+  statsExperience: '12+ Years',
+  visionText: 'To become Sri Lanka\'s benchmark educational institute, empowering a generation of analytical thinkers, problem solvers, and visionary leaders who excel in G.C.E. Advanced Level examinations and lead future frontiers in engineering, medicine, and technology.',
+  missionText: 'To unlock every student\'s highest potential by combining modern digital technology, rigorous paper series, clear concept delivery, and individual mentorship that guarantee outstanding Z-Scores and Island Ranks.',
+  address: 'Kingswood Education Complex, Peradeniya Road, Kandy, Sri Lanka',
+  phone: '+94 81 222 3456 / +94 77 123 4567',
+  email: 'info@kingswoodconnect.lk'
+};
+
+app.get('/api/landing-settings', async (req, res) => {
+  try {
+    const docSnap = await db.collection('settings').doc('landingPage').get();
+    if (docSnap.exists) {
+      res.json({ ...defaultLandingSettings, ...docSnap.data() });
+    } else {
+      res.json(defaultLandingSettings);
+    }
+  } catch (error) {
+    console.error('Error fetching landing settings:', error);
+    res.json(defaultLandingSettings);
+  }
+});
+
+app.put('/api/landing-settings', async (req, res) => {
+  try {
+    const newSettings = req.body;
+    const updatedData = {
+      ...newSettings,
+      updatedAt: new Date().toISOString()
+    };
+    await db.collection('settings').doc('landingPage').set(updatedData, { merge: true });
+    res.json({ message: 'Landing page settings updated successfully', settings: updatedData });
+  } catch (error) {
+    console.error('Error updating landing settings:', error);
+    res.status(500).json({ error: 'Failed to update landing page settings' });
+  }
+});
+
 // Export the Express API for Vercel Serverless Function
 if (require.main === module) {
   const PORT = process.env.PORT || 5000;
