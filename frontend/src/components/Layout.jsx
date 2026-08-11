@@ -9,9 +9,13 @@ const Layout = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+    navigate('/');
   };
 
   const navigation = [
