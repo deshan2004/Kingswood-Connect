@@ -2,29 +2,6 @@
 
 @theme {
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-
-  --color-maroon-50: #fdf2f4;
-  --color-maroon-100: #fbe5e9;
-  --color-maroon-200: #f7ced5;
-  --color-maroon-300: #f0a7b5;
-  --color-maroon-400: #e37489;
-  --color-maroon-500: #d14661;
-  --color-maroon-600: #b92543;
-  --color-maroon-700: #800000;
-  --color-maroon-800: #701a24;
-  --color-maroon-900: #5c141d;
-  --color-maroon-950: #35080e;
-
-  --color-gold-50: #fffbeb;
-  --color-gold-100: #fef3c7;
-  --color-gold-200: #fde68a;
-  --color-gold-300: #fcd34d;
-  --color-gold-400: #fbbf24;
-  --color-gold-500: #f59e0b;
-  --color-gold-600: #d97706;
-  --color-gold-700: #b45309;
-  --color-gold-800: #92400e;
-  --color-gold-900: #78350f;
 }
 
 @layer base {
@@ -38,9 +15,9 @@
     -moz-osx-font-smoothing: grayscale;
     background-color: #f8fafc;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(128, 0, 0, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(217, 119, 6, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(128, 0, 0, 0.04) 0px, transparent 50%),
+      radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.06) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.06) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.05) 0px, transparent 50%),
       radial-gradient(at 0% 100%, rgba(15, 23, 42, 0.04) 0px, transparent 50%);
     background-attachment: fixed;
     color: #0f172a;
@@ -67,18 +44,18 @@
 
   /* Text Selection */
   ::selection {
-    background: #fbe5e9;
-    color: #701a24;
+    background: #e0e7ff;
+    color: #312e81;
   }
 }
 
 @layer components {
   .glass-card {
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: 0 10px 25px -5px rgba(128, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
   }
 }
 
