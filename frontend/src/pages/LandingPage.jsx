@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { 
   Trophy,
   GraduationCap, 
@@ -28,12 +29,21 @@ import {
   Video,
   Send,
   Zap,
-  Check
+  Check,
+  UserCheck
 } from 'lucide-react';
+
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [contactSubmitted, setContactSubmitted] = useState(false);
+  
+  // Dynamic Admin Panel Data State
+  const [classesList, setClassesList] = useState([]);
+  const [teachersList, setTeachersList] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
+
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -41,6 +51,28 @@ const LandingPage = () => {
     subject: 'Combined Mathematics',
     message: ''
   });
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const [classesRes, teachersRes] = await Promise.all([
+          axios.get(`${API_URL}/classes`),
+          axios.get(`${API_URL}/teachers`)
+        ]);
+        if (Array.isArray(classesRes.data) && classesRes.data.length > 0) {
+          setClassesList(classesRes.data);
+        }
+        if (Array.isArray(teachersRes.data) && teachersRes.data.length > 0) {
+          setTeachersList(teachersRes.data);
+        }
+      } catch (err) {
+        console.log('Using default landing page data:', err?.message);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+    fetchAdminData();
+  }, []);
 
   const handleContactSubmit = (e) => {
     e.preventDefault();
@@ -58,6 +90,84 @@ const LandingPage = () => {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  // Fallback / Initial Faculty if API data is empty
+  const defaultTeachers = [
+    {
+      teacherId: 'TCH-1001',
+      name: 'Eng. Kasun Perera',
+      subject: 'Combined Mathematics',
+      qualification: 'B.Sc. Engineering (Hons) - Peradeniya',
+      desc: 'Graduating with First Class Honors from Peradeniya Engineering, Eng. Kasun Perera is renowned for simplifying complex calculus, vectors, and mechanics.',
+      image: '/images/sir_portrait.png',
+      experience: '12+ Years',
+      ranks: '150+ Ranks',
+      badgeColor: 'bg-indigo-600'
+    },
+    {
+      teacherId: 'TCH-1002',
+      name: 'Dr. Nimal Wickramasinghe',
+      subject: 'Physics Specialist',
+      qualification: 'Ph.D., B.Sc. Physics Special (Hons) - Colombo',
+      desc: 'Senior Physics lecturer specializing in theoretical mechanics, waves, and electronics. Known for visual lab experiments and analytical paper techniques.',
+      image: '/images/sir_physics.png',
+      experience: '14+ Years',
+      ranks: '120+ Ranks',
+      badgeColor: 'bg-blue-600'
+    },
+    {
+      teacherId: 'TCH-1003',
+      name: 'Eng. Chamara Rathnayake',
+      subject: 'Chemistry Specialist',
+      qualification: 'B.Sc. Eng., M.Sc. Industrial Chemistry',
+      desc: 'Master educator in Organic, Inorganic & Physical Chemistry. Simplifies reaction pathways using logical flowcharts and high-yield memory techniques.',
+      image: '/images/sir_chemistry.png',
+      experience: '10+ Years',
+      ranks: '95+ Ranks',
+      badgeColor: 'bg-emerald-600'
+    }
+  ];
+
+  // Fallback / Initial Classes if API data is empty
+  const defaultClasses = [
+    {
+      classId: 'CLS-2026-M',
+      name: '2026 A/L Theory Class',
+      grade: '2026 A/L',
+      teacherName: 'Eng. Kasun Perera',
+      subject: 'Combined Mathematics',
+      schedule: 'Saturday 8:00 AM - 1:00 PM',
+      location: 'Kandy Auditorium & HD LMS Live',
+      fee: 3500,
+      description: 'Building fundamental concepts from scratch with weekly tute discussions, real-world examples, and problem solving.'
+    },
+    {
+      classId: 'CLS-2025-P',
+      name: '2025 A/L Revision & Theory',
+      grade: '2025 A/L',
+      teacherName: 'Dr. Nimal Wickramasinghe',
+      subject: 'Physics',
+      schedule: 'Sunday 8:00 AM - 1:30 PM',
+      location: 'Kandy Main Auditorium & Web Portal',
+      fee: 3500,
+      isPopular: true,
+      description: 'Rapid syllabus coverage, past paper breakdowns, and high-yield exam strategies designed for top scores.'
+    },
+    {
+      classId: 'CLS-PAPER-C',
+      name: 'Paper Class & Speed Revision',
+      grade: 'Exam Focused',
+      teacherName: 'Eng. Chamara Rathnayake',
+      subject: 'Paper Class',
+      schedule: 'Wednesday 2:30 PM - 6:00 PM',
+      location: 'Physical Exam Hall & Online Submissions',
+      fee: 2500,
+      description: 'Timed exam condition practice, instant mark distribution analysis, and detailed marking scheme breakdowns.'
+    }
+  ];
+
+  const activeClasses = classesList.length > 0 ? classesList : defaultClasses;
+  const activeTeachers = teachersList.length > 0 ? teachersList : defaultTeachers;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-600 selection:text-white relative overflow-hidden">
@@ -333,148 +443,59 @@ const LandingPage = () => {
 
           {/* Faculty Cards Grid */}
           <div className="grid md:grid-cols-3 gap-8">
-            
-            {/* Sir 1: Combined Maths */}
-            <div className="rounded-3xl bg-white border border-slate-200/90 hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
-              <div>
-                <div className="relative h-72 overflow-hidden bg-slate-900">
-                  <img 
-                    src="/images/sir_portrait.png" 
-                    alt="Eng. Kasun Perera - Combined Mathematics"
-                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 right-3 bg-indigo-600/95 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md border border-indigo-400/40">
-                    Combined Mathematics
-                  </div>
-                </div>
+            {activeTeachers.map((teacher, idx) => {
+              const badgeColors = ['bg-indigo-600', 'bg-blue-600', 'bg-emerald-600'];
+              const cardBadgeColor = teacher.badgeColor || badgeColors[idx % badgeColors.length];
+              const teacherImg = teacher.image || (idx % 2 === 0 ? '/images/sir_portrait.png' : '/images/sir_physics.png');
 
-                <div className="p-6 space-y-4">
+              return (
+                <div key={teacher.teacherId || idx} className="rounded-3xl bg-white border border-slate-200/90 hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Eng. Kasun Perera</h3>
-                    <p className="text-xs text-indigo-700 font-bold mt-1">B.Sc. Engineering (Hons) - Peradeniya</p>
+                    <div className="relative h-72 overflow-hidden bg-slate-900">
+                      <img 
+                        src={teacherImg} 
+                        alt={`${teacher.name} - ${teacher.subject}`}
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className={`absolute top-3 right-3 ${cardBadgeColor} backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md border border-white/20`}>
+                        {teacher.subject || 'Specialist'}
+                      </div>
+                    </div>
+
+                    <div className="p-6 space-y-4">
+                      <div>
+                        <h3 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{teacher.name}</h3>
+                        <p className="text-xs text-indigo-700 font-bold mt-1">{teacher.qualification || 'Senior Lecturer'}</p>
+                      </div>
+
+                      <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                        {teacher.desc || `Expert educator specializing in ${teacher.subject || 'Advanced Level Subjects'}. Simplifies complex topics with intuitive visual concepts.`}
+                      </p>
+
+                      <div className="pt-3 border-t border-slate-200/80 space-y-2 text-xs text-slate-600">
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-amber-500" /> Experience:</span>
+                          <strong className="text-slate-900 font-bold">{teacher.experience || '10+ Years'}</strong>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-indigo-600" /> Island Ranks:</span>
+                          <strong className="text-indigo-700 font-extrabold">{teacher.ranks || '100+ Ranks'}</strong>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                    Graduating with First Class Honors from Peradeniya Engineering, Eng. Kasun Perera is renowned for simplifying complex calculus, vectors, and mechanics into intuitive visual concepts.
-                  </p>
-
-                  <div className="pt-3 border-t border-slate-200/80 space-y-2 text-xs text-slate-600">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-amber-500" /> Teaching Experience:</span>
-                      <strong className="text-slate-900 font-bold">12+ Years</strong>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-indigo-600" /> Top Island Ranks:</span>
-                      <strong className="text-indigo-700 font-extrabold">150+ Ranks</strong>
-                    </div>
+                  <div className="p-6 pt-0">
+                    <button 
+                      onClick={() => scrollToSection('courses')}
+                      className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
+                    >
+                      View Classes <ChevronRight className="w-4 h-4 ml-1" />
+                    </button>
                   </div>
                 </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <button 
-                  onClick={() => scrollToSection('courses')}
-                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
-                >
-                  View Maths Classes <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
-              </div>
-            </div>
-
-            {/* Sir 2: Physics */}
-            <div className="rounded-3xl bg-white border border-slate-200/90 hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
-              <div>
-                <div className="relative h-72 overflow-hidden bg-slate-900">
-                  <img 
-                    src="/images/sir_physics.png" 
-                    alt="Dr. Nimal Wickramasinghe - Physics"
-                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 right-3 bg-blue-600/95 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md border border-blue-400/40">
-                    Physics Specialist
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Dr. Nimal Wickramasinghe</h3>
-                    <p className="text-xs text-blue-700 font-bold mt-1">Ph.D., B.Sc. Physics Special (Hons) - Colombo</p>
-                  </div>
-
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                    Senior Physics lecturer specializing in theoretical mechanics, waves, and electronics. Known for visual lab experiments and speed past-paper analytical techniques.
-                  </p>
-
-                  <div className="pt-3 border-t border-slate-200/80 space-y-2 text-xs text-slate-600">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-amber-500" /> Teaching Experience:</span>
-                      <strong className="text-slate-900 font-bold">14+ Years</strong>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-blue-600" /> Top Island Ranks:</span>
-                      <strong className="text-blue-700 font-extrabold">120+ Ranks</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <button 
-                  onClick={() => scrollToSection('courses')}
-                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
-                >
-                  View Physics Classes <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
-              </div>
-            </div>
-
-            {/* Sir 3: Chemistry */}
-            <div className="rounded-3xl bg-white border border-slate-200/90 hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
-              <div>
-                <div className="relative h-72 overflow-hidden bg-slate-900">
-                  <img 
-                    src="/images/sir_chemistry.png" 
-                    alt="Eng. Chamara Rathnayake - Chemistry"
-                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 right-3 bg-emerald-600/95 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md border border-emerald-400/40">
-                    Chemistry Specialist
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Eng. Chamara Rathnayake</h3>
-                    <p className="text-xs text-emerald-700 font-bold mt-1">B.Sc. Eng., M.Sc. Industrial Chemistry</p>
-                  </div>
-
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                    Master educator in Organic, Inorganic & Physical Chemistry. Simplifies reaction pathways using logical flowcharts and high-yield memory techniques.
-                  </p>
-
-                  <div className="pt-3 border-t border-slate-200/80 space-y-2 text-xs text-slate-600">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-amber-500" /> Teaching Experience:</span>
-                      <strong className="text-slate-900 font-bold">10+ Years</strong>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-emerald-600" /> Top Island Ranks:</span>
-                      <strong className="text-emerald-700 font-extrabold">95+ Ranks</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <button 
-                  onClick={() => scrollToSection('courses')}
-                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
-                >
-                  View Chemistry Classes <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
-              </div>
-            </div>
-
+              );
+            })}
           </div>
 
         </div>
@@ -672,136 +693,92 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 5: Courses & Class Schedule */}
+      {/* Section 5: Courses & Class Schedule (Synced with Admin Panel Data) */}
       <section id="courses" className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <BookOpen className="w-4 h-4 mr-1 text-indigo-600" />
-              ACADEMIC PROGRAMMING
+              ACADEMIC PROGRAMMING (LIVE FROM ADMIN PANEL)
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
               Courses & <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600">Class Schedule</span>
             </h2>
             <p className="text-slate-600 text-base sm:text-lg">
-              Flexible physical auditorium lectures in Kandy coupled with HD live stream options for remote learners.
+              Explore our active auditorium & online LMS classes managed directly by institute administration.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            
-            {/* Course 1 */}
-            <div className="rounded-3xl bg-white border border-slate-200/90 p-6 flex flex-col justify-between hover:border-indigo-300 transition-all shadow-md hover:shadow-xl group">
-              <div>
-                <div className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold mb-4 border border-indigo-100">
-                  2026 A/L Batch
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">2026 A/L Theory Class</h3>
-                <p className="text-xs text-slate-600 mb-6 leading-relaxed">
-                  Building fundamental concepts from scratch with weekly tute discussions, real-world examples, and problem solving.
-                </p>
-                <div className="space-y-3 text-xs text-slate-700 border-t border-slate-200 pt-4 font-medium">
-                  <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-indigo-600" />
-                    <span>Every Saturday</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-2 text-indigo-600" />
-                    <span>8:00 AM - 1:00 PM</span>
-                  </div>
-                  <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-2 text-indigo-600" />
-                    <span>Kandy Auditorium & HD LMS Live</span>
-                  </div>
-                </div>
-              </div>
+            {activeClasses.map((cls, idx) => {
+              const isPopularClass = cls.isPopular || idx === 1;
+              const formattedFee = typeof cls.fee === 'number' ? `Rs. ${cls.fee.toLocaleString()}` : (cls.fee || 'Rs. 3,500');
 
-              <div className="mt-8 pt-4 border-t border-slate-200">
-                <button 
-                  onClick={() => scrollToSection('contact')}
-                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition-colors flex items-center justify-center"
+              return (
+                <div 
+                  key={cls.classId || idx} 
+                  className={`rounded-3xl bg-white p-6 flex flex-col justify-between transition-all relative group ${
+                    isPopularClass 
+                      ? 'border-2 border-indigo-600 shadow-xl' 
+                      : 'border border-slate-200/90 shadow-md hover:shadow-xl hover:border-indigo-300'
+                  }`}
                 >
-                  Register Now <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
-              </div>
-            </div>
+                  {isPopularClass && (
+                    <div className="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md">
+                      POPULAR
+                    </div>
+                  )}
 
-            {/* Course 2 */}
-            <div className="rounded-3xl bg-white border-2 border-indigo-600 p-6 flex flex-col justify-between transition-all shadow-xl relative group">
-              <div className="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md">
-                POPULAR
-              </div>
-              <div>
-                <div className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-extrabold mb-4 border border-blue-100">
-                  2025 A/L Batch
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">2025 A/L Revision & Theory</h3>
-                <p className="text-xs text-slate-600 mb-6 leading-relaxed">
-                  Rapid syllabus coverage, past paper breakdowns, and high-yield exam strategies designed for top scores.
-                </p>
-                <div className="space-y-3 text-xs text-slate-700 border-t border-slate-200 pt-4 font-medium">
-                  <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-blue-600" />
-                    <span>Every Sunday</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-2 text-blue-600" />
-                    <span>8:00 AM - 1:30 PM</span>
-                  </div>
-                  <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-2 text-blue-600" />
-                    <span>Kandy Main Auditorium & Web Portal</span>
-                  </div>
-                </div>
-              </div>
+                  <div>
+                    <div className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold mb-4 border border-indigo-100">
+                      {cls.grade || 'A/L Batch'}
+                    </div>
 
-              <div className="mt-8 pt-4 border-t border-slate-200">
-                <button 
-                  onClick={() => scrollToSection('contact')}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-md shadow-indigo-600/30"
-                >
-                  Register Now <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
-              </div>
-            </div>
+                    <h3 className="text-xl font-bold text-slate-900 mb-1">{cls.name}</h3>
 
-            {/* Course 3 */}
-            <div className="rounded-3xl bg-white border border-slate-200/90 p-6 flex flex-col justify-between hover:border-indigo-300 transition-all shadow-md hover:shadow-xl group">
-              <div>
-                <div className="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold mb-4 border border-slate-200">
-                  Exam Focused
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Paper Class & Speed Revision</h3>
-                <p className="text-xs text-slate-600 mb-6 leading-relaxed">
-                  Timed exam condition practice, instant mark distribution analysis, and detailed marking scheme breakdowns.
-                </p>
-                <div className="space-y-3 text-xs text-slate-700 border-t border-slate-200 pt-4 font-medium">
-                  <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-slate-700" />
-                    <span>Every Wednesday</span>
+                    {cls.teacherName && (
+                      <p className="text-xs text-indigo-600 font-bold mb-3 flex items-center">
+                        <UserCheck className="w-3.5 h-3.5 mr-1" />
+                        Lecturer: {cls.teacherName}
+                      </p>
+                    )}
+
+                    <p className="text-xs text-slate-600 mb-6 leading-relaxed">
+                      {cls.description || `Comprehensive syllabus coverage, tute discussions, and exam paper evaluation conducted by ${cls.teacherName || 'expert sirs'}.`}
+                    </p>
+
+                    <div className="space-y-3 text-xs text-slate-700 border-t border-slate-200 pt-4 font-medium">
+                      <div className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-2 text-indigo-600 shrink-0" />
+                        <span>Schedule: <strong className="text-slate-900">{cls.schedule || 'Weekly Class'}</strong></span>
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-2 text-indigo-600 shrink-0" />
+                        <span>Venue: <strong className="text-slate-900">{cls.location || 'Kandy Auditorium & HD LMS'}</strong></span>
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="w-4 h-4 mr-2 text-indigo-600 shrink-0" />
+                        <span>Class Fee: <strong className="text-indigo-700 font-extrabold">{formattedFee}</strong></span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-2 text-slate-700" />
-                    <span>2:30 PM - 6:00 PM</span>
-                  </div>
-                  <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-2 text-slate-700" />
-                    <span>Physical Exam Hall & Online Submissions</span>
+
+                  <div className="mt-8 pt-4 border-t border-slate-200">
+                    <button 
+                      onClick={() => scrollToSection('contact')}
+                      className={`w-full py-2.5 rounded-xl text-white font-bold text-xs transition-all flex items-center justify-center ${
+                        isPopularClass 
+                          ? 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30' 
+                          : 'bg-slate-900 hover:bg-indigo-600'
+                      }`}
+                    >
+                      Register Now <ChevronRight className="w-4 h-4 ml-1" />
+                    </button>
                   </div>
                 </div>
-              </div>
-
-              <div className="mt-8 pt-4 border-t border-slate-200">
-                <button 
-                  onClick={() => scrollToSection('contact')}
-                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition-colors flex items-center justify-center"
-                >
-                  Register Now <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
-              </div>
-            </div>
-
+              );
+            })}
           </div>
 
         </div>
@@ -1039,15 +1016,17 @@ const LandingPage = () => {
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">A/L Batch</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Select Class / Batch</label>
                         <select 
                           value={formData.batch}
                           onChange={(e) => setFormData({...formData, batch: e.target.value})}
                           className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
                         >
-                          <option value="2026 A/L">2026 A/L Theory</option>
-                          <option value="2025 A/L">2025 A/L Revision</option>
-                          <option value="Paper Class">Paper Class</option>
+                          {activeClasses.map((cls, i) => (
+                            <option key={cls.classId || i} value={cls.name}>
+                              {cls.name} ({cls.teacherName || cls.grade})
+                            </option>
+                          ))}
                         </select>
                       </div>
                       <div>
@@ -1059,6 +1038,7 @@ const LandingPage = () => {
                         >
                           <option value="Combined Mathematics">Combined Mathematics</option>
                           <option value="Physics">Physics</option>
+                          <option value="Chemistry">Chemistry</option>
                           <option value="Both Subjects">Both Subjects</option>
                         </select>
                       </div>
@@ -1094,7 +1074,7 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Footer - Aligned with Admin/Student Indigo-950 Sidebar Style */}
+      {/* Footer */}
       <footer className="bg-indigo-950 border-t border-indigo-900 py-12 text-xs text-slate-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
