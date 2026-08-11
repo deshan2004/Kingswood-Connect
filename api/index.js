@@ -1528,16 +1528,205 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
 
 // 7. Landing Page CMS Settings Endpoints
 const defaultLandingSettings = {
+  // Hero Section
   heroTagline: '🏆 Premier A/L Physics & Combined Maths Institute',
   heroTitleLine1: 'Empowering Academic Excellence &',
   heroTitleGradient: 'Future Leaders',
   heroSubtitle: 'Master G.C.E. Advanced Level Physics & Combined Mathematics with deep conceptual clarity, structured tuition classes, real-time attendance, and island-top rankers\' guidance.',
+  heroBtn1Text: 'Meet Our Faculty (Sirs)',
+  heroBtn2Text: 'View Exam Results',
+  heroBadge1Title: '#1 Rated Institute',
+  heroBadge1Sub: 'Auditorium & Live Stream',
+  heroBadge2Title: 'Smart QR Attendance',
+  heroBadge2Sub: 'Instant Parent SMS Alerts',
+
+  // Stat Counters
   statsRanks: '150+',
+  statsRanksLabel: 'Island Ranks',
   statsPassRate: '98%',
+  statsPassRateLabel: 'A/B Grade Pass Rate',
   statsStudents: '5,000+',
+  statsStudentsLabel: 'Active Students',
   statsExperience: '12+ Years',
+  statsExperienceLabel: 'Academic Mastery',
+
+  // Faculty (Sirs) Section
+  facultyBadge: 'MEET OUR PANEL OF EXPERT SIRS',
+  facultyTitle: 'Distinguished Faculty & Subject Specialists',
+  facultySub: 'Our institute brings together Sri Lanka\'s top-tier lecturers, engineers, and scientists dedicated to producing island ranks in A/L Science & Mathematics streams.',
+  teachers: [
+    {
+      teacherId: 'TCH-1001',
+      name: 'Eng. Kasun Perera',
+      subject: 'Combined Mathematics',
+      qualification: 'B.Sc. Engineering (Hons) - Peradeniya',
+      desc: 'Graduating with First Class Honors from Peradeniya Engineering, Eng. Kasun Perera is renowned for simplifying complex calculus, vectors, and mechanics into intuitive visual concepts.',
+      image: '/images/sir_portrait.png',
+      experience: '12+ Years',
+      ranks: '150+ Ranks',
+      badgeColor: 'bg-indigo-600'
+    },
+    {
+      teacherId: 'TCH-1002',
+      name: 'Dr. Nimal Wickramasinghe',
+      subject: 'Physics Specialist',
+      qualification: 'Ph.D., B.Sc. Physics Special (Hons) - Colombo',
+      desc: 'Senior Physics lecturer specializing in theoretical mechanics, waves, and electronics. Known for visual lab experiments and analytical paper techniques.',
+      image: '/images/sir_physics.png',
+      experience: '14+ Years',
+      ranks: '120+ Ranks',
+      badgeColor: 'bg-blue-600'
+    },
+    {
+      teacherId: 'TCH-1003',
+      name: 'Eng. Chamara Rathnayake',
+      subject: 'Chemistry Specialist',
+      qualification: 'B.Sc. Eng., M.Sc. Industrial Chemistry',
+      desc: 'Master educator in Organic, Inorganic & Physical Chemistry. Simplifies reaction pathways using logical flowcharts and high-yield memory techniques.',
+      image: '/images/sir_chemistry.png',
+      experience: '10+ Years',
+      ranks: '95+ Ranks',
+      badgeColor: 'bg-emerald-600'
+    }
+  ],
+
+  // Classes & Schedule Section
+  classesBadge: 'TUITION CLASSES & SCHEDULE',
+  classesTitle: 'Our Classes & Schedule',
+  classesSub: 'Explore our active auditorium & online live tuition classes managed directly by institute administration.',
+  classes: [
+    {
+      classId: 'CLS-2026-M',
+      name: '2026 A/L Theory Class',
+      grade: '2026 A/L',
+      teacherName: 'Eng. Kasun Perera',
+      subject: 'Combined Mathematics',
+      schedule: 'Saturday 8:00 AM - 1:00 PM',
+      location: 'Kandy Main Auditorium & Online Live Stream',
+      fee: 3500,
+      description: 'Building fundamental concepts from scratch with weekly tute discussions, real-world examples, and problem solving.'
+    },
+    {
+      classId: 'CLS-2025-P',
+      name: '2025 A/L Revision & Theory',
+      grade: '2025 A/L',
+      teacherName: 'Dr. Nimal Wickramasinghe',
+      subject: 'Physics',
+      schedule: 'Sunday 8:00 AM - 1:30 PM',
+      location: 'Kandy Main Auditorium & Web Stream',
+      fee: 3500,
+      isPopular: true,
+      description: 'Rapid syllabus coverage, past paper breakdowns, and high-yield exam strategies designed for top scores.'
+    },
+    {
+      classId: 'CLS-PAPER-C',
+      name: 'Paper Class & Speed Revision',
+      grade: 'Exam Focused',
+      teacherName: 'Eng. Chamara Rathnayake',
+      subject: 'Paper Class',
+      schedule: 'Wednesday 2:30 PM - 6:00 PM',
+      location: 'Physical Exam Hall & Online Submissions',
+      fee: 2500,
+      description: 'Timed exam condition practice, instant mark distribution analysis, and detailed marking scheme breakdowns.'
+    }
+  ],
+
+  // Exam Results & Achievers
+  resultsBadge: 'PROVEN EXCELLENCE',
+  resultsTitle: 'Celebrating Our Top Island Rankers',
+  resultsSub: 'True success is measured by consistent results. Highlighting our outstanding performers in recent G.C.E. A/L examinations.',
+  resultsCtaTitle: 'Be the Next A/L Success Story!',
+  resultsCtaSub: 'Enroll today and gain instant access to Kingswood Connect student portal, tutes, and exam schedules.',
+  achievers: [
+    {
+      name: 'Kaveen Perera',
+      rankBadge: '🏆 Island Rank 01',
+      stream: 'Combined Mathematics (Physical Science)',
+      zScore: '2.8942',
+      district: 'Kandy District',
+      image: '/images/top_student_male.png'
+    },
+    {
+      name: 'Shenali Fernando',
+      rankBadge: '🌟 Island Rank 04',
+      stream: 'Physics & Chemistry',
+      zScore: '2.8105',
+      district: 'Colombo District',
+      image: '/images/top_student_female.png'
+    },
+    {
+      name: 'Nipuna Jayasinghe',
+      rankBadge: '🥇 District Rank 01',
+      stream: 'Combined Mathematics',
+      zScore: '2.7840',
+      district: 'Kurunegala',
+      image: ''
+    },
+    {
+      name: 'Dilini Ranasinghe',
+      rankBadge: '🎖️ Island Rank 12',
+      stream: 'Physics & Combined Maths',
+      zScore: '2.7650',
+      district: 'Kandy',
+      image: ''
+    }
+  ],
+
+  // Vision & Mission
+  visionBadge: 'OUR CORE PURPOSE',
+  visionTitle: 'Vision & Mission',
+  visionSub: 'Every initiative at Kingswood Connect is guided by an unyielding commitment to student transformation and academic integrity.',
   visionText: 'To become Sri Lanka\'s benchmark educational institute, empowering a generation of analytical thinkers, problem solvers, and visionary leaders who excel in G.C.E. Advanced Level examinations and lead future frontiers in engineering, medicine, and technology.',
   missionText: 'To unlock every student\'s highest potential by combining modern digital technology, rigorous paper series, clear concept delivery, and individual mentorship that guarantee outstanding Z-Scores and Island Ranks.',
+
+  // Technology Features
+  featuresBadge: 'INSTITUTE & DIGITAL FEATURES',
+  featuresTitle: 'Modern Tuition & Technology Features',
+  featuresSub: 'Engineered specifically to maximize student productivity and keep parents informed in real-time.',
+  features: [
+    {
+      title: 'Smart QR Attendance',
+      desc: 'Instant QR code scanning upon class entry automatically logs attendance and dispatches instant SMS alerts to parents.'
+    },
+    {
+      title: 'Exam Analytics & Ranks',
+      desc: 'Instant score dashboards, district-level rank indices, and progress trend graphs available right after evaluation.'
+    },
+    {
+      title: 'HD Lecture Recordings',
+      desc: 'On-demand access to high-definition recordings of missed or previous lectures anytime on student portal.'
+    },
+    {
+      title: 'Digital Materials & Tutes',
+      desc: 'Downloadable PDF tutes, lesson summaries, past paper marking schemes, and speed revision guides.'
+    }
+  ],
+
+  // Testimonials
+  testimonialsBadge: 'STUDENT & PARENT REVIEWS',
+  testimonialsTitle: 'Trusted by Thousands',
+  testimonials: [
+    {
+      name: 'Kaveen Perera',
+      role: 'Engineering Faculty - Moratuwa (2024 A/L)',
+      text: '"Combined Maths felt overwhelming until I joined Kasun Sir\'s class. His visual problem-solving techniques gave me immense clarity, leading directly to my Island Rank 01 achievement."'
+    },
+    {
+      name: 'Shenali Fernando',
+      role: 'Medical Student - Colombo (2024 A/L)',
+      text: '"The Kingswood Connect Student Portal made studying so effortless. Being able to rewatch HD recordings and check paper results instantly boosted my overall Z-Score tremendously."'
+    },
+    {
+      name: 'N. Jayasinghe',
+      role: 'Parent of Nipuna (District Rank 01)',
+      text: '"As a parent, receiving real-time QR attendance SMS alerts gave us peace of mind. Sir\'s personal dedication and continuous mentorship are truly commendable."'
+    }
+  ],
+
+  // Contact Info & WhatsApp
+  contactBadge: 'GET IN TOUCH',
+  contactTitle: 'Contact Us & Class Enrollment',
+  contactSub: 'Have questions regarding upcoming tuition batches or online class registration? Send us an inquiry or reach out to our hotlines directly.',
   address: 'Kingswood Education Complex, Peradeniya Road, Kandy, Sri Lanka',
   phone: '+94 81 222 3456 / +94 77 123 4567',
   whatsapp: '+94 77 123 4567',
