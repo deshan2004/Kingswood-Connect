@@ -98,7 +98,7 @@ const LandingPage = () => {
       name: 'Eng. Kasun Perera',
       subject: 'Combined Mathematics',
       qualification: 'B.Sc. Engineering (Hons) - Peradeniya',
-      desc: 'Graduating with First Class Honors from Peradeniya Engineering, Eng. Kasun Perera is renowned for simplifying complex calculus, vectors, and mechanics.',
+      desc: 'Graduating with First Class Honors from Peradeniya Engineering, Eng. Kasun Perera is renowned for simplifying complex calculus, vectors, and mechanics into intuitive visual concepts.',
       image: '/images/sir_portrait.png',
       experience: '12+ Years',
       ranks: '150+ Ranks',
@@ -137,7 +137,7 @@ const LandingPage = () => {
       teacherName: 'Eng. Kasun Perera',
       subject: 'Combined Mathematics',
       schedule: 'Saturday 8:00 AM - 1:00 PM',
-      location: 'Kandy Auditorium & HD LMS Live',
+      location: 'Kandy Main Auditorium & Online Live Stream',
       fee: 3500,
       description: 'Building fundamental concepts from scratch with weekly tute discussions, real-world examples, and problem solving.'
     },
@@ -148,7 +148,7 @@ const LandingPage = () => {
       teacherName: 'Dr. Nimal Wickramasinghe',
       subject: 'Physics',
       schedule: 'Sunday 8:00 AM - 1:30 PM',
-      location: 'Kandy Main Auditorium & Web Portal',
+      location: 'Kandy Main Auditorium & Web Stream',
       fee: 3500,
       isPopular: true,
       description: 'Rapid syllabus coverage, past paper breakdowns, and high-yield exam strategies designed for top scores.'
@@ -210,11 +210,11 @@ const LandingPage = () => {
             <button onClick={() => scrollToSection('results')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
               Exam Results
             </button>
-            <button onClick={() => scrollToSection('courses')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
-              Courses
+            <button onClick={() => scrollToSection('classes')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
+              Classes
             </button>
             <button onClick={() => scrollToSection('features')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
-              LMS Features
+              Key Features
             </button>
             <button onClick={() => scrollToSection('contact')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
               Contact Us
@@ -228,7 +228,7 @@ const LandingPage = () => {
               className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/25 border border-indigo-400/20 transition-all duration-200 transform hover:-translate-y-0.5"
             >
               <LogIn className="w-4 h-4 mr-2 text-indigo-100" />
-              LMS Portal Access
+              Student & Teacher Portal
             </Link>
           </div>
 
@@ -271,16 +271,16 @@ const LandingPage = () => {
               Exam Results
             </button>
             <button 
-              onClick={() => scrollToSection('courses')} 
+              onClick={() => scrollToSection('classes')} 
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
-              Courses & Schedule
+              Classes & Schedule
             </button>
             <button 
               onClick={() => scrollToSection('features')} 
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
-              LMS Features
+              Key Features
             </button>
             <button 
               onClick={() => scrollToSection('contact')} 
@@ -294,7 +294,7 @@ const LandingPage = () => {
                 className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30"
               >
                 <LogIn className="w-5 h-5 mr-2 text-indigo-100" />
-                LMS Portal Log In
+                Portal Log In
               </Link>
             </div>
           </div>
@@ -322,7 +322,7 @@ const LandingPage = () => {
               </h1>
 
               <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-                Master G.C.E. Advanced Level Physics & Combined Mathematics with deep conceptual clarity, structured learning, real-time analytics, and island-top rankers' guidance.
+                Master G.C.E. Advanced Level Physics & Combined Mathematics with deep conceptual clarity, structured tuition classes, real-time attendance, and island-top rankers' guidance.
               </p>
 
               {/* Action Buttons */}
@@ -401,7 +401,7 @@ const LandingPage = () => {
                   </div>
                   <div>
                     <div className="text-sm font-extrabold text-slate-900">#1 Rated Institute</div>
-                    <div className="text-xs text-slate-600 font-medium">Auditorium & Online LMS</div>
+                    <div className="text-xs text-slate-600 font-medium">Auditorium & Live Stream</div>
                   </div>
                 </div>
 
@@ -411,8 +411,8 @@ const LandingPage = () => {
                     <ShieldCheck className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-extrabold text-slate-900">Real-Time Attendance</div>
-                    <div className="text-xs text-slate-600 font-medium">Instant Parent SMS</div>
+                    <div className="text-sm font-extrabold text-slate-900">Smart QR Attendance</div>
+                    <div className="text-xs text-slate-600 font-medium">Instant Parent SMS Alerts</div>
                   </div>
                 </div>
 
@@ -487,7 +487,7 @@ const LandingPage = () => {
 
                   <div className="p-6 pt-0">
                     <button 
-                      onClick={() => scrollToSection('courses')}
+                      onClick={() => scrollToSection('classes')}
                       className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
                     >
                       View Classes <ChevronRight className="w-4 h-4 ml-1" />
@@ -679,7 +679,7 @@ const LandingPage = () => {
           <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-indigo-950 via-indigo-900 to-slate-900 border border-indigo-800/50 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
             <div className="space-y-2 text-center md:text-left">
               <h3 className="text-xl font-extrabold text-white">Be the Next A/L Success Story!</h3>
-              <p className="text-sm text-indigo-100">Enroll today and gain instant access to Kingswood Connect LMS video portal, tutes, and exam schedules.</p>
+              <p className="text-sm text-indigo-100">Enroll today and gain instant access to Kingswood Connect student portal, tutes, and exam schedules.</p>
             </div>
             <Link 
               to="/login"
@@ -693,20 +693,20 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 5: Courses & Class Schedule (Synced with Admin Panel Data) */}
-      <section id="courses" className="py-20 relative">
+      {/* Section 5: Classes & Schedule (Synced with Admin Panel Data) */}
+      <section id="classes" className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <BookOpen className="w-4 h-4 mr-1 text-indigo-600" />
-              ACADEMIC PROGRAMMING (LIVE FROM ADMIN PANEL)
+              TUITION CLASSES & SCHEDULE
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
-              Courses & <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600">Class Schedule</span>
+              Our Classes & <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600">Schedule</span>
             </h2>
             <p className="text-slate-600 text-base sm:text-lg">
-              Explore our active auditorium & online LMS classes managed directly by institute administration.
+              Explore our active auditorium & online live tuition classes managed directly by institute administration.
             </p>
           </div>
 
@@ -755,7 +755,7 @@ const LandingPage = () => {
                       </div>
                       <div className="flex items-center">
                         <MapPin className="w-4 h-4 mr-2 text-indigo-600 shrink-0" />
-                        <span>Venue: <strong className="text-slate-900">{cls.location || 'Kandy Auditorium & HD LMS'}</strong></span>
+                        <span>Venue: <strong className="text-slate-900">{cls.location || 'Kandy Auditorium & Live Stream'}</strong></span>
                       </div>
                       <div className="flex items-center">
                         <Clock className="w-4 h-4 mr-2 text-indigo-600 shrink-0" />
@@ -785,17 +785,17 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 6: Kingswood LMS Ecosystem Features */}
+      {/* Section 6: Tuition Class Technology & Features */}
       <section id="features" className="py-20 bg-slate-100/80 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold uppercase tracking-wider shadow-xs">
               <Zap className="w-4 h-4 mr-1 text-emerald-600" />
-              DIGITAL LEARNING ECOSYSTEM
+              INSTITUTE & DIGITAL FEATURES
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
-              Cutting-Edge <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-indigo-600">Technology Features</span>
+              Modern Tuition & <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-indigo-600">Technology Features</span>
             </h2>
             <p className="text-slate-600 text-base sm:text-lg">
               Engineered specifically to maximize student productivity and keep parents informed in real-time.
@@ -828,9 +828,9 @@ const LandingPage = () => {
               <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
                 <Video className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">HD Class Recordings</h3>
+              <h3 className="text-lg font-bold text-slate-900">HD Lecture Recordings</h3>
               <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                On-demand access to high-definition recordings of missed or previous lectures anytime on student dashboards.
+                On-demand access to high-definition recordings of missed or previous lectures anytime on student portal.
               </p>
             </div>
 
@@ -838,7 +838,7 @@ const LandingPage = () => {
               <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
                 <FileText className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Digital Materials & Notes</h3>
+              <h3 className="text-lg font-bold text-slate-900">Digital Materials & Tutes</h3>
               <p className="text-xs text-slate-600 leading-relaxed font-normal">
                 Downloadable PDF tutes, lesson summaries, past paper marking schemes, and speed revision guides.
               </p>
@@ -891,7 +891,7 @@ const LandingPage = () => {
                 ))}
               </div>
               <p className="text-slate-700 text-xs sm:text-sm leading-relaxed italic">
-                "The Kingswood Connect LMS made studying so effortless. Being able to rewatch HD recordings and check paper results instantly boosted my overall Z-Score tremendously."
+                "The Kingswood Connect Student Portal made studying so effortless. Being able to rewatch HD recordings and check paper results instantly boosted my overall Z-Score tremendously."
               </p>
               <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
                 <div>
@@ -940,10 +940,10 @@ const LandingPage = () => {
                   GET IN TOUCH
                 </div>
                 <h2 className="text-3xl font-black text-slate-900">
-                  Contact Us & <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600">Enrollment</span>
+                  Contact Us & <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600">Class Enrollment</span>
                 </h2>
                 <p className="text-slate-600 text-sm leading-relaxed">
-                  Have questions regarding upcoming batches or online LMS registration? Send us an inquiry or reach out to our hotlines directly.
+                  Have questions regarding upcoming tuition batches or online class registration? Send us an inquiry or reach out to our hotlines directly.
                 </p>
               </div>
 
@@ -1016,7 +1016,7 @@ const LandingPage = () => {
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Select Class / Batch</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Select Tuition Class</label>
                         <select 
                           value={formData.batch}
                           onChange={(e) => setFormData({...formData, batch: e.target.value})}
@@ -1091,8 +1091,8 @@ const LandingPage = () => {
               <button onClick={() => scrollToSection('about-sir')} className="hover:text-white transition-colors">About Sir</button>
               <button onClick={() => scrollToSection('vision-mission')} className="hover:text-white transition-colors">Vision & Mission</button>
               <button onClick={() => scrollToSection('results')} className="hover:text-white transition-colors">Results</button>
-              <button onClick={() => scrollToSection('courses')} className="hover:text-white transition-colors">Courses</button>
-              <Link to="/login" className="text-blue-400 font-bold hover:underline">LMS Portal Log In</Link>
+              <button onClick={() => scrollToSection('classes')} className="hover:text-white transition-colors">Classes</button>
+              <Link to="/login" className="text-blue-400 font-bold hover:underline">Portal Log In</Link>
             </div>
 
             <p className="text-indigo-300/80">© {new Date().getFullYear()} Kingswood Connect. All Rights Reserved.</p>
