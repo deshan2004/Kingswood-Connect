@@ -949,42 +949,26 @@ const LandingPage = () => {
               </div>
 
               <div className="space-y-4 text-sm text-slate-700">
-                <div className="flex items-start space-x-4 p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                  <MapPin className="w-6 h-6 text-indigo-600 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-slate-900">Class Location & Auditorium</h4>
-                    <p className="text-xs text-slate-600 mt-0.5">{cmsSettings?.address || 'Kingswood Education Complex, Peradeniya Road, Kandy, Sri Lanka'}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4 p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                  <Phone className="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-slate-900">Inquiry Hotlines</h4>
-                    <p className="text-xs text-slate-600 mt-0.5">{cmsSettings?.phone || '+94 81 222 3456 / +94 77 123 4567'}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4 p-4 rounded-xl bg-white border border-emerald-200/90 shadow-sm hover:border-emerald-400 transition-all">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0 mt-0.5">
-                    <MessageSquare className="w-5 h-5 text-emerald-600" />
+                <div className="flex items-start space-x-4 p-5 rounded-2xl bg-white border border-emerald-300 shadow-md hover:border-emerald-500 transition-all">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                    <MessageSquare className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-bold text-slate-900">WhatsApp Official Support</h4>
-                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      <h4 className="font-extrabold text-base text-slate-900">WhatsApp Official Support</h4>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
                         INSTANT CHAT
                       </span>
                     </div>
-                    <p className="text-xs font-bold text-emerald-700 mt-0.5">
+                    <p className="text-sm font-black text-emerald-700 mt-1">
                       {cmsSettings?.whatsapp || '+94 77 123 4567'}
                     </p>
                     <button
                       onClick={handleWhatsAppInquiry}
                       type="button"
-                      className="inline-flex items-center text-xs font-bold text-emerald-600 hover:text-emerald-700 mt-2 hover:underline focus:outline-none"
+                      className="inline-flex items-center px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold mt-3 shadow-sm transition-colors"
                     >
-                      Click to Join / Chat on WhatsApp <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
+                      Click to Join / Chat on WhatsApp <ChevronRight className="w-4 h-4 ml-1" />
                     </button>
                   </div>
                 </div>
