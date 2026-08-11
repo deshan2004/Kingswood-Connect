@@ -1539,6 +1539,7 @@ const defaultLandingSettings = {
   heroBadge1Sub: 'Auditorium & Live Stream',
   heroBadge2Title: 'Smart QR Attendance',
   heroBadge2Sub: 'Instant Parent SMS Alerts',
+  heroImage: '/images/sir_lecture.png',
 
   // Stat Counters
   statsRanks: '150+',

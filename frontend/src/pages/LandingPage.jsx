@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { 
+import {
   Trophy,
-  GraduationCap, 
-  Award, 
-  BookOpen, 
-  Users, 
-  CheckCircle2, 
-  Star, 
-  TrendingUp, 
-  Sparkles, 
-  ShieldCheck, 
-  Calendar, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Clock, 
-  Target, 
-  Compass, 
-  ChevronRight, 
-  Menu, 
-  X, 
-  LogIn, 
+  GraduationCap,
+  Award,
+  BookOpen,
+  Users,
+  CheckCircle2,
+  Star,
+  TrendingUp,
+  Sparkles,
+  ShieldCheck,
+  Calendar,
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  Target,
+  Compass,
+  ChevronRight,
+  Menu,
+  X,
+  LogIn,
   MessageSquare,
   School,
   FileText,
@@ -38,7 +38,7 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [contactSubmitted, setContactSubmitted] = useState(false);
-  
+
   // Dynamic Admin Panel Data State
   const [classesList, setClassesList] = useState([]);
   const [teachersList, setTeachersList] = useState([]);
@@ -106,7 +106,7 @@ const LandingPage = () => {
     const msg = formData.message || '';
 
     const text = `Hello Kingswood Connect! 👋\n\nI would like to inquire / join tuition classes:\n• *Name:* ${name}\n• *Phone:* ${phone}\n• *Class/Batch:* ${batch}\n• *Subject:* ${subject}${msg ? `\n• *Message:* ${msg}` : ''}`;
-    
+
     const waUrl = `https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}`;
     window.open(waUrl, '_blank');
   };
@@ -265,8 +265,8 @@ const LandingPage = () => {
     }
   ];
 
-  const activeClasses = (cmsSettings?.classes && cmsSettings.classes.length > 0) 
-    ? cmsSettings.classes 
+  const activeClasses = (cmsSettings?.classes && cmsSettings.classes.length > 0)
+    ? cmsSettings.classes
     : (classesList.length > 0 ? classesList : defaultClasses);
 
   const activeTeachers = (cmsSettings?.teachers && cmsSettings.teachers.length > 0)
@@ -296,7 +296,7 @@ const LandingPage = () => {
       {/* Navigation Bar */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/90 border-b border-slate-200/80 shadow-xs transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          
+
           {/* Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-800 flex items-center justify-center shadow-md shadow-indigo-950/20 border border-indigo-700/30 group-hover:scale-105 transition-transform duration-300">
@@ -339,12 +339,12 @@ const LandingPage = () => {
 
           {/* Login Action Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
+            <Link
               to="/login"
               className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/25 border border-indigo-400/20 transition-all duration-200 transform hover:-translate-y-0.5"
             >
               <LogIn className="w-4 h-4 mr-2 text-indigo-100" />
-              Student & Teacher Portal
+              Student Portal
             </Link>
           </div>
 
@@ -362,50 +362,50 @@ const LandingPage = () => {
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-white/95 border-b border-slate-200 px-4 pt-3 pb-6 space-y-3 backdrop-blur-2xl">
-            <button 
-              onClick={() => scrollToSection('home')} 
+            <button
+              onClick={() => scrollToSection('home')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Home
             </button>
-            <button 
-              onClick={() => scrollToSection('about-sir')} 
+            <button
+              onClick={() => scrollToSection('about-sir')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               About Sir
             </button>
-            <button 
-              onClick={() => scrollToSection('vision-mission')} 
+            <button
+              onClick={() => scrollToSection('vision-mission')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Vision & Mission
             </button>
-            <button 
-              onClick={() => scrollToSection('results')} 
+            <button
+              onClick={() => scrollToSection('results')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Exam Results
             </button>
-            <button 
-              onClick={() => scrollToSection('classes')} 
+            <button
+              onClick={() => scrollToSection('classes')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Classes & Schedule
             </button>
-            <button 
-              onClick={() => scrollToSection('features')} 
+            <button
+              onClick={() => scrollToSection('features')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Key Features
             </button>
-            <button 
-              onClick={() => scrollToSection('contact')} 
+            <button
+              onClick={() => scrollToSection('contact')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Contact Us
             </button>
             <div className="pt-2">
-              <Link 
+              <Link
                 to="/login"
                 className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30"
               >
@@ -421,10 +421,10 @@ const LandingPage = () => {
       <section id="home" className="relative pt-12 pb-20 lg:pt-24 lg:pb-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            
+
             {/* Left Column: Text & CTA */}
             <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
-              
+
               <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs sm:text-sm font-bold shadow-xs">
                 <Sparkles className="w-4 h-4 text-amber-500 fill-amber-400" />
                 <span>{cmsSettings?.heroTagline || '🏆 Premier A/L Physics & Combined Maths Institute'}</span>
@@ -486,17 +486,17 @@ const LandingPage = () => {
             {/* Right Column: Visual Graphic Banner */}
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-md lg:max-w-none">
-                
+
                 {/* Main Graphic Container with Glow */}
                 <div className="relative rounded-3xl overflow-hidden p-2.5 bg-gradient-to-tr from-indigo-950 via-indigo-600 to-blue-500 shadow-2xl shadow-indigo-950/20">
                   <div className="rounded-2xl overflow-hidden bg-slate-900 relative">
-                    <img 
-                      src="/images/sir_lecture.png" 
-                      alt="Eng. Kasun Perera conducting interactive lecture" 
+                    <img
+                      src={cmsSettings?.heroImage || '/images/sir_lecture.png'}
+                      alt="Kingswood Connect Learning Environment"
                       className="w-full h-[420px] object-cover object-center transform hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
-                    
+
                     <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl backdrop-blur-md bg-white/90 border border-white/60 shadow-lg">
                       <div className="flex items-center justify-between">
                         <div>
@@ -544,7 +544,7 @@ const LandingPage = () => {
       {/* Section 2: Faculty Panel & Teachers' Profiles (Meet Our Sirs) */}
       <section id="about-sir" className="py-20 bg-slate-100/70 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <School className="w-4 h-4 mr-1 text-indigo-600" />
@@ -569,8 +569,8 @@ const LandingPage = () => {
                 <div key={teacher.teacherId || idx} className="rounded-3xl bg-white border border-slate-200/90 hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
                   <div>
                     <div className="relative h-72 overflow-hidden bg-slate-900">
-                      <img 
-                        src={teacherImg} 
+                      <img
+                        src={teacherImg}
                         alt={`${teacher.name} - ${teacher.subject}`}
                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
@@ -603,7 +603,7 @@ const LandingPage = () => {
                   </div>
 
                   <div className="p-6 pt-0">
-                    <button 
+                    <button
                       onClick={() => scrollToSection('classes')}
                       className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
                     >
@@ -622,7 +622,7 @@ const LandingPage = () => {
       {/* Section 3: Vision & Mission */}
       <section id="vision-mission" className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-100 border border-blue-200 text-blue-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <Compass className="w-4 h-4 mr-1 text-blue-600" />
@@ -637,11 +637,11 @@ const LandingPage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            
+
             {/* Vision Card */}
             <div className="relative group rounded-3xl p-8 bg-white border border-slate-200 hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/5 rounded-full blur-2xl group-hover:bg-indigo-600/10 transition-all" />
-              
+
               <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center mb-6">
                 <Target className="w-8 h-8 text-indigo-600" />
               </div>
@@ -663,7 +663,7 @@ const LandingPage = () => {
             {/* Mission Card */}
             <div className="relative group rounded-3xl p-8 bg-white border border-slate-200 hover:border-blue-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-2xl group-hover:bg-blue-600/10 transition-all" />
-              
+
               <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center mb-6">
                 <Sparkles className="w-8 h-8 text-blue-600" />
               </div>
@@ -691,7 +691,7 @@ const LandingPage = () => {
       {/* Section 4: Exam Results & Top Achievers */}
       <section id="results" className="py-20 bg-slate-100/80 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold uppercase tracking-wider shadow-xs">
               <Award className="w-4 h-4 mr-1 text-amber-600" />
@@ -711,8 +711,8 @@ const LandingPage = () => {
               <div key={idx} className="rounded-2xl bg-white border border-slate-200 hover:border-amber-400 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-xl group">
                 <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-900 h-56 flex items-center justify-center">
                   {ach.image ? (
-                    <img 
-                      src={ach.image} 
+                    <img
+                      src={ach.image}
                       alt={ach.name}
                       className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />
@@ -744,7 +744,7 @@ const LandingPage = () => {
               <h3 className="text-xl font-extrabold text-white">{cmsSettings?.resultsCtaTitle || 'Be the Next A/L Success Story!'}</h3>
               <p className="text-sm text-indigo-100">{cmsSettings?.resultsCtaSub || 'Enroll today and gain instant access to Kingswood Connect student portal, tutes, and exam schedules.'}</p>
             </div>
-            <Link 
+            <Link
               to="/login"
               className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-black text-sm whitespace-nowrap shadow-lg shadow-indigo-500/30 transition-all flex items-center"
             >
@@ -759,7 +759,7 @@ const LandingPage = () => {
       {/* Section 5: Classes & Schedule */}
       <section id="classes" className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <BookOpen className="w-4 h-4 mr-1 text-indigo-600" />
@@ -779,13 +779,12 @@ const LandingPage = () => {
               const formattedFee = typeof cls.fee === 'number' ? `Rs. ${cls.fee.toLocaleString()}` : (cls.fee || 'Rs. 3,500');
 
               return (
-                <div 
-                  key={cls.classId || idx} 
-                  className={`rounded-3xl bg-white p-6 flex flex-col justify-between transition-all relative group ${
-                    isPopularClass 
-                      ? 'border-2 border-indigo-600 shadow-xl' 
+                <div
+                  key={cls.classId || idx}
+                  className={`rounded-3xl bg-white p-6 flex flex-col justify-between transition-all relative group ${isPopularClass
+                      ? 'border-2 border-indigo-600 shadow-xl'
                       : 'border border-slate-200/90 shadow-md hover:shadow-xl hover:border-indigo-300'
-                  }`}
+                    }`}
                 >
                   {isPopularClass && (
                     <div className="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md">
@@ -828,13 +827,12 @@ const LandingPage = () => {
                   </div>
 
                   <div className="mt-8 pt-4 border-t border-slate-200">
-                    <button 
+                    <button
                       onClick={() => scrollToSection('contact')}
-                      className={`w-full py-2.5 rounded-xl text-white font-bold text-xs transition-all flex items-center justify-center ${
-                        isPopularClass 
-                          ? 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30' 
+                      className={`w-full py-2.5 rounded-xl text-white font-bold text-xs transition-all flex items-center justify-center ${isPopularClass
+                          ? 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30'
                           : 'bg-slate-900 hover:bg-indigo-600'
-                      }`}
+                        }`}
                     >
                       Register Now <ChevronRight className="w-4 h-4 ml-1" />
                     </button>
@@ -851,7 +849,7 @@ const LandingPage = () => {
       {/* Section 6: Tuition Class Technology & Features */}
       <section id="features" className="py-20 bg-slate-100/80 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold uppercase tracking-wider shadow-xs">
               <Zap className="w-4 h-4 mr-1 text-emerald-600" />
@@ -890,7 +888,7 @@ const LandingPage = () => {
       {/* Section 7: Student & Parent Testimonials */}
       <section className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <MessageSquare className="w-4 h-4 mr-1 text-indigo-600" />
@@ -929,9 +927,9 @@ const LandingPage = () => {
       {/* Section 8: Contact Us & Location */}
       <section id="contact" className="py-20 bg-slate-100/90 border-t border-slate-200 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="grid lg:grid-cols-12 gap-12">
-            
+
             {/* Contact Details */}
             <div className="lg:col-span-5 space-y-8">
               <div className="space-y-4">
@@ -1105,7 +1103,7 @@ const LandingPage = () => {
       <footer className="bg-indigo-950 border-t border-indigo-900 py-12 text-xs text-slate-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            
+
             <div className="flex items-center space-x-3">
               <div className="h-9 w-9 bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-900/60 border border-indigo-400/20">
                 <span className="text-white font-black text-sm tracking-tighter">KC</span>
