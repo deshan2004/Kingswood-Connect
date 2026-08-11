@@ -60,27 +60,27 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-maroon-800 selection:text-white relative overflow-hidden">
 
       {/* Decorative Background Glow Filters */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-3xl pointer-events-none -z-0" />
-      <div className="absolute top-[400px] right-10 w-[500px] h-[500px] bg-blue-600/15 rounded-full blur-3xl pointer-events-none -z-0" />
-      <div className="absolute top-[1800px] left-10 w-[600px] h-[600px] bg-violet-600/15 rounded-full blur-3xl pointer-events-none -z-0" />
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-maroon-700/5 rounded-full blur-3xl pointer-events-none -z-0" />
+      <div className="absolute top-[400px] right-10 w-[500px] h-[500px] bg-gold-500/10 rounded-full blur-3xl pointer-events-none -z-0" />
+      <div className="absolute top-[1800px] left-10 w-[600px] h-[600px] bg-maroon-600/5 rounded-full blur-3xl pointer-events-none -z-0" />
 
       {/* Navigation Bar */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-slate-900/80 border-b border-slate-800/80 transition-all duration-300">
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/90 border-b border-slate-200/80 shadow-xs transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           
           {/* Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-300">
-              <GraduationCap className="w-7 h-7 text-white" />
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-maroon-800 to-maroon-600 flex items-center justify-center shadow-md shadow-maroon-800/20 group-hover:scale-105 transition-transform duration-300">
+              <GraduationCap className="w-7 h-7 text-gold-400" />
             </div>
             <div>
-              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-indigo-200 tracking-tight">
+              <span className="text-xl font-extrabold text-maroon-950 tracking-tight block">
                 Kingswood Connect
               </span>
-              <span className="block text-[11px] font-medium text-indigo-400 tracking-wider uppercase">
+              <span className="block text-[11px] font-bold text-maroon-800 tracking-wider uppercase">
                 Premier Educational Institute
               </span>
             </div>
@@ -88,25 +88,25 @@ const LandingPage = () => {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center space-x-8">
-            <button onClick={() => scrollToSection('home')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
+            <button onClick={() => scrollToSection('home')} className="text-sm font-semibold text-slate-700 hover:text-maroon-800 transition-colors">
               Home
             </button>
-            <button onClick={() => scrollToSection('about-sir')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
+            <button onClick={() => scrollToSection('about-sir')} className="text-sm font-semibold text-slate-700 hover:text-maroon-800 transition-colors">
               Faculty (Our Sirs)
             </button>
-            <button onClick={() => scrollToSection('vision-mission')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
+            <button onClick={() => scrollToSection('vision-mission')} className="text-sm font-semibold text-slate-700 hover:text-maroon-800 transition-colors">
               Vision & Mission
             </button>
-            <button onClick={() => scrollToSection('results')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
+            <button onClick={() => scrollToSection('results')} className="text-sm font-semibold text-slate-700 hover:text-maroon-800 transition-colors">
               Exam Results
             </button>
-            <button onClick={() => scrollToSection('courses')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
+            <button onClick={() => scrollToSection('courses')} className="text-sm font-semibold text-slate-700 hover:text-maroon-800 transition-colors">
               Courses
             </button>
-            <button onClick={() => scrollToSection('features')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
+            <button onClick={() => scrollToSection('features')} className="text-sm font-semibold text-slate-700 hover:text-maroon-800 transition-colors">
               LMS Features
             </button>
-            <button onClick={() => scrollToSection('contact')} className="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">
+            <button onClick={() => scrollToSection('contact')} className="text-sm font-semibold text-slate-700 hover:text-maroon-800 transition-colors">
               Contact Us
             </button>
           </nav>
@@ -115,9 +115,9 @@ const LandingPage = () => {
           <div className="hidden md:flex items-center space-x-4">
             <Link 
               to="/login"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-200 transform hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-maroon-800 via-maroon-700 to-maroon-900 hover:from-maroon-700 hover:to-maroon-800 shadow-md shadow-maroon-800/25 border border-maroon-600/30 transition-all duration-200 transform hover:-translate-y-0.5"
             >
-              <LogIn className="w-4 h-4 mr-2" />
+              <LogIn className="w-4 h-4 mr-2 text-gold-400" />
               LMS Portal Access
             </Link>
           </div>
@@ -126,7 +126,7 @@ const LandingPage = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none"
+              className="p-2 rounded-xl text-slate-700 hover:text-maroon-800 hover:bg-slate-100 focus:outline-none"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -135,55 +135,55 @@ const LandingPage = () => {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-slate-900/95 border-b border-slate-800 px-4 pt-3 pb-6 space-y-3 backdrop-blur-2xl">
+          <div className="md:hidden bg-white/95 border-b border-slate-200 px-4 pt-3 pb-6 space-y-3 backdrop-blur-2xl">
             <button 
               onClick={() => scrollToSection('home')} 
-              className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
+              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-maroon-50 hover:text-maroon-800 rounded-lg"
             >
               Home
             </button>
             <button 
               onClick={() => scrollToSection('about-sir')} 
-              className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
+              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-maroon-50 hover:text-maroon-800 rounded-lg"
             >
               About Sir
             </button>
             <button 
               onClick={() => scrollToSection('vision-mission')} 
-              className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
+              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-maroon-50 hover:text-maroon-800 rounded-lg"
             >
               Vision & Mission
             </button>
             <button 
               onClick={() => scrollToSection('results')} 
-              className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
+              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-maroon-50 hover:text-maroon-800 rounded-lg"
             >
               Exam Results
             </button>
             <button 
               onClick={() => scrollToSection('courses')} 
-              className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
+              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-maroon-50 hover:text-maroon-800 rounded-lg"
             >
               Courses & Schedule
             </button>
             <button 
               onClick={() => scrollToSection('features')} 
-              className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
+              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-maroon-50 hover:text-maroon-800 rounded-lg"
             >
               LMS Features
             </button>
             <button 
               onClick={() => scrollToSection('contact')} 
-              className="block w-full text-left py-2 px-3 text-base font-medium text-slate-300 hover:bg-slate-800/80 hover:text-indigo-400 rounded-lg"
+              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-maroon-50 hover:text-maroon-800 rounded-lg"
             >
               Contact Us
             </button>
             <div className="pt-2">
               <Link 
                 to="/login"
-                className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/30"
+                className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-base font-bold text-white bg-maroon-800 hover:bg-maroon-700 shadow-md shadow-maroon-800/30"
               >
-                <LogIn className="w-5 h-5 mr-2" />
+                <LogIn className="w-5 h-5 mr-2 text-gold-400" />
                 LMS Portal Log In
               </Link>
             </div>
@@ -199,19 +199,19 @@ const LandingPage = () => {
             {/* Left Column: Text & CTA */}
             <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
               
-              <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs sm:text-sm font-medium animate-pulse">
-                <Sparkles className="w-4 h-4 text-amber-400" />
+              <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-maroon-50 border border-maroon-200 text-maroon-800 text-xs sm:text-sm font-bold shadow-xs">
+                <Sparkles className="w-4 h-4 text-gold-600 fill-gold-500" />
                 <span>🏆 Premier A/L Physics & Combined Maths Institute</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight sm:leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight sm:leading-tight">
                 Empowering Academic Excellence & <br className="hidden sm:inline" />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-sky-300 to-emerald-400">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-maroon-800 via-maroon-700 to-gold-600">
                   Future Leaders
                 </span>
               </h1>
 
-              <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+              <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
                 Master G.C.E. Advanced Level Physics & Combined Mathematics with deep conceptual clarity, structured learning, real-time analytics, and island-top rankers' guidance.
               </p>
 
@@ -219,38 +219,38 @@ const LandingPage = () => {
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
                 <button
                   onClick={() => scrollToSection('about-sir')}
-                  className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 transition-all transform hover:-translate-y-0.5 flex items-center justify-center"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-maroon-800 to-maroon-700 hover:from-maroon-700 hover:to-maroon-800 shadow-xl shadow-maroon-800/30 hover:shadow-maroon-800/40 transition-all transform hover:-translate-y-0.5 flex items-center justify-center"
                 >
-                  <Users className="w-5 h-5 mr-2" />
+                  <Users className="w-5 h-5 mr-2 text-gold-300" />
                   Meet Our Faculty (Sirs)
                 </button>
 
                 <button
                   onClick={() => scrollToSection('results')}
-                  className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold text-slate-200 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 transition-all flex items-center justify-center"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold text-slate-800 bg-white hover:bg-slate-100 border border-slate-300 shadow-sm transition-all flex items-center justify-center"
                 >
-                  <Award className="w-5 h-5 mr-2 text-amber-400" />
+                  <Award className="w-5 h-5 mr-2 text-gold-600" />
                   View Exam Results
                 </button>
               </div>
 
               {/* Stat Highlights Grid */}
-              <div className="pt-8 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-6">
-                <div>
-                  <div className="text-3xl font-extrabold text-white">150+</div>
-                  <div className="text-xs text-slate-400 mt-1 font-medium">Island Ranks</div>
+              <div className="pt-8 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-6">
+                <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center lg:text-left">
+                  <div className="text-3xl font-black text-maroon-800">150+</div>
+                  <div className="text-xs text-slate-600 mt-1 font-semibold">Island Ranks</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-sky-400">98%</div>
-                  <div className="text-xs text-slate-400 mt-1 font-medium">A/B Grade Pass Rate</div>
+                <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center lg:text-left">
+                  <div className="text-3xl font-black text-gold-600">98%</div>
+                  <div className="text-xs text-slate-600 mt-1 font-semibold">A/B Grade Pass Rate</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-extrabold text-white">5,000+</div>
-                  <div className="text-xs text-slate-400 mt-1 font-medium">Active Students</div>
+                <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center lg:text-left">
+                  <div className="text-3xl font-black text-slate-900">5,000+</div>
+                  <div className="text-xs text-slate-600 mt-1 font-semibold">Active Students</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-extrabold text-emerald-400">12+ Years</div>
-                  <div className="text-xs text-slate-400 mt-1 font-medium">Academic Mastery</div>
+                <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm text-center lg:text-left">
+                  <div className="text-3xl font-black text-emerald-700">12+ Years</div>
+                  <div className="text-xs text-slate-600 mt-1 font-semibold">Academic Mastery</div>
                 </div>
               </div>
 
@@ -261,23 +261,23 @@ const LandingPage = () => {
               <div className="relative mx-auto max-w-md lg:max-w-none">
                 
                 {/* Main Graphic Container with Glow */}
-                <div className="relative rounded-3xl overflow-hidden p-2 bg-gradient-to-tr from-indigo-500 via-sky-500 to-violet-500 shadow-2xl shadow-indigo-500/20">
-                  <div className="rounded-2xl overflow-hidden bg-slate-950 relative">
+                <div className="relative rounded-3xl overflow-hidden p-2.5 bg-gradient-to-tr from-maroon-700 via-maroon-800 to-gold-500 shadow-2xl shadow-maroon-900/20">
+                  <div className="rounded-2xl overflow-hidden bg-slate-900 relative">
                     <img 
                       src="/images/sir_lecture.png" 
                       alt="Eng. Kasun Perera conducting interactive lecture" 
                       className="w-full h-[420px] object-cover object-center transform hover:scale-105 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
                     
-                    <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl backdrop-blur-md bg-slate-900/80 border border-slate-700/60 shadow-lg">
+                    <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl backdrop-blur-md bg-white/90 border border-white/60 shadow-lg">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Advanced Learning Environment</p>
-                          <p className="text-sm font-bold text-white mt-0.5">Conceptual Understanding & Digital Pedagogy</p>
+                          <p className="text-xs text-maroon-800 font-bold uppercase tracking-wider">Advanced Learning Environment</p>
+                          <p className="text-sm font-extrabold text-slate-900 mt-0.5">Conceptual Understanding & Digital Pedagogy</p>
                         </div>
-                        <div className="w-10 h-10 rounded-lg bg-indigo-600/40 border border-indigo-400/30 flex items-center justify-center">
-                          <Zap className="w-5 h-5 text-amber-300" />
+                        <div className="w-10 h-10 rounded-lg bg-maroon-800/10 border border-maroon-700/30 flex items-center justify-center shrink-0">
+                          <Zap className="w-5 h-5 text-gold-600" />
                         </div>
                       </div>
                     </div>
@@ -285,24 +285,24 @@ const LandingPage = () => {
                 </div>
 
                 {/* Floating Badge 1 */}
-                <div className="hidden sm:flex absolute -top-6 -left-6 bg-slate-800/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-xl items-center space-x-3">
-                  <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-                    <Award className="w-6 h-6 text-amber-400" />
+                <div className="hidden sm:flex absolute -top-6 -left-6 bg-white/95 backdrop-blur-xl border border-slate-200 p-4 rounded-2xl shadow-xl items-center space-x-3">
+                  <div className="w-12 h-12 rounded-xl bg-gold-100 border border-gold-300 flex items-center justify-center">
+                    <Award className="w-6 h-6 text-gold-700" />
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-white">#1 Rated Institute</div>
-                    <div className="text-xs text-slate-400">Auditorium & Online LMS</div>
+                    <div className="text-sm font-extrabold text-slate-900">#1 Rated Institute</div>
+                    <div className="text-xs text-slate-600 font-medium">Auditorium & Online LMS</div>
                   </div>
                 </div>
 
                 {/* Floating Badge 2 */}
-                <div className="hidden sm:flex absolute -bottom-6 -right-6 bg-slate-800/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-xl items-center space-x-3">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-                    <ShieldCheck className="w-6 h-6 text-emerald-400" />
+                <div className="hidden sm:flex absolute -bottom-6 -right-6 bg-white/95 backdrop-blur-xl border border-slate-200 p-4 rounded-2xl shadow-xl items-center space-x-3">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center">
+                    <ShieldCheck className="w-6 h-6 text-emerald-700" />
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-white">Real-Time Attendance</div>
-                    <div className="text-xs text-slate-400">Instant Parent SMS</div>
+                    <div className="text-sm font-extrabold text-slate-900">Real-Time Attendance</div>
+                    <div className="text-xs text-slate-600 font-medium">Instant Parent SMS</div>
                   </div>
                 </div>
 
@@ -315,18 +315,18 @@ const LandingPage = () => {
 
 
       {/* Section 2: Faculty Panel & Teachers' Profiles (Meet Our Sirs) */}
-      <section id="about-sir" className="py-20 bg-slate-950/60 border-y border-slate-800/80 relative">
+      <section id="about-sir" className="py-20 bg-slate-100/70 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
-              <School className="w-4 h-4 mr-1" />
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-maroon-100 border border-maroon-200 text-maroon-800 text-xs font-bold uppercase tracking-wider shadow-xs">
+              <School className="w-4 h-4 mr-1 text-maroon-700" />
               MEET OUR PANEL OF EXPERT SIRS
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Distinguished Faculty <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-sky-400">& Subject Specialists</span>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
+              Distinguished Faculty <span className="bg-clip-text text-transparent bg-gradient-to-r from-maroon-800 to-gold-600">& Subject Specialists</span>
             </h2>
-            <p className="text-slate-400 text-base sm:text-lg">
+            <p className="text-slate-600 text-base sm:text-lg">
               Our institute brings together Sri Lanka's top-tier lecturers, engineers, and scientists dedicated to producing island ranks in A/L Science & Mathematics streams.
             </p>
           </div>
@@ -335,37 +335,37 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             
             {/* Sir 1: Combined Maths */}
-            <div className="rounded-3xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 transition-all duration-300 shadow-xl overflow-hidden group flex flex-col justify-between">
+            <div className="rounded-3xl bg-white border border-slate-200/90 hover:border-maroon-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
               <div>
-                <div className="relative h-72 overflow-hidden bg-slate-950">
+                <div className="relative h-72 overflow-hidden bg-slate-900">
                   <img 
                     src="/images/sir_portrait.png" 
                     alt="Eng. Kasun Perera - Combined Mathematics"
                     className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 right-3 bg-indigo-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-indigo-400/30">
+                  <div className="absolute top-3 right-3 bg-maroon-800/95 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md border border-maroon-600/40">
                     Combined Mathematics
                   </div>
                 </div>
 
                 <div className="p-6 space-y-4">
                   <div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors">Eng. Kasun Perera</h3>
-                    <p className="text-xs text-indigo-400 font-semibold mt-1">B.Sc. Engineering (Hons) - Peradeniya</p>
+                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-maroon-800 transition-colors">Eng. Kasun Perera</h3>
+                    <p className="text-xs text-maroon-700 font-bold mt-1">B.Sc. Engineering (Hons) - Peradeniya</p>
                   </div>
 
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
                     Graduating with First Class Honors from Peradeniya Engineering, Eng. Kasun Perera is renowned for simplifying complex calculus, vectors, and mechanics into intuitive visual concepts.
                   </p>
 
-                  <div className="pt-3 border-t border-slate-800/80 space-y-2 text-xs text-slate-400">
+                  <div className="pt-3 border-t border-slate-200/80 space-y-2 text-xs text-slate-600">
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-amber-400" /> Teaching Experience:</span>
-                      <strong className="text-white">12+ Years</strong>
+                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-gold-600" /> Teaching Experience:</span>
+                      <strong className="text-slate-900 font-bold">12+ Years</strong>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-emerald-400" /> Top Island Ranks:</span>
-                      <strong className="text-emerald-400">150+ Ranks</strong>
+                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-maroon-700" /> Top Island Ranks:</span>
+                      <strong className="text-maroon-800 font-extrabold">150+ Ranks</strong>
                     </div>
                   </div>
                 </div>
@@ -374,7 +374,7 @@ const LandingPage = () => {
               <div className="p-6 pt-0">
                 <button 
                   onClick={() => scrollToSection('courses')}
-                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-indigo-600 text-white font-semibold text-xs transition-colors flex items-center justify-center"
+                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-maroon-800 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
                 >
                   View Maths Classes <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
@@ -382,37 +382,37 @@ const LandingPage = () => {
             </div>
 
             {/* Sir 2: Physics */}
-            <div className="rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 transition-all duration-300 shadow-xl overflow-hidden group flex flex-col justify-between">
+            <div className="rounded-3xl bg-white border border-slate-200/90 hover:border-maroon-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
               <div>
-                <div className="relative h-72 overflow-hidden bg-slate-950">
+                <div className="relative h-72 overflow-hidden bg-slate-900">
                   <img 
                     src="/images/sir_physics.png" 
                     alt="Dr. Nimal Wickramasinghe - Physics"
                     className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 right-3 bg-sky-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-sky-400/30">
+                  <div className="absolute top-3 right-3 bg-slate-900/95 backdrop-blur-md text-gold-400 text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md border border-slate-700">
                     Physics Specialist
                   </div>
                 </div>
 
                 <div className="p-6 space-y-4">
                   <div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-sky-300 transition-colors">Dr. Nimal Wickramasinghe</h3>
-                    <p className="text-xs text-sky-400 font-semibold mt-1">Ph.D., B.Sc. Physics Special (Hons) - Colombo</p>
+                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-maroon-800 transition-colors">Dr. Nimal Wickramasinghe</h3>
+                    <p className="text-xs text-maroon-700 font-bold mt-1">Ph.D., B.Sc. Physics Special (Hons) - Colombo</p>
                   </div>
 
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
                     Senior Physics lecturer specializing in theoretical mechanics, waves, and electronics. Known for visual lab experiments and speed past-paper analytical techniques.
                   </p>
 
-                  <div className="pt-3 border-t border-slate-800/80 space-y-2 text-xs text-slate-400">
+                  <div className="pt-3 border-t border-slate-200/80 space-y-2 text-xs text-slate-600">
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-amber-400" /> Teaching Experience:</span>
-                      <strong className="text-white">14+ Years</strong>
+                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-gold-600" /> Teaching Experience:</span>
+                      <strong className="text-slate-900 font-bold">14+ Years</strong>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-sky-400" /> Top Island Ranks:</span>
-                      <strong className="text-sky-400">120+ Ranks</strong>
+                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-maroon-700" /> Top Island Ranks:</span>
+                      <strong className="text-maroon-800 font-extrabold">120+ Ranks</strong>
                     </div>
                   </div>
                 </div>
@@ -421,7 +421,7 @@ const LandingPage = () => {
               <div className="p-6 pt-0">
                 <button 
                   onClick={() => scrollToSection('courses')}
-                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-sky-600 text-white font-semibold text-xs transition-colors flex items-center justify-center"
+                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-maroon-800 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
                 >
                   View Physics Classes <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
@@ -429,37 +429,37 @@ const LandingPage = () => {
             </div>
 
             {/* Sir 3: Chemistry */}
-            <div className="rounded-3xl bg-slate-900 border border-slate-800 hover:border-violet-500/50 transition-all duration-300 shadow-xl overflow-hidden group flex flex-col justify-between">
+            <div className="rounded-3xl bg-white border border-slate-200/90 hover:border-maroon-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
               <div>
-                <div className="relative h-72 overflow-hidden bg-slate-950">
+                <div className="relative h-72 overflow-hidden bg-slate-900">
                   <img 
                     src="/images/sir_chemistry.png" 
                     alt="Eng. Chamara Rathnayake - Chemistry"
                     className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 right-3 bg-violet-600/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-violet-400/30">
+                  <div className="absolute top-3 right-3 bg-emerald-800/95 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md border border-emerald-600/40">
                     Chemistry Specialist
                   </div>
                 </div>
 
                 <div className="p-6 space-y-4">
                   <div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-violet-300 transition-colors">Eng. Chamara Rathnayake</h3>
-                    <p className="text-xs text-violet-400 font-semibold mt-1">B.Sc. Eng., M.Sc. Industrial Chemistry</p>
+                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-maroon-800 transition-colors">Eng. Chamara Rathnayake</h3>
+                    <p className="text-xs text-maroon-700 font-bold mt-1">B.Sc. Eng., M.Sc. Industrial Chemistry</p>
                   </div>
 
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
                     Master educator in Organic, Inorganic & Physical Chemistry. Simplifies reaction pathways using logical flowcharts and high-yield memory techniques.
                   </p>
 
-                  <div className="pt-3 border-t border-slate-800/80 space-y-2 text-xs text-slate-400">
+                  <div className="pt-3 border-t border-slate-200/80 space-y-2 text-xs text-slate-600">
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-amber-400" /> Teaching Experience:</span>
-                      <strong className="text-white">10+ Years</strong>
+                      <span className="flex items-center"><Award className="w-3.5 h-3.5 mr-1 text-gold-600" /> Teaching Experience:</span>
+                      <strong className="text-slate-900 font-bold">10+ Years</strong>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-violet-400" /> Top Island Ranks:</span>
-                      <strong className="text-violet-400">95+ Ranks</strong>
+                      <span className="flex items-center"><Trophy className="w-3.5 h-3.5 mr-1 text-maroon-700" /> Top Island Ranks:</span>
+                      <strong className="text-maroon-800 font-extrabold">95+ Ranks</strong>
                     </div>
                   </div>
                 </div>
@@ -468,7 +468,7 @@ const LandingPage = () => {
               <div className="p-6 pt-0">
                 <button 
                   onClick={() => scrollToSection('courses')}
-                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-violet-600 text-white font-semibold text-xs transition-colors flex items-center justify-center"
+                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-maroon-800 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
                 >
                   View Chemistry Classes <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
@@ -486,14 +486,14 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold uppercase tracking-wider">
-              <Compass className="w-4 h-4 mr-1" />
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-gold-100 border border-gold-300 text-gold-900 text-xs font-bold uppercase tracking-wider shadow-xs">
+              <Compass className="w-4 h-4 mr-1 text-gold-700" />
               OUR CORE PURPOSE
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Vision & <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-300">Mission</span>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
+              Vision & <span className="bg-clip-text text-transparent bg-gradient-to-r from-maroon-800 to-gold-600">Mission</span>
             </h2>
-            <p className="text-slate-400 text-base sm:text-lg">
+            <p className="text-slate-600 text-base sm:text-lg">
               Every initiative at Kingswood Connect is guided by an unyielding commitment to student transformation and academic integrity.
             </p>
           </div>
@@ -501,45 +501,45 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-2 gap-8">
             
             {/* Vision Card */}
-            <div className="relative group rounded-3xl p-8 bg-slate-900/90 border border-slate-800 hover:border-indigo-500/50 transition-all duration-300 shadow-xl overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all" />
+            <div className="relative group rounded-3xl p-8 bg-white border border-slate-200 hover:border-maroon-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-maroon-600/5 rounded-full blur-2xl group-hover:bg-maroon-600/10 transition-all" />
               
-              <div className="w-16 h-16 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center mb-6">
-                <Target className="w-8 h-8 text-indigo-400" />
+              <div className="w-16 h-16 rounded-2xl bg-maroon-50 border border-maroon-200 flex items-center justify-center mb-6">
+                <Target className="w-8 h-8 text-maroon-800" />
               </div>
 
-              <h3 className="text-2xl font-bold text-white mb-3 flex items-center">
-                Our Vision <span className="text-sm font-normal text-indigo-400 ml-2 uppercase tracking-wide">(Future Outlook)</span>
+              <h3 className="text-2xl font-black text-slate-900 mb-3 flex items-center">
+                Our Vision <span className="text-xs font-bold text-maroon-800 ml-2 uppercase tracking-wide bg-maroon-50 px-2.5 py-1 rounded-full border border-maroon-200">(Future Outlook)</span>
               </h3>
 
-              <p className="text-slate-300 leading-relaxed text-base">
+              <p className="text-slate-600 leading-relaxed text-base">
                 To become Sri Lanka's benchmark educational institute, empowering a generation of analytical thinkers, problem solvers, and visionary leaders who excel in G.C.E. Advanced Level examinations and lead future frontiers in engineering, medicine, and technology.
               </p>
 
-              <div className="mt-8 pt-6 border-t border-slate-800 flex items-center space-x-3 text-sm text-indigo-300 font-medium">
-                <CheckCircle2 className="w-5 h-5 text-indigo-400" />
+              <div className="mt-8 pt-6 border-t border-slate-200 flex items-center space-x-3 text-sm text-maroon-900 font-bold">
+                <CheckCircle2 className="w-5 h-5 text-maroon-700" />
                 <span>Pioneering Innovation & Educational Integrity</span>
               </div>
             </div>
 
             {/* Mission Card */}
-            <div className="relative group rounded-3xl p-8 bg-slate-900/90 border border-slate-800 hover:border-violet-500/50 transition-all duration-300 shadow-xl overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/10 rounded-full blur-2xl group-hover:bg-violet-500/20 transition-all" />
+            <div className="relative group rounded-3xl p-8 bg-white border border-slate-200 hover:border-gold-400 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gold-500/10 rounded-full blur-2xl group-hover:bg-gold-500/20 transition-all" />
               
-              <div className="w-16 h-16 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center mb-6">
-                <Sparkles className="w-8 h-8 text-violet-400" />
+              <div className="w-16 h-16 rounded-2xl bg-gold-50 border border-gold-200 flex items-center justify-center mb-6">
+                <Sparkles className="w-8 h-8 text-gold-700" />
               </div>
 
-              <h3 className="text-2xl font-bold text-white mb-3 flex items-center">
-                Our Mission <span className="text-sm font-normal text-violet-400 ml-2 uppercase tracking-wide">(Daily Commitment)</span>
+              <h3 className="text-2xl font-black text-slate-900 mb-3 flex items-center">
+                Our Mission <span className="text-xs font-bold text-gold-800 ml-2 uppercase tracking-wide bg-gold-50 px-2.5 py-1 rounded-full border border-gold-200">(Daily Commitment)</span>
               </h3>
 
-              <p className="text-slate-300 leading-relaxed text-base">
+              <p className="text-slate-600 leading-relaxed text-base">
                 To unlock every student's highest potential by combining modern digital technology, rigorous paper series, clear concept delivery, and individual mentorship that guarantee outstanding Z-Scores and Island Ranks.
               </p>
 
-              <div className="mt-8 pt-6 border-t border-slate-800 flex items-center space-x-3 text-sm text-violet-300 font-medium">
-                <CheckCircle2 className="w-5 h-5 text-violet-400" />
+              <div className="mt-8 pt-6 border-t border-slate-200 flex items-center space-x-3 text-sm text-gold-900 font-bold">
+                <CheckCircle2 className="w-5 h-5 text-gold-600" />
                 <span>Continuous Guidance & Uncompromising Quality</span>
               </div>
             </div>
@@ -551,18 +551,18 @@ const LandingPage = () => {
 
 
       {/* Section 4: Exam Results & Top Achievers */}
-      <section id="results" className="py-20 bg-slate-950/70 border-y border-slate-800/80 relative">
+      <section id="results" className="py-20 bg-slate-100/80 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-wider">
-              <Award className="w-4 h-4 mr-1" />
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-gold-100 border border-gold-300 text-gold-900 text-xs font-bold uppercase tracking-wider shadow-xs">
+              <Award className="w-4 h-4 mr-1 text-gold-700" />
               PROVEN EXCELLENCE
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Celebrating Our <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-400">Top Island Rankers</span>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
+              Celebrating Our <span className="bg-clip-text text-transparent bg-gradient-to-r from-gold-600 to-maroon-800">Top Island Rankers</span>
             </h2>
-            <p className="text-slate-400 text-base sm:text-lg">
+            <p className="text-slate-600 text-base sm:text-lg">
               True success is measured by consistent results. Highlighting our outstanding performers in recent G.C.E. A/L examinations.
             </p>
           </div>
@@ -571,100 +571,100 @@ const LandingPage = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Achiever 1 */}
-            <div className="rounded-2xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-lg group">
-              <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-950 h-56">
+            <div className="rounded-2xl bg-white border border-slate-200 hover:border-gold-400 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-xl group">
+              <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-900 h-56">
                 <img 
                   src="/images/top_student_male.png" 
                   alt="Kaveen Perera - Island Rank 01"
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute top-3 left-3 bg-amber-500 text-slate-950 text-xs font-extrabold px-3 py-1 rounded-full shadow-lg">
+                <div className="absolute top-3 left-3 bg-gold-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full shadow-md">
                   🏆 Island Rank 01
                 </div>
               </div>
-              <h3 className="text-lg font-bold text-white">Kaveen Perera</h3>
-              <p className="text-xs text-indigo-400 font-medium">Combined Mathematics (Physical Science)</p>
-              <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-slate-300">
-                <span>Z-Score: <strong className="text-amber-400">2.8942</strong></span>
-                <span className="text-slate-400">Kandy District</span>
+              <h3 className="text-lg font-bold text-slate-900">Kaveen Perera</h3>
+              <p className="text-xs text-maroon-800 font-bold">Combined Mathematics (Physical Science)</p>
+              <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center text-xs text-slate-700">
+                <span>Z-Score: <strong className="text-gold-700 font-black">2.8942</strong></span>
+                <span className="text-slate-500 font-medium">Kandy District</span>
               </div>
             </div>
 
             {/* Achiever 2 */}
-            <div className="rounded-2xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-lg group">
-              <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-950 h-56">
+            <div className="rounded-2xl bg-white border border-slate-200 hover:border-maroon-300 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-xl group">
+              <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-900 h-56">
                 <img 
                   src="/images/top_student_female.png" 
                   alt="Shenali Fernando - Island Rank 04"
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute top-3 left-3 bg-indigo-500 text-white text-xs font-extrabold px-3 py-1 rounded-full shadow-lg">
+                <div className="absolute top-3 left-3 bg-maroon-800 text-white text-xs font-black px-3 py-1 rounded-full shadow-md">
                   🌟 Island Rank 04
                 </div>
               </div>
-              <h3 className="text-lg font-bold text-white">Shenali Fernando</h3>
-              <p className="text-xs text-indigo-400 font-medium">Physics & Chemistry</p>
-              <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-slate-300">
-                <span>Z-Score: <strong className="text-indigo-400">2.8105</strong></span>
-                <span className="text-slate-400">Colombo District</span>
+              <h3 className="text-lg font-bold text-slate-900">Shenali Fernando</h3>
+              <p className="text-xs text-maroon-800 font-bold">Physics & Chemistry</p>
+              <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center text-xs text-slate-700">
+                <span>Z-Score: <strong className="text-maroon-800 font-black">2.8105</strong></span>
+                <span className="text-slate-500 font-medium">Colombo District</span>
               </div>
             </div>
 
             {/* Achiever 3 */}
-            <div className="rounded-2xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-lg group">
-              <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-950 h-56 flex items-center justify-center bg-gradient-to-b from-indigo-900/30 to-slate-950">
+            <div className="rounded-2xl bg-white border border-slate-200 hover:border-gold-400 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-xl group">
+              <div className="relative rounded-xl overflow-hidden mb-4 bg-gradient-to-b from-maroon-900 to-slate-950 h-56 flex items-center justify-center">
                 <div className="text-center p-4">
-                  <div className="w-16 h-16 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center mx-auto mb-2 border border-sky-500/40">
+                  <div className="w-16 h-16 rounded-full bg-gold-400/20 text-gold-400 flex items-center justify-center mx-auto mb-2 border border-gold-400/40">
                     <Trophy className="w-8 h-8" />
                   </div>
-                  <span className="text-xs text-sky-300 font-bold uppercase tracking-wider">District Champion</span>
+                  <span className="text-xs text-gold-300 font-extrabold uppercase tracking-wider">District Champion</span>
                 </div>
-                <div className="absolute top-3 left-3 bg-sky-500 text-slate-950 text-xs font-extrabold px-3 py-1 rounded-full shadow-lg">
+                <div className="absolute top-3 left-3 bg-gold-400 text-slate-950 text-xs font-black px-3 py-1 rounded-full shadow-md">
                   🥇 District Rank 01
                 </div>
               </div>
-              <h3 className="text-lg font-bold text-white">Nipuna Jayasinghe</h3>
-              <p className="text-xs text-indigo-400 font-medium">Combined Mathematics</p>
-              <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-slate-300">
-                <span>Z-Score: <strong className="text-sky-400">2.7840</strong></span>
-                <span className="text-slate-400">Kurunegala</span>
+              <h3 className="text-lg font-bold text-slate-900">Nipuna Jayasinghe</h3>
+              <p className="text-xs text-maroon-800 font-bold">Combined Mathematics</p>
+              <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center text-xs text-slate-700">
+                <span>Z-Score: <strong className="text-gold-700 font-black">2.7840</strong></span>
+                <span className="text-slate-500 font-medium">Kurunegala</span>
               </div>
             </div>
 
             {/* Achiever 4 */}
-            <div className="rounded-2xl bg-slate-900 border border-slate-800 hover:border-violet-500/50 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-lg group">
-              <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-950 h-56 flex items-center justify-center bg-gradient-to-b from-violet-900/30 to-slate-950">
+            <div className="rounded-2xl bg-white border border-slate-200 hover:border-maroon-300 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-xl group">
+              <div className="relative rounded-xl overflow-hidden mb-4 bg-gradient-to-b from-slate-900 to-maroon-950 h-56 flex items-center justify-center">
                 <div className="text-center p-4">
-                  <div className="w-16 h-16 rounded-full bg-violet-500/20 text-violet-400 flex items-center justify-center mx-auto mb-2 border border-violet-500/40">
+                  <div className="w-16 h-16 rounded-full bg-maroon-500/20 text-maroon-300 flex items-center justify-center mx-auto mb-2 border border-maroon-400/40">
                     <Award className="w-8 h-8" />
                   </div>
-                  <span className="text-xs text-violet-300 font-bold uppercase tracking-wider">Island Top 15</span>
+                  <span className="text-xs text-maroon-200 font-extrabold uppercase tracking-wider">Island Top 15</span>
                 </div>
-                <div className="absolute top-3 left-3 bg-violet-500 text-white text-xs font-extrabold px-3 py-1 rounded-full shadow-lg">
+                <div className="absolute top-3 left-3 bg-maroon-700 text-white text-xs font-black px-3 py-1 rounded-full shadow-md">
                   🎖️ Island Rank 12
                 </div>
               </div>
-              <h3 className="text-lg font-bold text-white">Dilini Ranasinghe</h3>
-              <p className="text-xs text-indigo-400 font-medium">Physics & Combined Maths</p>
-              <div className="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-slate-300">
-                <span>Z-Score: <strong className="text-violet-400">2.7650</strong></span>
-                <span className="text-slate-400">Kandy</span>
+              <h3 className="text-lg font-bold text-slate-900">Dilini Ranasinghe</h3>
+              <p className="text-xs text-maroon-800 font-bold">Physics & Combined Maths</p>
+              <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center text-xs text-slate-700">
+                <span>Z-Score: <strong className="text-maroon-800 font-black">2.7650</strong></span>
+                <span className="text-slate-500 font-medium">Kandy</span>
               </div>
             </div>
 
           </div>
 
           {/* Call-to-action Banner */}
-          <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-indigo-900/40 via-slate-900 to-slate-900 border border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-maroon-950 via-maroon-900 to-slate-900 border border-maroon-700/50 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
             <div className="space-y-2 text-center md:text-left">
-              <h3 className="text-xl font-bold text-white">Be the Next A/L Success Story!</h3>
-              <p className="text-sm text-slate-300">Enroll today and gain instant access to Kingswood Connect LMS video portal, tutes, and exam schedules.</p>
+              <h3 className="text-xl font-extrabold text-white">Be the Next A/L Success Story!</h3>
+              <p className="text-sm text-maroon-100">Enroll today and gain instant access to Kingswood Connect LMS video portal, tutes, and exam schedules.</p>
             </div>
             <Link 
               to="/login"
-              className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm whitespace-nowrap shadow-lg shadow-indigo-600/30 transition-all"
+              className="px-6 py-3.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-slate-950 font-black text-sm whitespace-nowrap shadow-lg shadow-gold-500/20 transition-all flex items-center"
             >
-              Access Student Portal
+              Access Student Portal <ChevronRight className="w-4 h-4 ml-1" />
             </Link>
           </div>
 
@@ -677,14 +677,14 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold uppercase tracking-wider">
-              <BookOpen className="w-4 h-4 mr-1" />
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-maroon-100 border border-maroon-200 text-maroon-800 text-xs font-bold uppercase tracking-wider shadow-xs">
+              <BookOpen className="w-4 h-4 mr-1 text-maroon-700" />
               ACADEMIC PROGRAMMING
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Courses & <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-400">Class Schedule</span>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
+              Courses & <span className="bg-clip-text text-transparent bg-gradient-to-r from-maroon-800 to-gold-600">Class Schedule</span>
             </h2>
-            <p className="text-slate-400 text-base sm:text-lg">
+            <p className="text-slate-600 text-base sm:text-lg">
               Flexible physical auditorium lectures in Kandy coupled with HD live stream options for remote learners.
             </p>
           </div>
@@ -692,35 +692,35 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             
             {/* Course 1 */}
-            <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 flex flex-col justify-between hover:border-indigo-500/50 transition-all shadow-xl group">
+            <div className="rounded-3xl bg-white border border-slate-200/90 p-6 flex flex-col justify-between hover:border-maroon-300 transition-all shadow-md hover:shadow-xl group">
               <div>
-                <div className="inline-block px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold mb-4">
+                <div className="inline-block px-3 py-1 rounded-full bg-maroon-100 text-maroon-800 text-xs font-bold mb-4">
                   2026 A/L Batch
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">2026 A/L Theory Class</h3>
-                <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+                <h3 className="text-xl font-bold text-slate-900 mb-2">2026 A/L Theory Class</h3>
+                <p className="text-xs text-slate-600 mb-6 leading-relaxed">
                   Building fundamental concepts from scratch with weekly tute discussions, real-world examples, and problem solving.
                 </p>
-                <div className="space-y-3 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
+                <div className="space-y-3 text-xs text-slate-700 border-t border-slate-200 pt-4 font-medium">
                   <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-indigo-400" />
+                    <Calendar className="w-4 h-4 mr-2 text-maroon-700" />
                     <span>Every Saturday</span>
                   </div>
                   <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-2 text-indigo-400" />
+                    <Clock className="w-4 h-4 mr-2 text-maroon-700" />
                     <span>8:00 AM - 1:00 PM</span>
                   </div>
                   <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-2 text-indigo-400" />
+                    <MapPin className="w-4 h-4 mr-2 text-maroon-700" />
                     <span>Kandy Auditorium & HD LMS Live</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-slate-800">
+              <div className="mt-8 pt-4 border-t border-slate-200">
                 <button 
                   onClick={() => scrollToSection('contact')}
-                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-indigo-600 text-white font-semibold text-xs transition-colors flex items-center justify-center"
+                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-maroon-800 text-white font-bold text-xs transition-colors flex items-center justify-center"
                 >
                   Register Now <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
@@ -728,38 +728,38 @@ const LandingPage = () => {
             </div>
 
             {/* Course 2 */}
-            <div className="rounded-3xl bg-slate-900 border border-indigo-500/40 p-6 flex flex-col justify-between hover:border-indigo-400 transition-all shadow-2xl relative group">
-              <div className="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md">
+            <div className="rounded-3xl bg-white border-2 border-maroon-600/80 p-6 flex flex-col justify-between transition-all shadow-xl relative group">
+              <div className="absolute -top-3 right-6 bg-gradient-to-r from-gold-500 to-amber-600 text-slate-950 text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md">
                 POPULAR
               </div>
               <div>
-                <div className="inline-block px-3 py-1 rounded-full bg-violet-500/20 text-violet-300 text-xs font-bold mb-4">
+                <div className="inline-block px-3 py-1 rounded-full bg-gold-100 text-gold-900 text-xs font-extrabold mb-4 border border-gold-200">
                   2025 A/L Batch
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">2025 A/L Revision & Theory</h3>
-                <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+                <h3 className="text-xl font-bold text-slate-900 mb-2">2025 A/L Revision & Theory</h3>
+                <p className="text-xs text-slate-600 mb-6 leading-relaxed">
                   Rapid syllabus coverage, past paper breakdowns, and high-yield exam strategies designed for top scores.
                 </p>
-                <div className="space-y-3 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
+                <div className="space-y-3 text-xs text-slate-700 border-t border-slate-200 pt-4 font-medium">
                   <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-violet-400" />
+                    <Calendar className="w-4 h-4 mr-2 text-gold-600" />
                     <span>Every Sunday</span>
                   </div>
                   <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-2 text-violet-400" />
+                    <Clock className="w-4 h-4 mr-2 text-gold-600" />
                     <span>8:00 AM - 1:30 PM</span>
                   </div>
                   <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-2 text-violet-400" />
+                    <MapPin className="w-4 h-4 mr-2 text-gold-600" />
                     <span>Kandy Main Auditorium & Web Portal</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-slate-800">
+              <div className="mt-8 pt-4 border-t border-slate-200">
                 <button 
                   onClick={() => scrollToSection('contact')}
-                  className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors flex items-center justify-center shadow-lg shadow-indigo-600/30"
+                  className="w-full py-2.5 rounded-xl bg-maroon-800 hover:bg-maroon-700 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-md shadow-maroon-800/30"
                 >
                   Register Now <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
@@ -767,35 +767,35 @@ const LandingPage = () => {
             </div>
 
             {/* Course 3 */}
-            <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 flex flex-col justify-between hover:border-sky-500/50 transition-all shadow-xl group">
+            <div className="rounded-3xl bg-white border border-slate-200/90 p-6 flex flex-col justify-between hover:border-maroon-300 transition-all shadow-md hover:shadow-xl group">
               <div>
-                <div className="inline-block px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 text-xs font-bold mb-4">
+                <div className="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold mb-4 border border-slate-200">
                   Exam Focused
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Paper Class & Speed Revision</h3>
-                <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Paper Class & Speed Revision</h3>
+                <p className="text-xs text-slate-600 mb-6 leading-relaxed">
                   Timed exam condition practice, instant mark distribution analysis, and detailed marking scheme breakdowns.
                 </p>
-                <div className="space-y-3 text-xs text-slate-300 border-t border-slate-800/80 pt-4">
+                <div className="space-y-3 text-xs text-slate-700 border-t border-slate-200 pt-4 font-medium">
                   <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-sky-400" />
+                    <Calendar className="w-4 h-4 mr-2 text-slate-700" />
                     <span>Every Wednesday</span>
                   </div>
                   <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-2 text-sky-400" />
+                    <Clock className="w-4 h-4 mr-2 text-slate-700" />
                     <span>2:30 PM - 6:00 PM</span>
                   </div>
                   <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-2 text-sky-400" />
+                    <MapPin className="w-4 h-4 mr-2 text-slate-700" />
                     <span>Physical Exam Hall & Online Submissions</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-slate-800">
+              <div className="mt-8 pt-4 border-t border-slate-200">
                 <button 
                   onClick={() => scrollToSection('contact')}
-                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-sky-600 text-white font-semibold text-xs transition-colors flex items-center justify-center"
+                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-maroon-800 text-white font-bold text-xs transition-colors flex items-center justify-center"
                 >
                   Register Now <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
@@ -809,60 +809,60 @@ const LandingPage = () => {
 
 
       {/* Section 6: Kingswood LMS Ecosystem Features */}
-      <section id="features" className="py-20 bg-slate-950/80 border-y border-slate-800/80 relative">
+      <section id="features" className="py-20 bg-slate-100/80 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
-              <Zap className="w-4 h-4 mr-1" />
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold uppercase tracking-wider shadow-xs">
+              <Zap className="w-4 h-4 mr-1 text-emerald-700" />
               DIGITAL LEARNING ECOSYSTEM
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Cutting-Edge <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-300">Technology Features</span>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
+              Cutting-Edge <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-700 to-maroon-800">Technology Features</span>
             </h2>
-            <p className="text-slate-400 text-base sm:text-lg">
+            <p className="text-slate-600 text-base sm:text-lg">
               Engineered specifically to maximize student productivity and keep parents informed in real-time.
             </p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 transition-all space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-emerald-400 transition-all space-y-3 shadow-md hover:shadow-xl">
+              <div className="w-12 h-12 rounded-xl bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">Smart QR Attendance</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <h3 className="text-lg font-bold text-slate-900">Smart QR Attendance</h3>
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">
                 Instant QR code scanning upon class entry automatically logs attendance and dispatches instant SMS alerts to parents.
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-indigo-500/40 transition-all space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-maroon-300 transition-all space-y-3 shadow-md hover:shadow-xl">
+              <div className="w-12 h-12 rounded-xl bg-maroon-100 border border-maroon-200 flex items-center justify-center text-maroon-800">
                 <TrendingUp className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">Exam Analytics & Ranks</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <h3 className="text-lg font-bold text-slate-900">Exam Analytics & Ranks</h3>
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">
                 Instant score dashboards, district-level rank indices, and progress trend graphs available right after evaluation.
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-sky-500/40 transition-all space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center text-sky-400">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-gold-400 transition-all space-y-3 shadow-md hover:shadow-xl">
+              <div className="w-12 h-12 rounded-xl bg-gold-100 border border-gold-200 flex items-center justify-center text-gold-800">
                 <Video className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">HD Class Recordings</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <h3 className="text-lg font-bold text-slate-900">HD Class Recordings</h3>
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">
                 On-demand access to high-definition recordings of missed or previous lectures anytime on student dashboards.
               </p>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-violet-500/40 transition-all space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-slate-400 transition-all space-y-3 shadow-md hover:shadow-xl">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-800">
                 <FileText className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">Digital Materials & Notes</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <h3 className="text-lg font-bold text-slate-900">Digital Materials & Notes</h3>
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">
                 Downloadable PDF tutes, lesson summaries, past paper marking schemes, and speed revision guides.
               </p>
             </div>
@@ -878,68 +878,68 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
-              <MessageSquare className="w-4 h-4 mr-1" />
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-maroon-100 border border-maroon-200 text-maroon-800 text-xs font-bold uppercase tracking-wider shadow-xs">
+              <MessageSquare className="w-4 h-4 mr-1 text-maroon-700" />
               STUDENT & PARENT REVIEWS
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Trusted by <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-sky-300">Thousands</span>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
+              Trusted by <span className="bg-clip-text text-transparent bg-gradient-to-r from-maroon-800 to-gold-600">Thousands</span>
             </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             
-            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 relative space-y-4">
-              <div className="flex text-amber-400">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/90 relative space-y-4 shadow-md hover:shadow-xl transition-all">
+              <div className="flex text-gold-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400" />
+                  <Star key={i} className="w-4 h-4 fill-gold-400" />
                 ))}
               </div>
-              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed italic">
+              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed italic">
                 "Combined Maths felt overwhelming until I joined Kasun Sir's class. His visual problem-solving techniques gave me immense clarity, leading directly to my Island Rank 01 achievement."
               </p>
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-bold text-white block">Kaveen Perera</span>
-                  <span className="text-slate-400">Engineering Faculty - Moratuwa</span>
+                  <span className="font-bold text-slate-900 block">Kaveen Perera</span>
+                  <span className="text-slate-500">Engineering Faculty - Moratuwa</span>
                 </div>
-                <span className="text-indigo-400 font-semibold">2024 A/L</span>
+                <span className="text-maroon-800 font-extrabold">2024 A/L</span>
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 relative space-y-4">
-              <div className="flex text-amber-400">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/90 relative space-y-4 shadow-md hover:shadow-xl transition-all">
+              <div className="flex text-gold-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400" />
+                  <Star key={i} className="w-4 h-4 fill-gold-400" />
                 ))}
               </div>
-              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed italic">
+              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed italic">
                 "The Kingswood Connect LMS made studying so effortless. Being able to rewatch HD recordings and check paper results instantly boosted my overall Z-Score tremendously."
               </p>
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-bold text-white block">Shenali Fernando</span>
-                  <span className="text-slate-400">Medical Student - Colombo</span>
+                  <span className="font-bold text-slate-900 block">Shenali Fernando</span>
+                  <span className="text-slate-500">Medical Student - Colombo</span>
                 </div>
-                <span className="text-indigo-400 font-semibold">2024 A/L</span>
+                <span className="text-maroon-800 font-extrabold">2024 A/L</span>
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 relative space-y-4">
-              <div className="flex text-amber-400">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/90 relative space-y-4 shadow-md hover:shadow-xl transition-all">
+              <div className="flex text-gold-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400" />
+                  <Star key={i} className="w-4 h-4 fill-gold-400" />
                 ))}
               </div>
-              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed italic">
+              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed italic">
                 "As a parent, receiving real-time QR attendance SMS alerts gave us peace of mind. Sir's personal dedication and continuous mentorship are truly commendable."
               </p>
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-bold text-white block">N. Jayasinghe</span>
-                  <span className="text-slate-400">Parent of Nipuna (District Rank 01)</span>
+                  <span className="font-bold text-slate-900 block">N. Jayasinghe</span>
+                  <span className="text-slate-500">Parent of Nipuna (District Rank 01)</span>
                 </div>
-                <span className="text-indigo-400 font-semibold">Parent Review</span>
+                <span className="text-maroon-800 font-extrabold">Parent Review</span>
               </div>
             </div>
 
@@ -950,7 +950,7 @@ const LandingPage = () => {
 
 
       {/* Section 8: Contact Us & Location */}
-      <section id="contact" className="py-20 bg-slate-950/90 border-t border-slate-800/80 relative">
+      <section id="contact" className="py-20 bg-slate-100/90 border-t border-slate-200 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="grid lg:grid-cols-12 gap-12">
@@ -958,40 +958,40 @@ const LandingPage = () => {
             {/* Contact Details */}
             <div className="lg:col-span-5 space-y-8">
               <div className="space-y-4">
-                <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
-                  <Phone className="w-4 h-4 mr-1" />
+                <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-maroon-100 border border-maroon-200 text-maroon-800 text-xs font-bold uppercase tracking-wider shadow-xs">
+                  <Phone className="w-4 h-4 mr-1 text-maroon-700" />
                   GET IN TOUCH
                 </div>
-                <h2 className="text-3xl font-extrabold text-white">
-                  Contact Us & <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-violet-400">Enrollment</span>
+                <h2 className="text-3xl font-black text-slate-900">
+                  Contact Us & <span className="bg-clip-text text-transparent bg-gradient-to-r from-maroon-800 to-gold-600">Enrollment</span>
                 </h2>
-                <p className="text-slate-400 text-sm leading-relaxed">
+                <p className="text-slate-600 text-sm leading-relaxed">
                   Have questions regarding upcoming batches or online LMS registration? Send us an inquiry or reach out to our hotlines directly.
                 </p>
               </div>
 
-              <div className="space-y-4 text-sm text-slate-300">
-                <div className="flex items-start space-x-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-                  <MapPin className="w-6 h-6 text-indigo-400 shrink-0 mt-0.5" />
+              <div className="space-y-4 text-sm text-slate-700">
+                <div className="flex items-start space-x-4 p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                  <MapPin className="w-6 h-6 text-maroon-800 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-bold text-white">Class Location & Auditorium</h4>
-                    <p className="text-xs text-slate-400 mt-0.5">Kingswood Education Complex, Peradeniya Road, Kandy, Sri Lanka</p>
+                    <h4 className="font-bold text-slate-900">Class Location & Auditorium</h4>
+                    <p className="text-xs text-slate-600 mt-0.5">Kingswood Education Complex, Peradeniya Road, Kandy, Sri Lanka</p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-                  <Phone className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="flex items-start space-x-4 p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                  <Phone className="w-6 h-6 text-emerald-700 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-bold text-white">Inquiry Hotlines</h4>
-                    <p className="text-xs text-slate-400 mt-0.5">+94 81 222 3456 / +94 77 123 4567</p>
+                    <h4 className="font-bold text-slate-900">Inquiry Hotlines</h4>
+                    <p className="text-xs text-slate-600 mt-0.5">+94 81 222 3456 / +94 77 123 4567</p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-                  <Mail className="w-6 h-6 text-sky-400 shrink-0 mt-0.5" />
+                <div className="flex items-start space-x-4 p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                  <Mail className="w-6 h-6 text-gold-700 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-bold text-white">Official Email</h4>
-                    <p className="text-xs text-slate-400 mt-0.5">info@kingswoodconnect.lk</p>
+                    <h4 className="font-bold text-slate-900">Official Email</h4>
+                    <p className="text-xs text-slate-600 mt-0.5">info@kingswoodconnect.lk</p>
                   </div>
                 </div>
               </div>
@@ -999,51 +999,51 @@ const LandingPage = () => {
 
             {/* Direct Inquiry Form */}
             <div className="lg:col-span-7">
-              <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl relative">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl relative">
                 
-                <h3 className="text-xl font-bold text-white mb-2">Send an Instant Inquiry</h3>
-                <p className="text-xs text-slate-400 mb-6">Fill out your details below and our counseling team will get back to you within 24 hours.</p>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Send an Instant Inquiry</h3>
+                <p className="text-xs text-slate-600 mb-6">Fill out your details below and our counseling team will get back to you within 24 hours.</p>
 
                 {contactSubmitted ? (
-                  <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-center space-y-2">
-                    <Check className="w-10 h-10 mx-auto text-emerald-400" />
-                    <h4 className="font-bold text-lg text-white">Inquiry Sent Successfully!</h4>
-                    <p className="text-xs text-slate-300">Thank you for reaching out. Our team will contact you shortly.</p>
+                  <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-center space-y-2">
+                    <Check className="w-10 h-10 mx-auto text-emerald-700" />
+                    <h4 className="font-bold text-lg text-slate-900">Inquiry Sent Successfully!</h4>
+                    <p className="text-xs text-slate-700">Thank you for reaching out. Our team will contact you shortly.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleContactSubmit} className="space-y-4">
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
                         <input 
                           type="text" 
                           required
                           value={formData.name}
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
                           placeholder="e.g. Kaveen Perera" 
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-base sm:text-sm"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-maroon-700 focus:bg-white text-base sm:text-sm font-medium transition-all"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1">WhatsApp / Phone Number</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Phone Number</label>
                         <input 
                           type="tel" 
                           required
                           value={formData.phone}
                           onChange={(e) => setFormData({...formData, phone: e.target.value})}
                           placeholder="0771234567" 
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-base sm:text-sm"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-maroon-700 focus:bg-white text-base sm:text-sm font-medium transition-all"
                         />
                       </div>
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1">A/L Batch</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">A/L Batch</label>
                         <select 
                           value={formData.batch}
                           onChange={(e) => setFormData({...formData, batch: e.target.value})}
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-base sm:text-sm"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-maroon-700 focus:bg-white text-base sm:text-sm font-medium transition-all"
                         >
                           <option value="2026 A/L">2026 A/L Theory</option>
                           <option value="2025 A/L">2025 A/L Revision</option>
@@ -1051,11 +1051,11 @@ const LandingPage = () => {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1">Subject Preference</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Subject Preference</label>
                         <select 
                           value={formData.subject}
                           onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-base sm:text-sm"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-maroon-700 focus:bg-white text-base sm:text-sm font-medium transition-all"
                         >
                           <option value="Combined Mathematics">Combined Mathematics</option>
                           <option value="Physics">Physics</option>
@@ -1065,21 +1065,21 @@ const LandingPage = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1">Your Message</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Your Message</label>
                       <textarea 
                         rows="3" 
                         value={formData.message}
                         onChange={(e) => setFormData({...formData, message: e.target.value})}
                         placeholder="Write any specific questions or details you would like to know..." 
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-base sm:text-sm"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-maroon-700 focus:bg-white text-base sm:text-sm font-medium transition-all"
                       />
                     </div>
 
                     <button 
                       type="submit"
-                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold text-sm shadow-xl shadow-indigo-600/30 transition-all flex items-center justify-center"
+                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-maroon-800 to-maroon-700 hover:from-maroon-700 hover:to-maroon-800 text-white font-bold text-sm shadow-lg shadow-maroon-800/30 transition-all flex items-center justify-center"
                     >
-                      <Send className="w-4 h-4 mr-2" />
+                      <Send className="w-4 h-4 mr-2 text-gold-300" />
                       Submit Inquiry
                     </button>
                   </form>
@@ -1095,27 +1095,27 @@ const LandingPage = () => {
 
 
       {/* Footer */}
-      <footer className="bg-slate-950 border-t border-slate-800/80 py-12 text-xs text-slate-400">
+      <footer className="bg-slate-950 border-t border-slate-800 py-12 text-xs text-slate-400">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             
             <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white">
+              <div className="w-9 h-9 rounded-xl bg-maroon-800 flex items-center justify-center text-gold-400 shadow-md">
                 <GraduationCap className="w-5 h-5" />
               </div>
-              <span className="text-base font-bold text-white">Kingswood Connect</span>
+              <span className="text-base font-extrabold text-white">Kingswood Connect</span>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-6 text-slate-400 font-medium">
-              <button onClick={() => scrollToSection('home')} className="hover:text-indigo-400 transition-colors">Home</button>
-              <button onClick={() => scrollToSection('about-sir')} className="hover:text-indigo-400 transition-colors">About Sir</button>
-              <button onClick={() => scrollToSection('vision-mission')} className="hover:text-indigo-400 transition-colors">Vision & Mission</button>
-              <button onClick={() => scrollToSection('results')} className="hover:text-indigo-400 transition-colors">Results</button>
-              <button onClick={() => scrollToSection('courses')} className="hover:text-indigo-400 transition-colors">Courses</button>
-              <Link to="/login" className="text-indigo-400 font-semibold hover:underline">LMS Portal Log In</Link>
+            <div className="flex flex-wrap justify-center gap-6 text-slate-300 font-semibold">
+              <button onClick={() => scrollToSection('home')} className="hover:text-gold-400 transition-colors">Home</button>
+              <button onClick={() => scrollToSection('about-sir')} className="hover:text-gold-400 transition-colors">About Sir</button>
+              <button onClick={() => scrollToSection('vision-mission')} className="hover:text-gold-400 transition-colors">Vision & Mission</button>
+              <button onClick={() => scrollToSection('results')} className="hover:text-gold-400 transition-colors">Results</button>
+              <button onClick={() => scrollToSection('courses')} className="hover:text-gold-400 transition-colors">Courses</button>
+              <Link to="/login" className="text-gold-400 font-bold hover:underline">LMS Portal Log In</Link>
             </div>
 
-            <p>© {new Date().getFullYear()} Kingswood Connect. All Rights Reserved.</p>
+            <p className="text-slate-400">© {new Date().getFullYear()} Kingswood Connect. All Rights Reserved.</p>
 
           </div>
         </div>
