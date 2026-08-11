@@ -313,35 +313,35 @@ const LandingPage = () => {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <button onClick={() => scrollToSection('home')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
+          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-3">
+            <button onClick={() => scrollToSection('home')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
               Home
             </button>
-            <button onClick={() => scrollToSection('about-sir')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
-              Faculty (Our Sirs)
+            <button onClick={() => scrollToSection('about-sir')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
+              Our Faculty
             </button>
-            <button onClick={() => scrollToSection('vision-mission')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
+            <button onClick={() => scrollToSection('vision-mission')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
               Vision & Mission
             </button>
-            <button onClick={() => scrollToSection('results')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
+            <button onClick={() => scrollToSection('results')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
               Exam Results
             </button>
-            <button onClick={() => scrollToSection('classes')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
+            <button onClick={() => scrollToSection('classes')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
               Classes
             </button>
-            <button onClick={() => scrollToSection('features')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
+            <button onClick={() => scrollToSection('features')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
               Key Features
             </button>
-            <button onClick={() => scrollToSection('contact')} className="text-sm font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
+            <button onClick={() => scrollToSection('contact')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
               Contact Us
             </button>
           </nav>
 
-          {/* Login Action Button */}
+          {/* Student Portal Action Button */}
           <div className="hidden md:flex items-center space-x-4">
             <Link
               to="/login"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/25 border border-indigo-400/20 transition-all duration-200 transform hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs xl:text-sm font-extrabold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/25 border border-indigo-400/20 transition-all duration-200 transform hover:-translate-y-0.5"
             >
               <LogIn className="w-4 h-4 mr-2 text-indigo-100" />
               Student Portal
