@@ -2,13 +2,79 @@ import React, { useState, useEffect } from 'react';
 import { 
   Shield, Key, Mail, UserCheck, Layout, Save, CheckCircle2, AlertCircle, 
   Phone, MapPin, Sparkles, Trophy, Compass, Globe, Plus, Trash2, BookOpen, 
-  Users, Award, Zap, MessageSquare, ChevronDown, ChevronUp 
+  Users, Award, Zap, MessageSquare, ChevronDown, ChevronUp, Upload 
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import ChangePassword from '../components/ChangePassword';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
+
+const ImageUploadInput = ({ label, value, onChange, placeholder }) => {
+  const handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      if (file.size > 4 * 1024 * 1024) {
+        alert('Image file size is too large. Please select an image under 4MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        onChange(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-xs font-bold text-slate-700">{label}</label>
+      <div className="flex items-center gap-3">
+        {value ? (
+          <div className="relative w-14 h-14 rounded-xl border border-slate-300 overflow-hidden bg-slate-100 shrink-0 group shadow-xs">
+            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            <button
+              type="button"
+              onClick={() => onChange('')}
+              className="absolute inset-0 bg-slate-900/70 text-white text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              Remove
+            </button>
+          </div>
+        ) : (
+          <div className="w-14 h-14 rounded-xl border border-dashed border-slate-300 flex items-center justify-center text-slate-400 bg-slate-50 shrink-0">
+            <Upload size={20} />
+          </div>
+        )}
+
+        <div className="flex-1 space-y-1.5">
+          <div className="flex items-center gap-2">
+            <label className="cursor-pointer px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs inline-flex items-center gap-1.5 transition-colors">
+              <Upload size={14} /> Choose / Upload Photo
+              <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+            </label>
+            {value && (
+              <button
+                type="button"
+                onClick={() => onChange('')}
+                className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder || "Or paste Image URL / path..."}
+            className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:bg-white focus:outline-none font-medium"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const SettingsPage = () => {
   const { user } = useAuth();
@@ -387,16 +453,12 @@ const SettingsPage = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Hero Main Graphic Banner Image URL / Path</label>
-                    <input
-                      type="text"
-                      value={cmsData.heroImage}
-                      onChange={(e) => setCmsData({ ...cmsData, heroImage: e.target.value })}
-                      placeholder="e.g. /images/sir_lecture.png or https://example.com/photo.jpg"
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium focus:outline-none focus:border-indigo-600 focus:bg-white"
-                    />
-                  </div>
+                  <ImageUploadInput
+                    label="Hero Main Graphic Banner Photo"
+                    value={cmsData.heroImage}
+                    onChange={(val) => setCmsData({ ...cmsData, heroImage: val })}
+                    placeholder="Or paste image URL / path e.g. /images/sir_lecture.png"
+                  />
 
                   <div className="grid md:grid-cols-2 gap-4 pt-2">
                     <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
@@ -613,20 +675,16 @@ const SettingsPage = () => {
                             </div>
                           </div>
 
-                          <div>
-                            <label className="block text-[11px] font-bold text-slate-600">Teacher Photo Image URL / Path</label>
-                            <input
-                              type="text"
-                              value={t.image || ''}
-                              onChange={(e) => {
-                                const copy = [...cmsData.teachers];
-                                copy[idx].image = e.target.value;
-                                setCmsData({ ...cmsData, teachers: copy });
-                              }}
-                              placeholder="e.g. /images/sir_portrait.png or https://example.com/photo.jpg"
-                              className="w-full px-3 py-1.5 text-xs rounded-lg bg-white border border-slate-300"
-                            />
-                          </div>
+                          <ImageUploadInput
+                            label="Teacher Photo"
+                            value={t.image || ''}
+                            onChange={(val) => {
+                              const copy = [...cmsData.teachers];
+                              copy[idx].image = val;
+                              setCmsData({ ...cmsData, teachers: copy });
+                            }}
+                            placeholder="Or paste image URL / path e.g. /images/sir_portrait.png"
+                          />
 
                           <div>
                             <label className="block text-[11px] font-bold text-slate-600">Bio Description</label>
@@ -868,20 +926,16 @@ const SettingsPage = () => {
                             </div>
                           </div>
 
-                          <div>
-                            <label className="block text-[10px] font-bold text-slate-600">Student Photo Image URL / Path</label>
-                            <input
-                              type="text"
-                              value={a.image || ''}
-                              onChange={(e) => {
-                                const copy = [...cmsData.achievers];
-                                copy[idx].image = e.target.value;
-                                setCmsData({ ...cmsData, achievers: copy });
-                              }}
-                              placeholder="e.g. /images/top_student_male.png or https://example.com/photo.jpg"
-                              className="w-full px-2.5 py-1 text-xs rounded-lg bg-white border border-slate-300"
-                            />
-                          </div>
+                          <ImageUploadInput
+                            label="Student Photo"
+                            value={a.image || ''}
+                            onChange={(val) => {
+                              const copy = [...cmsData.achievers];
+                              copy[idx].image = val;
+                              setCmsData({ ...cmsData, achievers: copy });
+                            }}
+                            placeholder="Or paste image URL / path e.g. /images/top_student_male.png"
+                          />
                         </div>
                       ))}
                     </div>
