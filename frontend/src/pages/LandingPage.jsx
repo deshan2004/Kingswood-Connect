@@ -624,82 +624,22 @@ const LandingPage = () => {
                           <strong className="text-indigo-700 font-extrabold">{teacher.ranks || '100+ Ranks'}</strong>
                         </div>
                       </div>
-
-                      {/* Directly Embedded Active Classes & Timetable List */}
-                      <div className="pt-3 border-t border-slate-200/80 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                            <BookOpen className="w-3.5 h-3.5 text-indigo-600" /> Active Classes & Schedule
-                          </span>
-                          <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
-                            Auditorium & Stream
-                          </span>
-                        </div>
-
-                        <div className="space-y-2">
-                          {(() => {
-                            const teacherClasses = activeClasses.filter(c => 
-                              (c.teacherName && c.teacherName.toLowerCase().includes(teacher.name.toLowerCase())) ||
-                              (c.name && c.name.toLowerCase().includes(teacher.subject?.toLowerCase() || ''))
-                            );
-                            const displayClasses = teacherClasses.length > 0 ? teacherClasses : [
-                              {
-                                name: `2026 A/L ${teacher.subject || 'Theory'} Class`,
-                                schedule: 'Saturday 8:00 AM - 1:00 PM',
-                                location: 'Kandy Auditorium & Stream',
-                                fee: 'Rs. 3,500'
-                              },
-                              {
-                                name: `2025 A/L ${teacher.subject || 'Revision'} & Paper Class`,
-                                schedule: 'Sunday 8:00 AM - 1:30 PM',
-                                location: 'Kandy Auditorium & Stream',
-                                fee: 'Rs. 3,500'
-                              }
-                            ];
-
-                            return displayClasses.map((cls, cIdx) => (
-                              <div key={cIdx} className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs space-y-1 hover:bg-indigo-50/50 transition-colors">
-                                <div className="flex items-center justify-between font-bold text-slate-900">
-                                  <span className="text-xs text-indigo-950 font-extrabold flex items-center gap-1.5">
-                                    <span className="w-2 h-2 rounded-full bg-indigo-600 shrink-0"></span>
-                                    {cls.name}
-                                  </span>
-                                  <span className="text-[11px] font-black text-indigo-700 shrink-0">
-                                    {typeof cls.fee === 'number' ? `Rs. ${cls.fee.toLocaleString()}` : (cls.fee || 'Rs. 3,500')}
-                                  </span>
-                                </div>
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-slate-600 font-medium pt-0.5">
-                                  <span className="flex items-center gap-1">
-                                    <Calendar className="w-3 h-3 text-indigo-600 shrink-0" />
-                                    <strong>{cls.schedule || 'Weekly Class'}</strong>
-                                  </span>
-                                  <span className="flex items-center gap-1">
-                                    <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-                                    <span>{cls.location || 'Auditorium'}</span>
-                                  </span>
-                                </div>
-                              </div>
-                            ));
-                          })()}
-                        </div>
-                      </div>
-
                     </div>
                   </div>
 
                   <div className="p-6 pt-0 space-y-2">
                     <button
                       onClick={() => setSelectedTeacherClasses(teacher)}
-                      className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+                      className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-md shadow-indigo-600/25 active:scale-[0.98]"
                     >
-                      <BookOpen className="w-4 h-4 text-indigo-300" /> View Full Timetable & Fees
+                      <BookOpen className="w-4 h-4 text-white" /> View Classes & Timetable
                     </button>
                     <button
                       onClick={() => {
                         const msg = `Hello! I would like to inquire about ${teacher.name}'s (${teacher.subject}) classes at Kingswood Connect.`;
                         window.open(`https://wa.me/94771234567?text=${encodeURIComponent(msg)}`, '_blank');
                       }}
-                      className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-[0.98]"
+                      className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]"
                     >
                       <Send className="w-4 h-4 text-white" /> Inquire / Join via WhatsApp
                     </button>
