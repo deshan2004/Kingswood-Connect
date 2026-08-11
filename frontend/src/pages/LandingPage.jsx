@@ -30,14 +30,30 @@ import {
   Send,
   Zap,
   Check,
-  UserCheck
+  UserCheck,
+  Play
 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
+const getEmbedVideoUrl = (url) => {
+  if (!url) return 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+  if (url.includes('embed/')) return url;
+  if (url.includes('youtube.com/watch?v=')) {
+    const videoId = url.split('v=')[1]?.split('&')[0];
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  }
+  if (url.includes('youtu.be/')) {
+    const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  }
+  return url;
+};
+
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [contactSubmitted, setContactSubmitted] = useState(false);
+  const [selectedTeacherVideo, setSelectedTeacherVideo] = useState(null);
 
   // Dynamic Admin Panel Data State
   const [classesList, setClassesList] = useState([]);
@@ -326,9 +342,6 @@ const LandingPage = () => {
             <button onClick={() => scrollToSection('results')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
               Exam Results
             </button>
-            <button onClick={() => scrollToSection('classes')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
-              Classes
-            </button>
             <button onClick={() => scrollToSection('features')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
               Key Features
             </button>
@@ -372,7 +385,7 @@ const LandingPage = () => {
               onClick={() => scrollToSection('about-sir')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
-              About Sir
+              Our Faculty
             </button>
             <button
               onClick={() => scrollToSection('vision-mission')}
@@ -385,12 +398,6 @@ const LandingPage = () => {
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
               Exam Results
-            </button>
-            <button
-              onClick={() => scrollToSection('classes')}
-              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
-            >
-              Classes & Schedule
             </button>
             <button
               onClick={() => scrollToSection('features')}
@@ -568,14 +575,27 @@ const LandingPage = () => {
               return (
                 <div key={teacher.teacherId || idx} className="rounded-3xl bg-white border border-slate-200/90 hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
                   <div>
-                    <div className="relative h-72 overflow-hidden bg-slate-900">
+                    <div 
+                      onClick={() => setSelectedTeacherVideo(teacher)}
+                      className="relative h-72 overflow-hidden bg-slate-900 cursor-pointer"
+                    >
                       <img
                         src={teacherImg}
                         alt={`${teacher.name} - ${teacher.subject}`}
                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div className={`absolute top-3 right-3 ${cardBadgeColor} backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md border border-white/20`}>
+                      <div className={`absolute top-3 right-3 ${cardBadgeColor} backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md border border-white/20 z-10`}>
                         {teacher.subject || 'Specialist'}
+                      </div>
+
+                      {/* Play Video Overlay Badge */}
+                      <div className="absolute inset-0 bg-slate-950/40 group-hover:bg-slate-950/20 transition-all flex items-center justify-center">
+                        <div className="w-14 h-14 rounded-full bg-indigo-600/90 group-hover:bg-indigo-600 text-white flex items-center justify-center shadow-xl border border-white/30 transform group-hover:scale-110 transition-transform">
+                          <Play size={24} className="fill-white ml-1" />
+                        </div>
+                      </div>
+                      <div className="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full border border-white/20 flex items-center gap-1">
+                        <Play size={10} className="fill-amber-400 text-amber-400" /> Click to Watch Video Demo
                       </div>
                     </div>
 
@@ -604,10 +624,10 @@ const LandingPage = () => {
 
                   <div className="p-6 pt-0">
                     <button
-                      onClick={() => scrollToSection('classes')}
-                      className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition-colors flex items-center justify-center shadow-xs"
+                      onClick={() => setSelectedTeacherVideo(teacher)}
+                      className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-md shadow-indigo-600/25 active:scale-[0.98]"
                     >
-                      View Classes <ChevronRight className="w-4 h-4 ml-1" />
+                      <Play className="w-4 h-4 fill-white" /> Watch Class Video Demo
                     </button>
                   </div>
                 </div>
@@ -756,94 +776,7 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 5: Classes & Schedule */}
-      <section id="classes" className="py-20 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
-              <BookOpen className="w-4 h-4 mr-1 text-indigo-600" />
-              {cmsSettings?.classesBadge || 'TUITION CLASSES & SCHEDULE'}
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
-              {cmsSettings?.classesTitle || 'Our Classes & Schedule'}
-            </h2>
-            <p className="text-slate-600 text-base sm:text-lg">
-              {cmsSettings?.classesSub || 'Explore our active auditorium & online live tuition classes managed directly by institute administration.'}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {activeClasses.map((cls, idx) => {
-              const isPopularClass = cls.isPopular || idx === 1;
-              const formattedFee = typeof cls.fee === 'number' ? `Rs. ${cls.fee.toLocaleString()}` : (cls.fee || 'Rs. 3,500');
-
-              return (
-                <div
-                  key={cls.classId || idx}
-                  className={`rounded-3xl bg-white p-6 flex flex-col justify-between transition-all relative group ${isPopularClass
-                      ? 'border-2 border-indigo-600 shadow-xl'
-                      : 'border border-slate-200/90 shadow-md hover:shadow-xl hover:border-indigo-300'
-                    }`}
-                >
-                  {isPopularClass && (
-                    <div className="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md">
-                      POPULAR
-                    </div>
-                  )}
-
-                  <div>
-                    <div className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold mb-4 border border-indigo-100">
-                      {cls.grade || 'A/L Batch'}
-                    </div>
-
-                    <h3 className="text-xl font-bold text-slate-900 mb-1">{cls.name}</h3>
-
-                    {cls.teacherName && (
-                      <p className="text-xs text-indigo-600 font-bold mb-3 flex items-center">
-                        <UserCheck className="w-3.5 h-3.5 mr-1" />
-                        Lecturer: {cls.teacherName}
-                      </p>
-                    )}
-
-                    <p className="text-xs text-slate-600 mb-6 leading-relaxed">
-                      {cls.description || `Comprehensive syllabus coverage, tute discussions, and exam paper evaluation conducted by ${cls.teacherName || 'expert sirs'}.`}
-                    </p>
-
-                    <div className="space-y-3 text-xs text-slate-700 border-t border-slate-200 pt-4 font-medium">
-                      <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-2 text-indigo-600 shrink-0" />
-                        <span>Schedule: <strong className="text-slate-900">{cls.schedule || 'Weekly Class'}</strong></span>
-                      </div>
-                      <div className="flex items-center">
-                        <MapPin className="w-4 h-4 mr-2 text-indigo-600 shrink-0" />
-                        <span>Venue: <strong className="text-slate-900">{cls.location || 'Kandy Auditorium & Live Stream'}</strong></span>
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="w-4 h-4 mr-2 text-indigo-600 shrink-0" />
-                        <span>Class Fee: <strong className="text-indigo-700 font-extrabold">{formattedFee}</strong></span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-8 pt-4 border-t border-slate-200">
-                    <button
-                      onClick={() => scrollToSection('contact')}
-                      className={`w-full py-2.5 rounded-xl text-white font-bold text-xs transition-all flex items-center justify-center ${isPopularClass
-                          ? 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30'
-                          : 'bg-slate-900 hover:bg-indigo-600'
-                        }`}
-                    >
-                      Register Now <ChevronRight className="w-4 h-4 ml-1" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-        </div>
-      </section>
 
 
       {/* Section 6: Tuition Class Technology & Features */}
@@ -1113,10 +1046,9 @@ const LandingPage = () => {
 
             <div className="flex flex-wrap justify-center gap-6 text-indigo-200 font-semibold">
               <button onClick={() => scrollToSection('home')} className="hover:text-white transition-colors">Home</button>
-              <button onClick={() => scrollToSection('about-sir')} className="hover:text-white transition-colors">About Sir</button>
+              <button onClick={() => scrollToSection('about-sir')} className="hover:text-white transition-colors">Our Faculty</button>
               <button onClick={() => scrollToSection('vision-mission')} className="hover:text-white transition-colors">Vision & Mission</button>
               <button onClick={() => scrollToSection('results')} className="hover:text-white transition-colors">Results</button>
-              <button onClick={() => scrollToSection('classes')} className="hover:text-white transition-colors">Classes</button>
               <Link to="/login" className="text-blue-400 font-bold hover:underline">Portal Log In</Link>
             </div>
 
@@ -1125,6 +1057,50 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
+
+      {/* Interactive Teacher Introduction & Class Demo Video Modal */}
+      {selectedTeacherVideo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-slate-200">
+            <div className="p-5 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 flex items-center justify-center shrink-0">
+                  <Play size={20} className="fill-indigo-400" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base sm:text-lg text-white leading-tight">{selectedTeacherVideo.name}</h3>
+                  <p className="text-xs text-indigo-300 font-bold">{selectedTeacherVideo.subject || 'Specialist'} - Class Demo & Introduction Video</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedTeacherVideo(null)}
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                title="Close Video"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-4 bg-slate-950 aspect-video relative">
+              <iframe
+                src={getEmbedVideoUrl(selectedTeacherVideo.videoUrl)}
+                title={`${selectedTeacherVideo.name} Class Video Demo`}
+                className="w-full h-full rounded-2xl border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+            <div className="p-4 bg-slate-50 flex items-center justify-between border-t border-slate-200">
+              <span className="text-xs font-bold text-slate-600">Kingswood Connect Faculty Video Demo</span>
+              <button
+                onClick={() => setSelectedTeacherVideo(null)}
+                className="px-5 py-2 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition-colors shadow-xs"
+              >
+                Close Window
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -1563,6 +1563,7 @@ const defaultLandingSettings = {
       qualification: 'B.Sc. Engineering (Hons) - Peradeniya',
       desc: 'Graduating with First Class Honors from Peradeniya Engineering, Eng. Kasun Perera is renowned for simplifying complex calculus, vectors, and mechanics into intuitive visual concepts.',
       image: '/images/sir_portrait.png',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
       experience: '12+ Years',
       ranks: '150+ Ranks',
       badgeColor: 'bg-indigo-600'
@@ -1574,6 +1575,7 @@ const defaultLandingSettings = {
       qualification: 'Ph.D., B.Sc. Physics Special (Hons) - Colombo',
       desc: 'Senior Physics lecturer specializing in theoretical mechanics, waves, and electronics. Known for visual lab experiments and analytical paper techniques.',
       image: '/images/sir_physics.png',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
       experience: '14+ Years',
       ranks: '120+ Ranks',
       badgeColor: 'bg-blue-600'
@@ -1585,6 +1587,7 @@ const defaultLandingSettings = {
       qualification: 'B.Sc. Eng., M.Sc. Industrial Chemistry',
       desc: 'Master educator in Organic, Inorganic & Physical Chemistry. Simplifies reaction pathways using logical flowcharts and high-yield memory techniques.',
       image: '/images/sir_chemistry.png',
+      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
       experience: '10+ Years',
       ranks: '95+ Ranks',
       badgeColor: 'bg-emerald-600'

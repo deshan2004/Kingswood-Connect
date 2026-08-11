@@ -687,6 +687,21 @@ const SettingsPage = () => {
                           />
 
                           <div>
+                            <label className="block text-[11px] font-bold text-slate-600">Introduction / Class Demo Video URL (YouTube / Vimeo)</label>
+                            <input
+                              type="text"
+                              value={t.videoUrl || ''}
+                              onChange={(e) => {
+                                const copy = [...cmsData.teachers];
+                                copy[idx].videoUrl = e.target.value;
+                                setCmsData({ ...cmsData, teachers: copy });
+                              }}
+                              placeholder="e.g. https://www.youtube.com/watch?v=... or https://www.youtube.com/embed/..."
+                              className="w-full px-3 py-1.5 text-xs rounded-lg bg-white border border-slate-300 font-medium text-indigo-700"
+                            />
+                          </div>
+
+                          <div>
                             <label className="block text-[11px] font-bold text-slate-600">Bio Description</label>
                             <textarea
                               rows="2"
