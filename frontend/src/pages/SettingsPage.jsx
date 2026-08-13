@@ -10,7 +10,7 @@ import ChangePassword from '../components/ChangePassword';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-const ImageUploadInput = ({ label, value, onChange, placeholder }) => {
+const ImageUploadInput = ({ label, value, onChange }) => {
   const handleFileChange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
@@ -47,29 +47,20 @@ const ImageUploadInput = ({ label, value, onChange, placeholder }) => {
           </div>
         )}
 
-        <div className="flex-1 space-y-1.5">
-          <div className="flex items-center gap-2">
-            <label className="cursor-pointer px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs inline-flex items-center gap-1.5 transition-colors">
-              <Upload size={14} /> Choose / Upload Photo
-              <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-            </label>
-            {value && (
-              <button
-                type="button"
-                onClick={() => onChange('')}
-                className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-          <input
-            type="text"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder || "Or paste Image URL / path..."}
-            className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:bg-white focus:outline-none font-medium"
-          />
+        <div className="flex items-center gap-2">
+          <label className="cursor-pointer px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs inline-flex items-center gap-1.5 transition-colors shadow-xs">
+            <Upload size={14} /> Choose / Upload Photo
+            <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+          </label>
+          {value && (
+            <button
+              type="button"
+              onClick={() => onChange('')}
+              className="px-3 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
+            >
+              Clear Photo
+            </button>
+          )}
         </div>
       </div>
     </div>
