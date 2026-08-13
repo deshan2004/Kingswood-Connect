@@ -25,9 +25,8 @@ const Layout = () => {
     { name: 'Attendance', href: '/admin/attendance', icon: ClipboardList },
     { name: 'Fees & Payments', href: '/admin/finance', icon: CreditCard },
     { name: 'Faculty', href: '/admin/teachers', icon: UserCog },
-    { name: 'Schedule', href: '/admin/schedule', icon: Calendar },
+    {name: 'Schedule', href: '/admin/schedule', icon: Calendar },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
-    { name: 'Trash Bin', href: '/admin/trash', icon: Trash2 },
   ];
 
   return (

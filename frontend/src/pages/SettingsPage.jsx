@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Shield, Key, Mail, UserCheck, Layout, Save, CheckCircle2, AlertCircle, 
   Phone, MapPin, Sparkles, Trophy, Compass, Globe, Plus, Trash2, BookOpen, 
@@ -7,6 +8,7 @@ import {
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import ChangePassword from '../components/ChangePassword';
+import TrashBin from './TrashBin';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -180,9 +182,17 @@ const VideoUploadInput = ({ label, value, onChange }) => {
 
 const SettingsPage = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const isAdmin = user?.role?.toLowerCase() === 'admin';
-  const [activeTab, setActiveTab] = useState(isAdmin ? 'cms' : 'security');
+  const paramTab = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(paramTab === 'trash' ? 'trash' : (isAdmin ? 'cms' : 'security'));
   const [activeCmsSection, setActiveCmsSection] = useState('hero');
+
+  useEffect(() => {
+    if (paramTab === 'trash') {
+      setActiveTab('trash');
+    }
+  }, [paramTab]);
 
   // Landing Page CMS Comprehensive State
   const [cmsData, setCmsData] = useState({
@@ -394,7 +404,7 @@ const SettingsPage = () => {
         <div className="flex border-b border-slate-200 gap-4 overflow-x-auto">
           <button
             onClick={() => setActiveTab('cms')}
-            className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+            className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
               activeTab === 'cms'
                 ? 'border-indigo-600 text-indigo-600'
                 : 'border-transparent text-slate-500 hover:text-slate-700'
@@ -403,8 +413,18 @@ const SettingsPage = () => {
             <Layout size={18} /> 100% Landing Page CMS Editor
           </button>
           <button
+            onClick={() => setActiveTab('trash')}
+            className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
+              activeTab === 'trash'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            <Trash2 size={18} /> Trash & Recycle Bin
+          </button>
+          <button
             onClick={() => setActiveTab('security')}
-            className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+            className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
               activeTab === 'security'
                 ? 'border-indigo-600 text-indigo-600'
                 : 'border-transparent text-slate-500 hover:text-slate-700'
@@ -1241,6 +1261,13 @@ const SettingsPage = () => {
             </form>
           )}
 
+        </div>
+      )}
+
+      {/* TAB: Trash & Recycle Bin */}
+      {isAdmin && activeTab === 'trash' && (
+        <div className="animate-in fade-in duration-200">
+          <TrashBin />
         </div>
       )}
 

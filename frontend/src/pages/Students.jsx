@@ -369,9 +369,9 @@ ${autoLoginLink}
           </button>
 
           <Link 
-            to="/admin/trash"
+            to="/admin/settings?tab=trash"
             className="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold py-2.5 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm shadow-2xs"
-            title="View deleted students & records in Trash Bin"
+            title="View deleted students & records in Settings Trash Bin"
           >
             <Trash2 size={18} /> Trash Bin
           </Link>
