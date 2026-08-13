@@ -371,67 +371,75 @@ const SettingsPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-16 animate-in fade-in duration-300">
-      <div>
-        <h2 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-          <Shield className="text-indigo-600" size={32} /> System Settings & CMS
-        </h2>
-        <p className="text-slate-500 font-medium mt-1">100% Granular control over all landing page text, teachers, classes, results, and hotlines</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30 border border-indigo-400/30 shrink-0">
+            <Shield size={28} />
+          </div>
+          <div>
+            <h2 className="text-3xl font-black tracking-tight text-slate-800">
+              System Settings & CMS
+            </h2>
+            <p className="text-slate-500 font-medium text-xs sm:text-sm mt-0.5">
+              Comprehensive granular control over landing page text, teachers, classes, results, and security
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Account Summary */}
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-white via-slate-50/70 to-indigo-50/40 rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-blue-600 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-indigo-200">
-            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+          <div className="relative">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-blue-600 text-white font-black text-xl flex items-center justify-center shadow-md shadow-indigo-200">
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            </div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow-xs"></div>
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-800">{user?.name || 'User Account'}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-extrabold text-slate-800">{user?.name || 'User Account'}</h3>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Active Session
+              </span>
+            </div>
             <p className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mt-0.5">
-              <Mail size={14} className="text-slate-400" /> {user?.email || 'No email attached'}
+              <Mail size={13} className="text-indigo-500" /> {user?.email || 'No email attached'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100 flex items-center gap-1.5">
-            <UserCheck size={14} /> Role: {user?.role || 'User'}
+        <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
+          <span className="px-4 py-2 rounded-2xl text-xs font-extrabold uppercase tracking-wider bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-700 border border-indigo-200/80 flex items-center gap-2 shadow-2xs">
+            <UserCheck size={15} className="text-indigo-600" /> Role: {user?.role || 'User'}
           </span>
         </div>
       </div>
 
       {/* Admin Tabs */}
       {isAdmin && (
-        <div className="flex border-b border-slate-200 gap-4 overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('cms')}
-            className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'cms'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            <Layout size={18} /> 100% Landing Page CMS Editor
-          </button>
-          <button
-            onClick={() => setActiveTab('trash')}
-            className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'trash'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            <Trash2 size={18} /> Trash & Recycle Bin
-          </button>
-          <button
-            onClick={() => setActiveTab('security')}
-            className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'security'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
-            }`}
-          >
-            <Key size={18} /> Password & Security
-          </button>
+        <div className="p-1.5 bg-slate-200/80 backdrop-blur-md rounded-2xl border border-slate-300/70 shadow-inner flex flex-wrap gap-2">
+          {[
+            { id: 'cms', label: '100% Landing Page CMS Editor', icon: Layout },
+            { id: 'trash', label: 'Trash & Recycle Bin', icon: Trash2 },
+            { id: 'security', label: 'Password & Security', icon: Key }
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-5 py-3 rounded-xl text-xs font-black transition-all duration-200 cursor-pointer flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-300 scale-[1.02]'
+                    : 'text-slate-700 hover:text-slate-900 hover:bg-white/70 font-extrabold'
+                }`}
+              >
+                <Icon size={16} /> {tab.label}
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -440,17 +448,18 @@ const SettingsPage = () => {
         <div className="space-y-6">
           
           {/* Action Header Banner */}
-          <div className="bg-gradient-to-r from-indigo-950 via-indigo-900 to-slate-900 p-6 rounded-3xl text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
-            <div>
-              <h3 className="text-xl font-extrabold flex items-center gap-2">
-                <Globe className="text-amber-400" size={24} /> Full Landing Page Content Editor
+          <div className="bg-gradient-to-r from-indigo-950 via-indigo-900 to-slate-900 p-6 sm:p-8 rounded-3xl text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden border border-indigo-800/40">
+            <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="relative z-10">
+              <h3 className="text-xl sm:text-2xl font-black flex items-center gap-2.5 tracking-tight">
+                <Globe className="text-amber-400 animate-pulse" size={26} /> Full Landing Page Content Editor
               </h3>
-              <p className="text-xs text-indigo-200 mt-1">Select any section below to customize text, headers, images, classes, teachers, or exam results.</p>
+              <p className="text-xs sm:text-sm text-indigo-200/90 font-medium mt-1">Select any section below to customize text, headers, images, classes, teachers, or exam results.</p>
             </div>
             <button
               onClick={handleSaveCms}
               disabled={savingCms}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-black text-sm shadow-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap shrink-0"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-black text-sm shadow-xl shadow-indigo-950/50 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 whitespace-nowrap shrink-0 relative z-10 cursor-pointer"
             >
               <Save size={18} />
               {savingCms ? 'Saving All...' : 'Save All Changes'}
