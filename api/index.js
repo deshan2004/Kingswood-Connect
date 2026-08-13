@@ -215,6 +215,25 @@ app.put('/api/students/:id', async (req, res) => {
   }
 });
 
+// 2.5.5 Delete a student
+app.delete('/api/students/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const studentRef = db.collection('students').doc(id);
+    const doc = await studentRef.get();
+    
+    if (!doc.exists) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    await studentRef.delete();
+    res.json({ message: 'Student deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting student:', error);
+    res.status(500).json({ error: 'Failed to delete student' });
+  }
+});
+
 // 2.6 Allow Teachers (Sir / Lecturers) to grant/update student card type
 app.post('/api/teacher/update-card-type', async (req, res) => {
   try {

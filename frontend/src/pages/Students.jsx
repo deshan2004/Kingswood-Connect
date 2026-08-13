@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X, Edit2, Filter, UserMinus, RefreshCw } from 'lucide-react';
+import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X, Edit2, Filter, UserMinus, RefreshCw, Trash2 } from 'lucide-react';
 import Select from 'react-select';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -244,6 +244,24 @@ ${autoLoginLink}
     }
   };
 
+  const handleDeleteStudent = async (student) => {
+    if (!student) return;
+    const confirmDelete = window.confirm(`Are you sure you want to delete student "${student.name}" (${student.studentId})? This action cannot be undone.`);
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${API_URL}/students/${student.studentId}`);
+      showToast('success', `Student "${student.name}" deleted successfully!`);
+      if (editingStudent?.studentId === student.studentId) {
+        setEditingStudent(null);
+      }
+      fetchData(); // Refresh list
+    } catch (error) {
+      console.error('Delete error:', error);
+      showToast('error', 'Failed to delete student');
+    }
+  };
+
   const filteredStudents = students.filter(student => {
     // Filter by class
     if (filterClass !== 'all') {
@@ -463,6 +481,13 @@ ${autoLoginLink}
                             className="text-slate-400 hover:text-indigo-600 transition-colors p-2 hover:bg-indigo-50 rounded-lg cursor-pointer"
                           >
                             <QrCode size={20} />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteStudent(student)}
+                            title="Delete Student"
+                            className="text-slate-400 hover:text-red-600 transition-colors p-2 hover:bg-red-50 rounded-lg cursor-pointer"
+                          >
+                            <Trash2 size={20} />
                           </button>
                         </td>
                       </tr>
@@ -745,21 +770,31 @@ ${autoLoginLink}
                   </div>
                 </div>
 
-                <div className="pt-4 flex justify-end gap-3">
+                <div className="pt-4 flex items-center justify-between gap-3 border-t border-slate-100">
                   <button 
                     type="button"
-                    onClick={() => setEditingStudent(null)}
-                    className="px-5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+                    onClick={() => handleDeleteStudent(editingStudent)}
+                    className="px-4 py-2.5 rounded-xl font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors flex items-center gap-1.5 cursor-pointer text-xs"
                   >
-                    Cancel
+                    <Trash2 size={16} /> Delete Student
                   </button>
-                  <button 
-                    type="submit" 
-                    disabled={updating}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95 disabled:opacity-70 flex items-center gap-2"
-                  >
-                    {updating ? 'Saving...' : 'Save Changes'}
-                  </button>
+                  
+                  <div className="flex items-center gap-2">
+                    <button 
+                      type="button"
+                      onClick={() => setEditingStudent(null)}
+                      className="px-5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors text-xs"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit" 
+                      disabled={updating}
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95 disabled:opacity-70 flex items-center gap-2 text-xs"
+                    >
+                      {updating ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
