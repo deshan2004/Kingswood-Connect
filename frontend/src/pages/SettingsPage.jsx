@@ -27,41 +27,59 @@ const ImageUploadInput = ({ label, value, onChange }) => {
   };
 
   return (
-    <div className="space-y-1.5">
-      <label className="block text-xs font-bold text-slate-700">{label}</label>
-      <div className="flex items-center gap-3">
+    <div className="space-y-2">
+      <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">{label}</label>
+      
+      <div className="p-4 rounded-2xl border border-slate-200/80 bg-gradient-to-br from-slate-50/50 via-white to-indigo-50/20 shadow-xs hover:border-indigo-300 transition-all">
         {value ? (
-          <div className="relative w-14 h-14 rounded-xl border border-slate-300 overflow-hidden bg-slate-100 shrink-0 group shadow-xs">
-            <img src={value} alt="Preview" className="w-full h-full object-cover" />
-            <button
-              type="button"
-              onClick={() => onChange('')}
-              className="absolute inset-0 bg-slate-900/70 text-white text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              Remove
-            </button>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="relative w-20 h-20 rounded-2xl border-2 border-indigo-500/20 overflow-hidden bg-slate-100 shrink-0 group shadow-md transition-transform hover:scale-105">
+              <img src={value} alt="Preview" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={() => onChange('')}
+                  className="p-2 rounded-xl bg-red-600/90 text-white hover:bg-red-700 transition-all shadow-md transform scale-95 group-hover:scale-100"
+                  title="Remove Photo"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 space-y-2 text-center sm:text-left">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[11px] font-bold">
+                <CheckCircle2 size={13} className="text-emerald-600" /> Photo Uploaded Successfully
+              </div>
+              <div className="flex items-center justify-center sm:justify-start gap-2 pt-0.5">
+                <label className="cursor-pointer px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs inline-flex items-center gap-2 shadow-md shadow-indigo-200 transition-all active:scale-95">
+                  <Upload size={14} /> Change Photo
+                  <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => onChange('')}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200/80 transition-all"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="w-14 h-14 rounded-xl border border-dashed border-slate-300 flex items-center justify-center text-slate-400 bg-slate-50 shrink-0">
-            <Upload size={20} />
-          </div>
-        )}
-
-        <div className="flex items-center gap-2">
-          <label className="cursor-pointer px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs inline-flex items-center gap-1.5 transition-colors shadow-xs">
-            <Upload size={14} /> Choose / Upload Photo
+          <label className="cursor-pointer group flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl bg-white/80 hover:bg-indigo-50/40 transition-all text-center">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-50 group-hover:bg-indigo-100 text-indigo-600 flex items-center justify-center mb-2.5 transition-all transform group-hover:scale-110 shadow-xs">
+              <Upload size={22} />
+            </div>
+            <span className="text-xs font-extrabold text-slate-700 group-hover:text-indigo-600 transition-colors">
+              Click to Choose / Upload Photo
+            </span>
+            <span className="text-[11px] font-medium text-slate-400 mt-1">
+              Supports PNG, JPG, WEBP under 4MB
+            </span>
             <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
           </label>
-          {value && (
-            <button
-              type="button"
-              onClick={() => onChange('')}
-              className="px-3 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
-            >
-              Clear Photo
-            </button>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
@@ -341,7 +359,7 @@ const SettingsPage = () => {
           )}
 
           {/* Section Navigation Tabs */}
-          <div className="flex flex-wrap gap-2 p-2 bg-slate-100 rounded-2xl border border-slate-200">
+          <div className="flex flex-wrap gap-2 p-2 bg-slate-100/90 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xs">
             {[
               { id: 'hero', label: '📌 Hero & Badges' },
               { id: 'stats', label: '📊 Stat Counters' },
@@ -356,10 +374,10 @@ const SettingsPage = () => {
               <button
                 key={sec.id}
                 onClick={() => setActiveCmsSection(sec.id)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-200 cursor-pointer ${
                   activeCmsSection === sec.id
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200/60'
+                    ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-200 scale-[1.02]'
+                    : 'bg-white text-slate-700 hover:bg-slate-200/80 hover:text-slate-900 border border-slate-200/60 shadow-2xs'
                 }`}
               >
                 {sec.label}
