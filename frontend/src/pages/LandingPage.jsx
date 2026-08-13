@@ -1003,107 +1003,92 @@ const LandingPage = () => {
               </div>
             </div>
 
-            {/* Direct Inquiry Form */}
+            {/* Direct WhatsApp Inquiry Form */}
             <div className="lg:col-span-7">
               <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl relative">
 
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Send an Instant Inquiry</h3>
-                <p className="text-xs text-slate-600 mb-6">Fill out your details below to submit or join directly via WhatsApp.</p>
+                <h3 className="text-xl font-bold text-slate-900 mb-1 flex items-center gap-2">
+                  <MessageSquare className="text-emerald-600" size={22} /> Send an Instant WhatsApp Inquiry
+                </h3>
+                <p className="text-xs text-slate-600 mb-6">Fill out your details below to send your inquiry directly to our team via WhatsApp.</p>
 
-                {contactSubmitted ? (
-                  <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-center space-y-2">
-                    <Check className="w-10 h-10 mx-auto text-emerald-600" />
-                    <h4 className="font-bold text-lg text-slate-900">Inquiry Sent Successfully!</h4>
-                    <p className="text-xs text-slate-700">Thank you for reaching out. Our counseling team will contact you shortly.</p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleContactSubmit} className="space-y-4">
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
-                        <input
-                          type="text"
-                          required
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          placeholder="e.g. Kaveen Perera"
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Phone Number</label>
-                        <input
-                          type="tel"
-                          required
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          placeholder="0771234567"
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Select Tuition Class</label>
-                        <select
-                          value={formData.batch}
-                          onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
-                        >
-                          {activeClasses.map((cls, i) => (
-                            <option key={cls.classId || i} value={cls.name}>
-                              {cls.name} ({cls.teacherName || cls.grade})
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Subject Preference</label>
-                        <select
-                          value={formData.subject}
-                          onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
-                        >
-                          <option value="Combined Mathematics">Combined Mathematics</option>
-                          <option value="Physics">Physics</option>
-                          <option value="Chemistry">Chemistry</option>
-                          <option value="Both Subjects">Both Subjects</option>
-                        </select>
-                      </div>
-                    </div>
-
+                <form onSubmit={handleWhatsAppInquiry} className="space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Your Message</label>
-                      <textarea
-                        rows="3"
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        placeholder="Write any specific questions or details you would like to know..."
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="e.g. Kaveen Perera"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
                       />
                     </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                      <button
-                        type="submit"
-                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/20 transition-all flex items-center justify-center"
-                      >
-                        <Send className="w-4 h-4 mr-2 text-indigo-100" />
-                        Submit Inquiry
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={handleWhatsAppInquiry}
-                        className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center"
-                      >
-                        <MessageSquare className="w-4 h-4 mr-2 text-emerald-100" />
-                        Join / Chat on WhatsApp
-                      </button>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Phone Number</label>
+                      <input
+                        type="tel"
+                        required
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        placeholder="0771234567"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
+                      />
                     </div>
-                  </form>
-                )}
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Select Tuition Class</label>
+                      <select
+                        value={formData.batch}
+                        onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
+                      >
+                        {activeClasses.map((cls, i) => (
+                          <option key={cls.classId || i} value={cls.name}>
+                            {cls.name} ({cls.teacherName || cls.grade})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Subject Preference</label>
+                      <select
+                        value={formData.subject}
+                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
+                      >
+                        <option value="Combined Mathematics">Combined Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Both Subjects">Both Subjects</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Your Message</label>
+                    <textarea
+                      rows="3"
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      placeholder="Write any specific questions or details you would like to know..."
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
+                    />
+                  </div>
+
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5 active:scale-[0.99]"
+                    >
+                      <MessageSquare className="w-5 h-5 text-white" />
+                      Send Inquiry via WhatsApp
+                    </button>
+                  </div>
+                </form>
 
               </div>
             </div>
