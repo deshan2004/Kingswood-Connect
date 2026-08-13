@@ -215,7 +215,7 @@ app.put('/api/students/:id', async (req, res) => {
   }
 });
 
-// 2.5.5 Delete a student
+// 2.5.5 Delete a student (Move to Trash)
 app.delete('/api/students/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -226,8 +226,21 @@ app.delete('/api/students/:id', async (req, res) => {
       return res.status(404).json({ error: 'Student not found' });
     }
 
+    const studentData = doc.data();
+    const trashId = `TRASH-STUDENT-${Date.now()}`;
+
+    await db.collection('trash').doc(trashId).set({
+      trashId,
+      type: 'Student',
+      originalId: id,
+      title: studentData.name || 'Unnamed Student',
+      subtitle: `ID: ${id} • Grade: ${studentData.grade || 'N/A'} • Contact: ${studentData.contact || 'N/A'}`,
+      itemData: { ...studentData, studentId: id },
+      deletedAt: new Date().toISOString()
+    });
+
     await studentRef.delete();
-    res.json({ message: 'Student deleted successfully' });
+    res.json({ message: 'Student moved to Trash Bin' });
   } catch (error) {
     console.error('Error deleting student:', error);
     res.status(500).json({ error: 'Failed to delete student' });
@@ -1407,11 +1420,106 @@ app.get('/api/materials/class/:id', async (req, res) => {
 app.delete('/api/materials/:id', async (req, res) => {
   try {
     const materialId = req.params.id;
-    await db.collection('materials').doc(materialId).delete();
-    res.json({ message: 'Material deleted successfully' });
+    const matRef = db.collection('materials').doc(materialId);
+    const doc = await matRef.get();
+
+    if (doc.exists) {
+      const matData = doc.data();
+      const trashId = `TRASH-MAT-${Date.now()}`;
+      await db.collection('trash').doc(trashId).set({
+        trashId,
+        type: 'Material',
+        originalId: materialId,
+        title: matData.title || 'Untitled Material',
+        subtitle: `Type: ${matData.type || 'Tute'} • Class: ${matData.className || matData.classId || 'N/A'}`,
+        itemData: { ...matData, materialId },
+        deletedAt: new Date().toISOString()
+      });
+    }
+
+    await matRef.delete();
+    res.json({ message: 'Material moved to Trash Bin' });
   } catch (error) {
     console.error('Delete material error:', error);
     res.status(500).json({ error: 'Failed to delete material' });
+  }
+});
+
+// --- Trash Bin Endpoints ---
+
+// Get all items in trash
+app.get('/api/trash', async (req, res) => {
+  try {
+    const snapshot = await db.collection('trash').get();
+    const items = snapshot.docs.map(doc => ({ trashId: doc.id, ...doc.data() }));
+    items.sort((a, b) => new Date(b.deletedAt || 0) - new Date(a.deletedAt || 0));
+    res.json(items);
+  } catch (error) {
+    console.error('Error fetching trash items:', error);
+    res.status(500).json({ error: 'Failed to fetch trash items' });
+  }
+});
+
+// Restore item from trash
+app.post('/api/trash/restore/:trashId', async (req, res) => {
+  try {
+    const { trashId } = req.params;
+    const trashRef = db.collection('trash').doc(trashId);
+    const doc = await trashRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: 'Trash item not found' });
+    }
+
+    const item = doc.data();
+    const { type, originalId, itemData } = item;
+
+    if (type === 'Student') {
+      await db.collection('students').doc(originalId).set(itemData);
+    } else if (type === 'Material') {
+      await db.collection('materials').doc(originalId).set(itemData);
+    } else if (type === 'Teacher') {
+      await db.collection('teachers').doc(originalId).set(itemData);
+    } else if (type === 'Class') {
+      await db.collection('classes').doc(originalId).set(itemData);
+    } else {
+      await db.collection(`${type.toLowerCase()}s`).doc(originalId).set(itemData);
+    }
+
+    // Delete from trash
+    await trashRef.delete();
+    res.json({ message: 'Item restored successfully' });
+  } catch (error) {
+    console.error('Error restoring trash item:', error);
+    res.status(500).json({ error: 'Failed to restore item' });
+  }
+});
+
+// Permanently delete single item from trash
+app.delete('/api/trash/:trashId', async (req, res) => {
+  try {
+    const { trashId } = req.params;
+    await db.collection('trash').doc(trashId).delete();
+    res.json({ message: 'Item deleted permanently' });
+  } catch (error) {
+    console.error('Error deleting item from trash:', error);
+    res.status(500).json({ error: 'Failed to delete item permanently' });
+  }
+});
+
+// Empty entire trash
+app.delete('/api/trash', async (req, res) => {
+  try {
+    const snapshot = await db.collection('trash').get();
+    const batch = db.batch();
+    snapshot.docs.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+    res.json({ message: 'Trash Bin emptied successfully' });
+  } catch (error) {
+    console.error('Error emptying trash:', error);
+    res.status(500).json({ error: 'Failed to empty trash' });
   }
 });
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Users, UserPlus, Search, MoreVertical, QrCode, MessageSquare, CheckCircle2, AlertCircle, X, Edit2, Filter, UserMinus, RefreshCw, Trash2 } from 'lucide-react';
 import Select from 'react-select';
@@ -366,6 +367,14 @@ ${autoLoginLink}
             <RefreshCw size={16} className={cleanupLoading ? "animate-spin text-amber-600" : "text-amber-600"} />
             {cleanupLoading ? 'Cleaning Up...' : 'Auto-Cleanup Inactive (2+ Months)'}
           </button>
+
+          <Link 
+            to="/admin/trash"
+            className="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold py-2.5 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm shadow-2xs"
+            title="View deleted students & records in Trash Bin"
+          >
+            <Trash2 size={18} /> Trash Bin
+          </Link>
 
           <button 
             onClick={() => setShowRegisterModal(true)}

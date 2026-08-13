@@ -20,6 +20,7 @@ import TeacherDashboard from './pages/TeacherDashboard';
 import Materials from './pages/Materials';
 import UpdateEmailPage from './pages/UpdateEmailPage';
 import SettingsPage from './pages/SettingsPage';
+import TrashBin from './pages/TrashBin';
 
 const ProtectedRoute = ({ children, allowedRole }) => {
   const { user, loading } = useAuth();
@@ -66,6 +67,7 @@ function App() {
             <Route path="teachers" element={<Teachers />} />
             <Route path="schedule" element={<Schedule />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="trash" element={<TrashBin />} />
           </Route>
 
           {/* Student Routes */}
