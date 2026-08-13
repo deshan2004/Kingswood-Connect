@@ -138,16 +138,23 @@ const Materials = () => {
     }
   };
 
-  const handleDelete = async (materialId) => {
-    if (!window.confirm('Are you sure you want to delete this material?')) return;
-    
-    try {
-      await axios.delete(`${API_URL}/materials/${materialId}`);
-      setMaterials(materials.filter(m => m.materialId !== materialId));
-      showToast('success', 'Material deleted.');
-    } catch (error) {
-      showToast('error', 'Failed to delete material.');
-    }
+  const [confirmModal, setConfirmModal] = useState(null);
+
+  const handleDelete = (materialId) => {
+    setConfirmModal({
+      title: 'Delete Material',
+      message: 'Are you sure you want to delete this material? This action cannot be undone.',
+      confirmText: 'Yes, Delete Material',
+      onConfirm: async () => {
+        try {
+          await axios.delete(`${API_URL}/materials/${materialId}`);
+          setMaterials(materials.filter(m => m.materialId !== materialId));
+          showToast('success', 'Material deleted.');
+        } catch (error) {
+          showToast('error', 'Failed to delete material.');
+        }
+      }
+    });
   };
 
   const getIcon = (type) => {
@@ -172,6 +179,44 @@ const Materials = () => {
             <button onClick={() => setToast(null)} className="ml-2 p-1.5 hover:bg-black/10 rounded-full transition-colors shrink-0">
               <X size={18} />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Sleek Confirmation Modal */}
+      {confirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-200 relative overflow-hidden">
+            <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mb-5 shadow-xs ring-4 ring-rose-50/50">
+              <Trash2 size={26} />
+            </div>
+            
+            <h3 className="text-xl font-black text-slate-900 mb-2">{confirmModal.title || 'Are you sure?'}</h3>
+            <div className="text-slate-600 text-sm font-medium leading-relaxed mb-6">
+              {confirmModal.message}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setConfirmModal(null)}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 border border-slate-200/80 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const action = confirmModal.onConfirm;
+                  setConfirmModal(null);
+                  if (action) action();
+                }}
+                className="px-5 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 shadow-lg shadow-rose-200 transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
+              >
+                <Trash2 size={15} />
+                {confirmModal.confirmText || 'Confirm'}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -37,6 +37,7 @@ const Students = () => {
 
   // Modals
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [confirmModal, setConfirmModal] = useState(null);
 
   // Filters
   const [filterClass, setFilterClass] = useState('all');
@@ -244,22 +245,30 @@ ${autoLoginLink}
     }
   };
 
-  const handleDeleteStudent = async (student) => {
+  const handleDeleteStudent = (student) => {
     if (!student) return;
-    const confirmDelete = window.confirm(`Are you sure you want to delete student "${student.name}" (${student.studentId})? This action cannot be undone.`);
-    if (!confirmDelete) return;
-
-    try {
-      await axios.delete(`${API_URL}/students/${student.studentId}`);
-      showToast('success', `Student "${student.name}" deleted successfully!`);
-      if (editingStudent?.studentId === student.studentId) {
-        setEditingStudent(null);
+    setConfirmModal({
+      title: 'Delete Student Record',
+      message: (
+        <span>
+          Are you sure you want to delete student <strong className="text-slate-900 font-extrabold">"{student.name}"</strong> (<span className="font-mono text-blue-600 font-bold">{student.studentId}</span>)? This action cannot be undone.
+        </span>
+      ),
+      confirmText: 'Yes, Delete Student',
+      onConfirm: async () => {
+        try {
+          await axios.delete(`${API_URL}/students/${student.studentId}`);
+          showToast('success', `Student "${student.name}" deleted successfully!`);
+          if (editingStudent?.studentId === student.studentId) {
+            setEditingStudent(null);
+          }
+          fetchData();
+        } catch (error) {
+          console.error('Delete error:', error);
+          showToast('error', 'Failed to delete student');
+        }
       }
-      fetchData(); // Refresh list
-    } catch (error) {
-      console.error('Delete error:', error);
-      showToast('error', 'Failed to delete student');
-    }
+    });
   };
 
   const filteredStudents = students.filter(student => {
@@ -300,6 +309,44 @@ ${autoLoginLink}
             <button onClick={() => setToast(null)} className="ml-2 p-1.5 hover:bg-black/10 rounded-full transition-colors shrink-0">
               <X size={18} />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Sleek Confirmation Modal */}
+      {confirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-200 relative overflow-hidden">
+            <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mb-5 shadow-xs ring-4 ring-rose-50/50">
+              <Trash2 size={26} />
+            </div>
+            
+            <h3 className="text-xl font-black text-slate-900 mb-2">{confirmModal.title || 'Are you sure?'}</h3>
+            <div className="text-slate-600 text-sm font-medium leading-relaxed mb-6">
+              {confirmModal.message}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setConfirmModal(null)}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 border border-slate-200/80 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const action = confirmModal.onConfirm;
+                  setConfirmModal(null);
+                  if (action) action();
+                }}
+                className="px-5 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 shadow-lg shadow-rose-200 transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
+              >
+                <Trash2 size={15} />
+                {confirmModal.confirmText || 'Confirm'}
+              </button>
+            </div>
           </div>
         </div>
       )}
