@@ -38,6 +38,7 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const getEmbedVideoUrl = (url) => {
   if (!url) return 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+  if (url.startsWith('data:video') || url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov')) return url;
   if (url.includes('embed/')) return url;
   if (url.includes('youtube.com/watch?v=')) {
     const videoId = url.split('v=')[1]?.split('&')[0];
@@ -46,6 +47,14 @@ const getEmbedVideoUrl = (url) => {
   if (url.includes('youtu.be/')) {
     const videoId = url.split('youtu.be/')[1]?.split('?')[0];
     return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  }
+  if (url.includes('youtube.com/shorts/')) {
+    const videoId = url.split('shorts/')[1]?.split('?')[0];
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  }
+  if (url.includes('vimeo.com/')) {
+    const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
+    return `https://player.vimeo.com/video/${videoId}?autoplay=1`;
   }
   return url;
 };
@@ -70,30 +79,49 @@ const LandingPage = () => {
     message: ''
   });
 
+  const fetchAdminData = async () => {
+    try {
+      const [classesRes, teachersRes, cmsRes] = await Promise.all([
+        axios.get(`${API_URL}/classes`),
+        axios.get(`${API_URL}/teachers`),
+        axios.get(`${API_URL}/landing-settings`)
+      ]);
+      if (Array.isArray(classesRes.data) && classesRes.data.length > 0) {
+        setClassesList(classesRes.data);
+      }
+      if (Array.isArray(teachersRes.data) && teachersRes.data.length > 0) {
+        setTeachersList(teachersRes.data);
+      }
+      if (cmsRes.data) {
+        setCmsSettings(cmsRes.data);
+      }
+    } catch (err) {
+      console.log('Using default landing page data:', err?.message);
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchAdminData = async () => {
-      try {
-        const [classesRes, teachersRes, cmsRes] = await Promise.all([
-          axios.get(`${API_URL}/classes`),
-          axios.get(`${API_URL}/teachers`),
-          axios.get(`${API_URL}/landing-settings`)
-        ]);
-        if (Array.isArray(classesRes.data) && classesRes.data.length > 0) {
-          setClassesList(classesRes.data);
-        }
-        if (Array.isArray(teachersRes.data) && teachersRes.data.length > 0) {
-          setTeachersList(teachersRes.data);
-        }
-        if (cmsRes.data) {
-          setCmsSettings(cmsRes.data);
-        }
-      } catch (err) {
-        console.log('Using default landing page data:', err?.message);
-      } finally {
-        setLoadingData(false);
+    fetchAdminData();
+
+    const handleFocus = () => fetchAdminData();
+    const handleCmsUpdate = () => fetchAdminData();
+    const handleStorage = (e) => {
+      if (e.key === 'kingswood_cms_updated') {
+        fetchAdminData();
       }
     };
-    fetchAdminData();
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('cms-updated', handleCmsUpdate);
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('cms-updated', handleCmsUpdate);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   const handleContactSubmit = (e) => {

@@ -12,17 +12,72 @@ import TrashBin from './TrashBin';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
+const getEmbedVideoUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('data:video') || url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov')) {
+    return url;
+  }
+  if (url.includes('embed/')) return url;
+  if (url.includes('youtube.com/watch?v=')) {
+    const videoId = url.split('v=')[1]?.split('&')[0];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  if (url.includes('youtu.be/')) {
+    const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  if (url.includes('youtube.com/shorts/')) {
+    const videoId = url.split('shorts/')[1]?.split('?')[0];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  if (url.includes('vimeo.com/')) {
+    const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
+    return `https://player.vimeo.com/video/${videoId}`;
+  }
+  return url;
+};
+
 const ImageUploadInput = ({ label, value, onChange }) => {
   const handleFileChange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      if (file.size > 4 * 1024 * 1024) {
-        alert('Image file size is too large. Please select an image under 4MB.');
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Image file size is too large. Please select an image under 10MB.');
         return;
       }
       const reader = new FileReader();
-      reader.onloadend = () => {
-        onChange(reader.result);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          onChange(compressedDataUrl);
+        };
+        img.onerror = () => {
+          onChange(event.target.result);
+        };
+        img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     }
@@ -51,7 +106,7 @@ const ImageUploadInput = ({ label, value, onChange }) => {
 
             <div className="flex-1 space-y-2 text-center sm:text-left">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[11px] font-bold">
-                <CheckCircle2 size={13} className="text-emerald-600" /> Photo Uploaded Successfully
+                <CheckCircle2 size={13} className="text-emerald-600" /> Photo Ready & Optimized
               </div>
               <div className="flex items-center justify-center sm:justify-start gap-2 pt-0.5">
                 <label className="cursor-pointer px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs inline-flex items-center gap-2 shadow-md shadow-indigo-200 transition-all active:scale-95">
@@ -77,7 +132,7 @@ const ImageUploadInput = ({ label, value, onChange }) => {
               Click to Choose / Upload Photo
             </span>
             <span className="text-[11px] font-medium text-slate-400 mt-1">
-              Supports PNG, JPG, WEBP under 4MB
+              Supports PNG, JPG, WEBP (auto-optimized for instant loading)
             </span>
             <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
           </label>
@@ -91,8 +146,8 @@ const VideoUploadInput = ({ label, value, onChange }) => {
   const handleFileChange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      if (file.size > 25 * 1024 * 1024) {
-        alert('Video file size is too large. Please select a video under 25MB or paste a YouTube / Vimeo link.');
+      if (file.size > 800 * 1024) {
+        alert('Video file size exceeds 800KB. Directly uploading large video files exceeds database document limits. Please paste a YouTube / Vimeo link instead, or select a short clip under 800KB.');
         return;
       }
       const reader = new FileReader();
@@ -104,6 +159,7 @@ const VideoUploadInput = ({ label, value, onChange }) => {
   };
 
   const isUploadedVideo = value && (value.startsWith('data:video') || value.endsWith('.mp4') || value.endsWith('.webm') || value.endsWith('.mov'));
+  const embedUrl = getEmbedVideoUrl(value);
 
   return (
     <div className="space-y-2">
@@ -117,7 +173,7 @@ const VideoUploadInput = ({ label, value, onChange }) => {
                 <video src={value} controls className="w-full h-full object-contain" />
               ) : (
                 <iframe
-                  src={value.includes('embed/') ? value : value.includes('youtube.com/watch?v=') ? `https://www.youtube.com/embed/${value.split('v=')[1]?.split('&')[0]}` : value}
+                  src={embedUrl}
                   title="Video Preview"
                   className="w-full h-full border-0 pointer-events-none"
                 />
@@ -132,7 +188,7 @@ const VideoUploadInput = ({ label, value, onChange }) => {
               
               <div className="flex items-center gap-2">
                 <label className="cursor-pointer px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs inline-flex items-center gap-2 shadow-md shadow-indigo-200 transition-all active:scale-95">
-                  <Upload size={14} /> Change / Upload Video
+                  <Upload size={14} /> Change Video
                   <input type="file" accept="video/*" className="hidden" onChange={handleFileChange} />
                 </label>
                 <button
@@ -152,10 +208,10 @@ const VideoUploadInput = ({ label, value, onChange }) => {
                 <Upload size={22} />
               </div>
               <span className="text-xs font-extrabold text-slate-700 group-hover:text-indigo-600 transition-colors">
-                Click to Choose / Upload Class Video File (MP4, WEBM)
+                Click to Choose Short Video File (under 800KB)
               </span>
               <span className="text-[11px] font-medium text-slate-400 mt-1">
-                Directly upload video file (up to 25MB)
+                For long videos, paste YouTube or Vimeo link below
               </span>
               <input type="file" accept="video/*" className="hidden" onChange={handleFileChange} />
             </label>
@@ -299,10 +355,16 @@ const SettingsPage = () => {
     try {
       await axios.put(`${API_URL}/landing-settings`, cmsData);
       setSuccessMsg('All Landing Page changes saved successfully! Live website updated.');
+      
+      // Dispatch real-time update events for open tabs / landing page
+      window.dispatchEvent(new Event('cms-updated'));
+      localStorage.setItem('kingswood_cms_updated', Date.now().toString());
+
       setTimeout(() => setSuccessMsg(''), 4000);
     } catch (err) {
       console.error('Failed to save CMS settings:', err);
-      setErrorMsg('Failed to save changes. Please try again.');
+      const serverDetails = err?.response?.data?.details || err?.response?.data?.error || err.message;
+      setErrorMsg(`Failed to save changes: ${serverDetails}`);
     } finally {
       setSavingCms(false);
     }
