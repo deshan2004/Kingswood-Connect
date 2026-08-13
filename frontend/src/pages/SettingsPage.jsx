@@ -85,6 +85,99 @@ const ImageUploadInput = ({ label, value, onChange }) => {
   );
 };
 
+const VideoUploadInput = ({ label, value, onChange }) => {
+  const handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      if (file.size > 25 * 1024 * 1024) {
+        alert('Video file size is too large. Please select a video under 25MB or paste a YouTube / Vimeo link.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        onChange(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const isUploadedVideo = value && (value.startsWith('data:video') || value.endsWith('.mp4') || value.endsWith('.webm') || value.endsWith('.mov'));
+
+  return (
+    <div className="space-y-2">
+      <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">{label}</label>
+      
+      <div className="p-4 rounded-2xl border border-slate-200/80 bg-gradient-to-br from-slate-50/50 via-white to-indigo-50/20 shadow-xs hover:border-indigo-300 transition-all space-y-3">
+        {value ? (
+          <div className="space-y-3">
+            <div className="relative aspect-video max-h-48 rounded-2xl border border-slate-300 overflow-hidden bg-slate-950 shadow-md flex items-center justify-center">
+              {isUploadedVideo ? (
+                <video src={value} controls className="w-full h-full object-contain" />
+              ) : (
+                <iframe
+                  src={value.includes('embed/') ? value : value.includes('youtube.com/watch?v=') ? `https://www.youtube.com/embed/${value.split('v=')[1]?.split('&')[0]}` : value}
+                  title="Video Preview"
+                  className="w-full h-full border-0 pointer-events-none"
+                />
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[11px] font-bold">
+                <CheckCircle2 size={13} className="text-emerald-600" />
+                {isUploadedVideo ? 'Direct Video File Active' : 'YouTube / External Link Active'}
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <label className="cursor-pointer px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs inline-flex items-center gap-2 shadow-md shadow-indigo-200 transition-all active:scale-95">
+                  <Upload size={14} /> Change / Upload Video
+                  <input type="file" accept="video/*" className="hidden" onChange={handleFileChange} />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => onChange('')}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200/80 transition-all"
+                >
+                  Clear Video
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <label className="cursor-pointer group flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl bg-white/80 hover:bg-indigo-50/40 transition-all text-center">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 group-hover:bg-indigo-100 text-indigo-600 flex items-center justify-center mb-2.5 transition-all transform group-hover:scale-110 shadow-xs">
+                <Upload size={22} />
+              </div>
+              <span className="text-xs font-extrabold text-slate-700 group-hover:text-indigo-600 transition-colors">
+                Click to Choose / Upload Class Video File (MP4, WEBM)
+              </span>
+              <span className="text-[11px] font-medium text-slate-400 mt-1">
+                Directly upload video file (up to 25MB)
+              </span>
+              <input type="file" accept="video/*" className="hidden" onChange={handleFileChange} />
+            </label>
+
+            <div className="flex items-center gap-2 my-1">
+              <div className="h-px bg-slate-200 flex-1"></div>
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">OR PASTE YOUTUBE / VIMEO LINK</span>
+              <div className="h-px bg-slate-200 flex-1"></div>
+            </div>
+
+            <input
+              type="text"
+              value={value || ''}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtu.be/..."
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-white border border-slate-300 font-medium text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const SettingsPage = () => {
   const { user } = useAuth();
   const isAdmin = user?.role?.toLowerCase() === 'admin';
@@ -695,20 +788,15 @@ const SettingsPage = () => {
                             placeholder="Or paste image URL / path e.g. /images/sir_portrait.png"
                           />
 
-                          <div>
-                            <label className="block text-[11px] font-bold text-slate-600">Introduction / Class Demo Video URL (YouTube / Vimeo)</label>
-                            <input
-                              type="text"
-                              value={t.videoUrl || ''}
-                              onChange={(e) => {
-                                const copy = [...cmsData.teachers];
-                                copy[idx].videoUrl = e.target.value;
-                                setCmsData({ ...cmsData, teachers: copy });
-                              }}
-                              placeholder="e.g. https://www.youtube.com/watch?v=... or https://www.youtube.com/embed/..."
-                              className="w-full px-3 py-1.5 text-xs rounded-lg bg-white border border-slate-300 font-medium text-indigo-700"
-                            />
-                          </div>
+                          <VideoUploadInput
+                            label="Teacher Introduction / Class Demo Video"
+                            value={t.videoUrl || ''}
+                            onChange={(val) => {
+                              const copy = [...cmsData.teachers];
+                              copy[idx].videoUrl = val;
+                              setCmsData({ ...cmsData, teachers: copy });
+                            }}
+                          />
 
                           <div>
                             <label className="block text-[11px] font-bold text-slate-600">Bio Description</label>

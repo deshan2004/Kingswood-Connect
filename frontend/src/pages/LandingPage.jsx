@@ -1134,14 +1134,23 @@ const LandingPage = () => {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-4 bg-slate-950 aspect-video relative">
-              <iframe
-                src={getEmbedVideoUrl(selectedTeacherVideo.videoUrl)}
-                title={`${selectedTeacherVideo.name} Class Video Demo`}
-                className="w-full h-full rounded-2xl border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+            <div className="p-4 bg-slate-950 aspect-video relative flex items-center justify-center">
+              {selectedTeacherVideo.videoUrl && (selectedTeacherVideo.videoUrl.startsWith('data:video') || selectedTeacherVideo.videoUrl.endsWith('.mp4') || selectedTeacherVideo.videoUrl.endsWith('.webm') || selectedTeacherVideo.videoUrl.endsWith('.mov')) ? (
+                <video
+                  src={selectedTeacherVideo.videoUrl}
+                  controls
+                  autoPlay
+                  className="w-full h-full rounded-2xl object-contain"
+                />
+              ) : (
+                <iframe
+                  src={getEmbedVideoUrl(selectedTeacherVideo.videoUrl)}
+                  title={`${selectedTeacherVideo.name} Class Video Demo`}
+                  className="w-full h-full rounded-2xl border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              )}
             </div>
             <div className="p-4 bg-slate-50 flex items-center justify-between border-t border-slate-200">
               <span className="text-xs font-bold text-slate-600">Kingswood Connect Faculty Video Demo</span>
