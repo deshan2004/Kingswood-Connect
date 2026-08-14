@@ -1077,13 +1077,28 @@ app.get('/api/teachers/commission', async (req, res) => {
           .where('enrolledClasses', 'array-contains', classDoc.id).get();
         
         totalStudents += studentSnap.size;
-        expectedIncome += studentSnap.size * classFee * (teacher.commissionRate || 0.5);
+
+        const rawComm = teacher.commissionRate;
+        const commRate = typeof rawComm === 'number' 
+          ? (rawComm > 1 ? rawComm / 100 : rawComm) 
+          : 0.5;
+
+        studentSnap.forEach(sDoc => {
+          const s = sDoc.data();
+          let baseFee = (typeof s.defaultFee === 'number' && s.defaultFee > 0) ? s.defaultFee : classFee;
+          if (s.cardType === 'free') {
+            baseFee = 0;
+          } else if (s.cardType === 'half') {
+            baseFee = baseFee / 2;
+          }
+          expectedIncome += baseFee * commRate;
+        });
       }
 
       teachers.push({
         ...teacher,
         students: totalStudents,
-        expectedIncome
+        expectedIncome: Math.round(expectedIncome)
       });
     }
 
