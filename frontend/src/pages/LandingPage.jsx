@@ -93,7 +93,23 @@ const LandingPage = () => {
         setTeachersList(teachersRes.data);
       }
       if (cmsRes.data) {
-        setCmsSettings(cmsRes.data);
+        const cms = { ...cmsRes.data };
+        if (cms.heroTagline && cms.heroTagline.includes('Physics & Combined')) {
+          cms.heroTagline = '🏆 Premier Educational Institute | Grade 1 to Grade 13 (All Subjects)';
+        }
+        if (cms.heroSubtitle && (cms.heroSubtitle.includes('Physics & Combined') || cms.heroSubtitle.includes('Master G.C.E. Advanced Level Physics'))) {
+          cms.heroSubtitle = 'Comprehensive tuition classes & digital learning portal for Grade 1 to Grade 13 across all subjects. Interactive learning, real-time attendance tracking, and expert academic guidance.';
+        }
+        if (cms.facultySub && cms.facultySub.includes('A/L Science & Mathematics')) {
+          cms.facultySub = 'Our institute brings together top Sri Lankan educators dedicated to guiding students from Grade 1 to Grade 13 across all core subjects and academic streams.';
+        }
+        if (cms.visionText && cms.visionText.includes('engineering, medicine, and technology')) {
+          cms.visionText = 'To become Sri Lanka\'s benchmark educational institute, empowering students from Grade 1 to Grade 13 with analytical thinking, problem-solving skills, and academic excellence across all subjects and streams.';
+        }
+        if (cms.missionText && cms.missionText.includes('Z-Scores and Island Ranks')) {
+          cms.missionText = 'To unlock every student\'s highest potential from Grade 1 through Grade 13 by combining modern digital technology, structured paper series, clear concept delivery, and individual mentorship.';
+        }
+        setCmsSettings(cms);
       }
     } catch (err) {
       console.log('Using default landing page data:', err?.message);

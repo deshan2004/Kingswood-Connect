@@ -1884,7 +1884,37 @@ app.get('/api/landing-settings', async (req, res) => {
   try {
     const docSnap = await db.collection('settings').doc('landingPage').get();
     if (docSnap.exists) {
-      res.json({ ...defaultLandingSettings, ...docSnap.data() });
+      const data = docSnap.data() || {};
+      let needsDbUpdate = false;
+
+      if (!data.heroTagline || data.heroTagline.includes('Physics & Combined')) {
+        data.heroTagline = defaultLandingSettings.heroTagline;
+        needsDbUpdate = true;
+      }
+      if (!data.heroSubtitle || data.heroSubtitle.includes('Physics & Combined') || data.heroSubtitle.includes('Master G.C.E. Advanced Level Physics')) {
+        data.heroSubtitle = defaultLandingSettings.heroSubtitle;
+        needsDbUpdate = true;
+      }
+      if (!data.facultySub || data.facultySub.includes('A/L Science & Mathematics')) {
+        data.facultySub = defaultLandingSettings.facultySub;
+        needsDbUpdate = true;
+      }
+      if (!data.visionText || data.visionText.includes('engineering, medicine, and technology')) {
+        data.visionText = defaultLandingSettings.visionText;
+        needsDbUpdate = true;
+      }
+      if (!data.missionText || data.missionText.includes('Z-Scores and Island Ranks')) {
+        data.missionText = defaultLandingSettings.missionText;
+        needsDbUpdate = true;
+      }
+
+      const merged = { ...defaultLandingSettings, ...data };
+
+      if (needsDbUpdate) {
+        db.collection('settings').doc('landingPage').set(merged, { merge: true }).catch(err => console.error('Error updating legacy settings:', err));
+      }
+
+      res.json(merged);
     } else {
       res.json(defaultLandingSettings);
     }
