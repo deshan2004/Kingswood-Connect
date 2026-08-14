@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Calendar as CalendarIcon, Clock, BellRing, ChevronRight, MessageSquareWarning, Edit2, X } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, BellRing, ChevronRight, MessageSquareWarning, Edit2, X, Search, Filter, User } from 'lucide-react';
 
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -12,6 +12,11 @@ const Schedule = () => {
   const [showModal, setShowModal] = useState(false);
   const [newClass, setNewClass] = useState({ name: '', teacherId: '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 1000 });
   const [submitting, setSubmitting] = useState(false);
+
+  // Filter & Search States
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTeacher, setSelectedTeacher] = useState('ALL');
+  const [selectedDay, setSelectedDay] = useState('ALL');
 
   // Edit State
   const [showEditModal, setShowEditModal] = useState(false);
@@ -86,11 +91,11 @@ const Schedule = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const selectedTeacher = teachers.find(t => t.teacherId === newClass.teacherId);
+      const selectedTeacherObj = teachers.find(t => t.teacherId === newClass.teacherId);
       await axios.post(`${API_URL}/classes`, {
         name: newClass.name,
         teacherId: newClass.teacherId,
-        teacherName: selectedTeacher ? selectedTeacher.name : 'Unknown',
+        teacherName: selectedTeacherObj ? selectedTeacherObj.name : 'Unknown',
         schedule: `${newClass.day} ${formatTimeStr(newClass.startTime)} - ${formatTimeStr(newClass.endTime)}`,
         fee: Number(newClass.fee)
       });
@@ -142,6 +147,22 @@ const Schedule = () => {
     alert(`[MOCK] SMS/WhatsApp broadcast sent to all students in ${className} regarding schedule updates.`);
   };
 
+  // Filtered classes calculation
+  const filteredClasses = classes.filter(cls => {
+    const teacherName = cls.teacherName || cls.teacher || '';
+    const matchesSearch = (cls.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          teacherName.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesTeacher = selectedTeacher === 'ALL' ||
+                           cls.teacherId === selectedTeacher ||
+                           teacherName.toLowerCase() === selectedTeacher.toLowerCase();
+
+    const matchesDay = selectedDay === 'ALL' ||
+                       (cls.schedule && cls.schedule.toLowerCase().includes(selectedDay.toLowerCase()));
+
+    return matchesSearch && matchesTeacher && matchesDay;
+  });
+
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-12">
       <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
@@ -151,11 +172,98 @@ const Schedule = () => {
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center justify-center sm:justify-start transition-all shadow-lg shadow-indigo-200 active:scale-95 w-full sm:w-auto"
+          className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center justify-center sm:justify-start transition-all shadow-lg shadow-indigo-200 active:scale-95 w-full sm:w-auto cursor-pointer"
         >
           <CalendarIcon size={18} className="mr-2" />
           Add Class
         </button>
+      </div>
+
+      {/* Search and Filters Controls */}
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+          {/* Search Input */}
+          <div className="md:col-span-7 relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by class name or teacher..."
+              className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+
+          {/* Teacher Dropdown Filter */}
+          <div className="md:col-span-5 relative">
+            <select
+              value={selectedTeacher}
+              onChange={(e) => setSelectedTeacher(e.target.value)}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all appearance-none cursor-pointer pr-10"
+            >
+              <option value="ALL">👨‍🏫 All Teachers (Sirs)</option>
+              {teachers.map((t) => (
+                <option key={t.teacherId || t.id} value={t.teacherId || t.name}>
+                  {t.name} {t.subject ? `(${t.subject})` : ''}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+              <Filter size={16} />
+            </div>
+          </div>
+        </div>
+
+        {/* Day Filter Chips */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100">
+          <span className="text-xs font-extrabold text-slate-500 mr-1.5 flex items-center">
+            <CalendarIcon size={14} className="mr-1 text-indigo-500" /> Filter Day:
+          </span>
+          <button
+            onClick={() => setSelectedDay('ALL')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+              selectedDay === 'ALL'
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            All Days
+          </button>
+          {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+            <button
+              key={day}
+              onClick={() => setSelectedDay(day)}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                selectedDay === day
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              {day}
+            </button>
+          ))}
+
+          {(searchTerm || selectedTeacher !== 'ALL' || selectedDay !== 'ALL') && (
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedTeacher('ALL');
+                setSelectedDay('ALL');
+              }}
+              className="ml-auto px-3 py-1.5 text-xs font-extrabold text-rose-600 hover:bg-rose-50 rounded-xl transition-all flex items-center gap-1 cursor-pointer"
+            >
+              <X size={14} /> Clear Filters
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="space-y-5">
@@ -163,23 +271,37 @@ const Schedule = () => {
           <h3 className="font-bold text-slate-700 text-lg flex items-center">
             <CalendarIcon size={20} className="mr-2 text-indigo-500" /> Upcoming Classes
           </h3>
-          <span className="text-sm font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">This Week</span>
+          <span className="text-sm font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
+            Showing {filteredClasses.length} of {classes.length} Classes
+          </span>
         </div>
 
         {loading ? (
            <div className="p-12 flex justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
            </div>
+        ) : filteredClasses.length === 0 ? (
+          <div className="p-12 text-center bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <CalendarIcon size={44} className="mx-auto text-slate-300 mb-3" />
+            <h4 className="text-lg font-extrabold text-slate-800">No classes found</h4>
+            <p className="text-sm text-slate-500 mt-1 font-medium">No schedule matched your search query or selected filters.</p>
+            <button
+              onClick={() => { setSearchTerm(''); setSelectedTeacher('ALL'); setSelectedDay('ALL'); }}
+              className="mt-4 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-extrabold rounded-xl transition-colors cursor-pointer"
+            >
+              Reset All Filters
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {classes.map(cls => (
+            {filteredClasses.map(cls => (
               <div key={cls.id || cls.classId} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md hover:border-indigo-200 transition-all relative">
                 <div className="h-2 w-full bg-gradient-to-r from-indigo-500 to-blue-500"></div>
                 
                 {/* Edit Button */}
                 <button
                   onClick={() => handleEditClick(cls)}
-                  className="absolute top-4 right-4 p-2 bg-indigo-50 text-indigo-600 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-indigo-100"
+                  className="absolute top-4 right-4 p-2 bg-indigo-50 text-indigo-600 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-indigo-100 cursor-pointer"
                   title="Edit Class"
                 >
                   <Edit2 size={18} />
