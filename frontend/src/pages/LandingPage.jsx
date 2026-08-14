@@ -74,8 +74,8 @@ const LandingPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    batch: '2026 A/L',
-    subject: 'Combined Mathematics',
+    batch: 'Grade 12 - 13 (G.C.E. A/L)',
+    subject: 'Mathematics',
     message: ''
   });
 
@@ -129,7 +129,7 @@ const LandingPage = () => {
     setContactSubmitted(true);
     setTimeout(() => {
       setContactSubmitted(false);
-      setFormData({ name: '', phone: '', batch: '2026 A/L', subject: 'Combined Mathematics', message: '' });
+      setFormData({ name: '', phone: '', batch: 'Grade 12 - 13 (G.C.E. A/L)', subject: 'Mathematics', message: '' });
     }, 4000);
   };
 
@@ -150,7 +150,7 @@ const LandingPage = () => {
     const subject = formData.subject || '';
     const msg = formData.message || '';
 
-    const text = `Hello Kingswood Connect! 👋\n\nI would like to inquire / join tuition classes:\n• *Name:* ${name}\n• *Phone:* ${phone}\n• *Class/Batch:* ${batch}\n• *Subject:* ${subject}${msg ? `\n• *Message:* ${msg}` : ''}`;
+    const text = `Hello Kingswood Connect! 👋\n\nI would like to inquire / join tuition classes:\n• *Name:* ${name}\n• *Phone:* ${phone}\n• *Grade/Batch:* ${batch}\n• *Subject:* ${subject}${msg ? `\n• *Message:* ${msg}` : ''}`;
 
     const waUrl = `https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}`;
     window.open(waUrl, '_blank');
@@ -169,104 +169,104 @@ const LandingPage = () => {
     {
       teacherId: 'TCH-1001',
       name: 'Eng. Kasun Perera',
-      subject: 'Combined Mathematics',
+      subject: 'Mathematics (Grade 6 - 13)',
       qualification: 'B.Sc. Engineering (Hons) - Peradeniya',
-      desc: 'Graduating with First Class Honors from Peradeniya Engineering, Eng. Kasun Perera is renowned for simplifying complex calculus, vectors, and mechanics into intuitive visual concepts.',
+      desc: 'Master lecturer specializing in Mathematics from Grade 6 to 11 O/L as well as A/L Combined Mathematics, simplifying complex algebra, geometry, and calculus.',
       image: '/images/sir_portrait.png',
       experience: '12+ Years',
-      ranks: '150+ Ranks',
+      ranks: '150+ Top Ranks',
       badgeColor: 'bg-indigo-600'
     },
     {
       teacherId: 'TCH-1002',
       name: 'Dr. Nimal Wickramasinghe',
-      subject: 'Physics Specialist',
+      subject: 'Science & Physics Specialist',
       qualification: 'Ph.D., B.Sc. Physics Special (Hons) - Colombo',
-      desc: 'Senior Physics lecturer specializing in theoretical mechanics, waves, and electronics. Known for visual lab experiments and analytical paper techniques.',
+      desc: 'Senior Science & Physics educator covering Junior Secondary Science (Grades 6-9), O/L Science (Grades 10-11), and A/L Physics with visual laboratory concepts.',
       image: '/images/sir_physics.png',
       experience: '14+ Years',
-      ranks: '120+ Ranks',
+      ranks: '120+ Top Ranks',
       badgeColor: 'bg-blue-600'
     },
     {
       teacherId: 'TCH-1003',
-      name: 'Eng. Chamara Rathnayake',
-      subject: 'Chemistry Specialist',
-      qualification: 'B.Sc. Eng., M.Sc. Industrial Chemistry',
-      desc: 'Master educator in Organic, Inorganic & Physical Chemistry. Simplifies reaction pathways using logical flowcharts and high-yield memory techniques.',
+      name: 'Mrs. Anusha Jayawardena',
+      subject: 'Primary & Foundation Specialist (Grade 1 - 5)',
+      qualification: 'B.Ed. Primary Education, M.A. Linguistics',
+      desc: 'Expert educator dedicated to Grade 1 to 5 foundation learning and Grade 5 Scholarship preparation, building strong literacy, numerical, and analytical skills.',
       image: '/images/sir_chemistry.png',
       experience: '10+ Years',
-      ranks: '95+ Ranks',
+      ranks: '95+ Island Ranks',
       badgeColor: 'bg-emerald-600'
     }
   ];
 
   const defaultClasses = [
     {
-      classId: 'CLS-2026-M',
-      name: '2026 A/L Theory Class',
-      grade: '2026 A/L',
-      teacherName: 'Eng. Kasun Perera',
-      subject: 'Combined Mathematics',
-      schedule: 'Saturday 8:00 AM - 1:00 PM',
-      location: 'Kandy Main Auditorium & Online Live Stream',
-      fee: 3500,
-      description: 'Building fundamental concepts from scratch with weekly tute discussions, real-world examples, and problem solving.'
-    },
-    {
-      classId: 'CLS-2025-P',
-      name: '2025 A/L Revision & Theory',
-      grade: '2025 A/L',
-      teacherName: 'Dr. Nimal Wickramasinghe',
-      subject: 'Physics',
-      schedule: 'Sunday 8:00 AM - 1:30 PM',
-      location: 'Kandy Main Auditorium & Web Stream',
-      fee: 3500,
-      isPopular: true,
-      description: 'Rapid syllabus coverage, past paper breakdowns, and high-yield exam strategies designed for top scores.'
-    },
-    {
-      classId: 'CLS-PAPER-C',
-      name: 'Paper Class & Speed Revision',
-      grade: 'Exam Focused',
-      teacherName: 'Eng. Chamara Rathnayake',
-      subject: 'Paper Class',
-      schedule: 'Wednesday 2:30 PM - 6:00 PM',
-      location: 'Physical Exam Hall & Online Submissions',
+      classId: 'CLS-PRI-101',
+      name: 'Grade 1 - 5 Primary & Scholarship Class',
+      grade: 'Grade 1 - 5',
+      teacherName: 'Mrs. Anusha Jayawardena',
+      subject: 'Primary Core Subjects & Scholarship',
+      schedule: 'Saturday 8:30 AM - 11:30 AM',
+      location: 'Primary Learning Wing & Online Stream',
       fee: 2500,
-      description: 'Timed exam condition practice, instant mark distribution analysis, and detailed marking scheme breakdowns.'
+      description: 'Interactive foundation building in Mathematics, Languages, and Scholarship Exam prep tailored for Grade 1-5 primary students.'
+    },
+    {
+      classId: 'CLS-OL-201',
+      name: 'Grade 6 - 11 O/L Core Theory & Revision',
+      grade: 'Grade 6 - 11',
+      teacherName: 'Eng. Kasun Perera & Science Faculty',
+      subject: 'Mathematics, Science, English & ICT',
+      schedule: 'Sunday 8:00 AM - 1:00 PM',
+      location: 'Main Auditorium & Web Stream',
+      fee: 3000,
+      isPopular: true,
+      description: 'Comprehensive syllabus coverage, monthly term test evaluations, and model paper breakdowns for Junior Secondary and G.C.E. O/L students.'
+    },
+    {
+      classId: 'CLS-AL-301',
+      name: 'Grade 12 - 13 A/L Theory & Revision',
+      grade: 'Grade 12 - 13 (A/L)',
+      teacherName: 'Dr. Nimal Wickramasinghe & A/L Panel',
+      subject: 'Science, Commerce, Arts & Tech Streams',
+      schedule: 'Wednesday 2:30 PM - 6:30 PM',
+      location: 'Physical Exam Hall & Online Stream',
+      fee: 3500,
+      description: 'In-depth concept delivery, past paper breakdowns, and speed revision sessions for G.C.E. Advanced Level success.'
     }
   ];
 
   const defaultAchievers = [
     {
       name: 'Kaveen Perera',
-      rankBadge: '🏆 Island Rank 01',
-      stream: 'Combined Mathematics (Physical Science)',
+      rankBadge: '🏆 A/L Island Rank 01',
+      stream: 'G.C.E. A/L Stream',
       zScore: '2.8942',
       district: 'Kandy District',
       image: '/images/top_student_male.png'
     },
     {
       name: 'Shenali Fernando',
-      rankBadge: '🌟 Island Rank 04',
-      stream: 'Physics & Chemistry',
-      zScore: '2.8105',
+      rankBadge: '🌟 O/L 9 A Stars',
+      stream: 'G.C.E. O/L Batch',
+      zScore: '9 A Passes',
       district: 'Colombo District',
       image: '/images/top_student_female.png'
     },
     {
       name: 'Nipuna Jayasinghe',
-      rankBadge: '🥇 District Rank 01',
-      stream: 'Combined Mathematics',
-      zScore: '2.7840',
+      rankBadge: '🥇 Grade 5 Scholarship Top Ranker',
+      stream: 'Primary Section (Grade 5)',
+      zScore: '196 Marks',
       district: 'Kurunegala',
       image: ''
     },
     {
       name: 'Dilini Ranasinghe',
-      rankBadge: '🎖️ Island Rank 12',
-      stream: 'Physics & Combined Maths',
+      rankBadge: '🎖️ A/L District Rank 01',
+      stream: 'G.C.E. A/L Stream',
       zScore: '2.7650',
       district: 'Kandy',
       image: ''
@@ -466,7 +466,7 @@ const LandingPage = () => {
 
               <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs sm:text-sm font-bold shadow-xs">
                 <Sparkles className="w-4 h-4 text-amber-500 fill-amber-400" />
-                <span>{cmsSettings?.heroTagline || '🏆 Premier A/L Physics & Combined Maths Institute'}</span>
+                <span>{cmsSettings?.heroTagline || '🏆 Premier Educational Institute | Grade 1 to Grade 13 (All Subjects)'}</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-tight sm:leading-tight">
@@ -478,7 +478,7 @@ const LandingPage = () => {
               </h1>
 
               <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-                {cmsSettings?.heroSubtitle || "Master G.C.E. Advanced Level Physics & Combined Mathematics with deep conceptual clarity, structured tuition classes, real-time attendance, and island-top rankers' guidance."}
+                {cmsSettings?.heroSubtitle || "Comprehensive tuition classes & digital learning portal for Grade 1 to Grade 13 across all subjects. Interactive learning, real-time attendance tracking, and expert academic guidance."}
               </p>
 
               {/* Action Buttons */}
@@ -593,7 +593,7 @@ const LandingPage = () => {
               {cmsSettings?.facultyTitle || 'Distinguished Faculty & Subject Specialists'}
             </h2>
             <p className="text-slate-600 text-base sm:text-lg">
-              {cmsSettings?.facultySub || "Our institute brings together Sri Lanka's top-tier lecturers, engineers, and scientists dedicated to producing island ranks in A/L Science & Mathematics streams."}
+              {cmsSettings?.facultySub || "Our institute brings together top Sri Lankan educators dedicated to guiding students from Grade 1 to Grade 13 across all core subjects and academic streams."}
             </p>
           </div>
 
@@ -769,7 +769,7 @@ const LandingPage = () => {
               </h3>
 
               <p className="text-slate-600 leading-relaxed text-base">
-                {cmsSettings?.visionText || "To become Sri Lanka's benchmark educational institute, empowering a generation of analytical thinkers, problem solvers, and visionary leaders who excel in G.C.E. Advanced Level examinations and lead future frontiers in engineering, medicine, and technology."}
+                {cmsSettings?.visionText || "To become Sri Lanka's benchmark educational institute, empowering students from Grade 1 to Grade 13 with analytical thinking, problem-solving skills, and academic excellence across all subjects and streams."}
               </p>
 
               <div className="mt-8 pt-6 border-t border-slate-200 flex items-center space-x-3 text-sm text-indigo-900 font-bold">
@@ -791,7 +791,7 @@ const LandingPage = () => {
               </h3>
 
               <p className="text-slate-600 leading-relaxed text-base">
-                {cmsSettings?.missionText || "To unlock every student's highest potential by combining modern digital technology, rigorous paper series, clear concept delivery, and individual mentorship that guarantee outstanding Z-Scores and Island Ranks."}
+                {cmsSettings?.missionText || "To unlock every student's highest potential from Grade 1 through Grade 13 by combining modern digital technology, structured paper series, clear concept delivery, and individual mentorship."}
               </p>
 
               <div className="mt-8 pt-6 border-t border-slate-200 flex items-center space-x-3 text-sm text-blue-900 font-bold">
@@ -1040,12 +1040,16 @@ const LandingPage = () => {
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Select Tuition Class</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Select Grade / Batch</label>
                       <select
                         value={formData.batch}
                         onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
                       >
+                        <option value="Grade 1 - 5 (Primary & Scholarship)">Grade 1 - 5 (Primary & Scholarship)</option>
+                        <option value="Grade 6 - 9 (Junior Secondary)">Grade 6 - 9 (Junior Secondary)</option>
+                        <option value="Grade 10 - 11 (G.C.E. O/L)">Grade 10 - 11 (G.C.E. O/L)</option>
+                        <option value="Grade 12 - 13 (G.C.E. A/L)">Grade 12 - 13 (G.C.E. A/L)</option>
                         {activeClasses.map((cls, i) => (
                           <option key={cls.classId || i} value={cls.name}>
                             {cls.name} ({cls.teacherName || cls.grade})
@@ -1060,10 +1064,17 @@ const LandingPage = () => {
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
                       >
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="English">English</option>
+                        <option value="ICT & Computer Studies">ICT & Computer Studies</option>
+                        <option value="Sinhala / Language">Sinhala / Language</option>
                         <option value="Combined Mathematics">Combined Mathematics</option>
                         <option value="Physics">Physics</option>
                         <option value="Chemistry">Chemistry</option>
-                        <option value="Both Subjects">Both Subjects</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Commerce & Accounting">Commerce & Accounting</option>
+                        <option value="All Core Subjects">All Core Subjects</option>
                       </select>
                     </div>
                   </div>

@@ -1672,10 +1672,10 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
 // 7. Landing Page CMS Settings Endpoints
 const defaultLandingSettings = {
   // Hero Section
-  heroTagline: '🏆 Premier A/L Physics & Combined Maths Institute',
+  heroTagline: '🏆 Premier Educational Institute | Grade 1 to Grade 13 (All Subjects)',
   heroTitleLine1: 'Empowering Academic Excellence &',
   heroTitleGradient: 'Future Leaders',
-  heroSubtitle: 'Master G.C.E. Advanced Level Physics & Combined Mathematics with deep conceptual clarity, structured tuition classes, real-time attendance, and island-top rankers\' guidance.',
+  heroSubtitle: 'Comprehensive tuition classes & digital learning portal for Grade 1 to Grade 13 across all subjects. Interactive learning, real-time attendance tracking, and expert academic guidance.',
   heroBtn1Text: 'Meet Our Faculty (Sirs)',
   heroBtn2Text: 'View Exam Results',
   heroBadge1Title: '#1 Rated Institute',
@@ -1697,42 +1697,42 @@ const defaultLandingSettings = {
   // Faculty (Sirs) Section
   facultyBadge: 'MEET OUR PANEL OF EXPERT SIRS',
   facultyTitle: 'Distinguished Faculty & Subject Specialists',
-  facultySub: 'Our institute brings together Sri Lanka\'s top-tier lecturers, engineers, and scientists dedicated to producing island ranks in A/L Science & Mathematics streams.',
+  facultySub: 'Our institute brings together top Sri Lankan educators dedicated to guiding students from Grade 1 to Grade 13 across all core subjects and academic streams.',
   teachers: [
     {
       teacherId: 'TCH-1001',
       name: 'Eng. Kasun Perera',
-      subject: 'Combined Mathematics',
+      subject: 'Mathematics (Grade 6 - 13)',
       qualification: 'B.Sc. Engineering (Hons) - Peradeniya',
-      desc: 'Graduating with First Class Honors from Peradeniya Engineering, Eng. Kasun Perera is renowned for simplifying complex calculus, vectors, and mechanics into intuitive visual concepts.',
+      desc: 'Master lecturer specializing in Mathematics from Grade 6 to 11 O/L as well as A/L Combined Mathematics, simplifying complex algebra, geometry, and calculus.',
       image: '/images/sir_portrait.png',
       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
       experience: '12+ Years',
-      ranks: '150+ Ranks',
+      ranks: '150+ Top Ranks',
       badgeColor: 'bg-indigo-600'
     },
     {
       teacherId: 'TCH-1002',
       name: 'Dr. Nimal Wickramasinghe',
-      subject: 'Physics Specialist',
+      subject: 'Science & Physics Specialist',
       qualification: 'Ph.D., B.Sc. Physics Special (Hons) - Colombo',
-      desc: 'Senior Physics lecturer specializing in theoretical mechanics, waves, and electronics. Known for visual lab experiments and analytical paper techniques.',
+      desc: 'Senior Science & Physics educator covering Junior Secondary Science (Grades 6-9), O/L Science (Grades 10-11), and A/L Physics with visual laboratory concepts.',
       image: '/images/sir_physics.png',
       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
       experience: '14+ Years',
-      ranks: '120+ Ranks',
+      ranks: '120+ Top Ranks',
       badgeColor: 'bg-blue-600'
     },
     {
       teacherId: 'TCH-1003',
-      name: 'Eng. Chamara Rathnayake',
-      subject: 'Chemistry Specialist',
-      qualification: 'B.Sc. Eng., M.Sc. Industrial Chemistry',
-      desc: 'Master educator in Organic, Inorganic & Physical Chemistry. Simplifies reaction pathways using logical flowcharts and high-yield memory techniques.',
+      name: 'Mrs. Anusha Jayawardena',
+      subject: 'Primary & Foundation Specialist (Grade 1 - 5)',
+      qualification: 'B.Ed. Primary Education, M.A. Linguistics',
+      desc: 'Expert educator dedicated to Grade 1 to 5 foundation learning and Grade 5 Scholarship preparation, building strong literacy, numerical, and analytical skills.',
       image: '/images/sir_chemistry.png',
       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
       experience: '10+ Years',
-      ranks: '95+ Ranks',
+      ranks: '95+ Island Ranks',
       badgeColor: 'bg-emerald-600'
     }
   ],
@@ -1743,76 +1743,76 @@ const defaultLandingSettings = {
   classesSub: 'Explore our active auditorium & online live tuition classes managed directly by institute administration.',
   classes: [
     {
-      classId: 'CLS-2026-M',
-      name: '2026 A/L Theory Class',
-      grade: '2026 A/L',
-      teacherName: 'Eng. Kasun Perera',
-      subject: 'Combined Mathematics',
-      schedule: 'Saturday 8:00 AM - 1:00 PM',
-      location: 'Kandy Main Auditorium & Online Live Stream',
-      fee: 3500,
-      description: 'Building fundamental concepts from scratch with weekly tute discussions, real-world examples, and problem solving.'
-    },
-    {
-      classId: 'CLS-2025-P',
-      name: '2025 A/L Revision & Theory',
-      grade: '2025 A/L',
-      teacherName: 'Dr. Nimal Wickramasinghe',
-      subject: 'Physics',
-      schedule: 'Sunday 8:00 AM - 1:30 PM',
-      location: 'Kandy Main Auditorium & Web Stream',
-      fee: 3500,
-      isPopular: true,
-      description: 'Rapid syllabus coverage, past paper breakdowns, and high-yield exam strategies designed for top scores.'
-    },
-    {
-      classId: 'CLS-PAPER-C',
-      name: 'Paper Class & Speed Revision',
-      grade: 'Exam Focused',
-      teacherName: 'Eng. Chamara Rathnayake',
-      subject: 'Paper Class',
-      schedule: 'Wednesday 2:30 PM - 6:00 PM',
-      location: 'Physical Exam Hall & Online Submissions',
+      classId: 'CLS-PRI-101',
+      name: 'Grade 1 - 5 Primary & Scholarship Class',
+      grade: 'Grade 1 - 5',
+      teacherName: 'Mrs. Anusha Jayawardena',
+      subject: 'Primary Core Subjects & Scholarship',
+      schedule: 'Saturday 8:30 AM - 11:30 AM',
+      location: 'Primary Learning Wing & Online Stream',
       fee: 2500,
-      description: 'Timed exam condition practice, instant mark distribution analysis, and detailed marking scheme breakdowns.'
+      description: 'Interactive foundation building in Mathematics, Languages, and Scholarship Exam prep tailored for Grade 1-5 primary students.'
+    },
+    {
+      classId: 'CLS-OL-201',
+      name: 'Grade 6 - 11 O/L Core Theory & Revision',
+      grade: 'Grade 6 - 11',
+      teacherName: 'Eng. Kasun Perera & Science Faculty',
+      subject: 'Mathematics, Science, English & ICT',
+      schedule: 'Sunday 8:00 AM - 1:00 PM',
+      location: 'Main Auditorium & Web Stream',
+      fee: 3000,
+      isPopular: true,
+      description: 'Comprehensive syllabus coverage, monthly term test evaluations, and model paper breakdowns for Junior Secondary and G.C.E. O/L students.'
+    },
+    {
+      classId: 'CLS-AL-301',
+      name: 'Grade 12 - 13 A/L Theory & Revision',
+      grade: 'Grade 12 - 13 (A/L)',
+      teacherName: 'Dr. Nimal Wickramasinghe & A/L Panel',
+      subject: 'Science, Commerce, Arts & Tech Streams',
+      schedule: 'Wednesday 2:30 PM - 6:30 PM',
+      location: 'Physical Exam Hall & Online Stream',
+      fee: 3500,
+      description: 'In-depth concept delivery, past paper breakdowns, and speed revision sessions for G.C.E. Advanced Level success.'
     }
   ],
 
   // Exam Results & Achievers
   resultsBadge: 'PROVEN EXCELLENCE',
-  resultsTitle: 'Celebrating Our Top Island Rankers',
-  resultsSub: 'True success is measured by consistent results. Highlighting our outstanding performers in recent G.C.E. A/L examinations.',
-  resultsCtaTitle: 'Be the Next A/L Success Story!',
+  resultsTitle: 'Celebrating Our Top Achievers',
+  resultsSub: 'True success is measured by consistent results. Highlighting our outstanding performers across Grade 1 to Grade 13 examinations.',
+  resultsCtaTitle: 'Be the Next Academic Success Story!',
   resultsCtaSub: 'Enroll today and gain instant access to Kingswood Connect student portal, tutes, and exam schedules.',
   achievers: [
     {
       name: 'Kaveen Perera',
-      rankBadge: '🏆 Island Rank 01',
-      stream: 'Combined Mathematics (Physical Science)',
+      rankBadge: '🏆 A/L Island Rank 01',
+      stream: 'G.C.E. A/L Stream',
       zScore: '2.8942',
       district: 'Kandy District',
       image: '/images/top_student_male.png'
     },
     {
       name: 'Shenali Fernando',
-      rankBadge: '🌟 Island Rank 04',
-      stream: 'Physics & Chemistry',
-      zScore: '2.8105',
+      rankBadge: '🌟 O/L 9 A Stars',
+      stream: 'G.C.E. O/L Batch',
+      zScore: '9 A Passes',
       district: 'Colombo District',
       image: '/images/top_student_female.png'
     },
     {
       name: 'Nipuna Jayasinghe',
-      rankBadge: '🥇 District Rank 01',
-      stream: 'Combined Mathematics',
-      zScore: '2.7840',
+      rankBadge: '🥇 Grade 5 Scholarship Top Ranker',
+      stream: 'Primary Section (Grade 5)',
+      zScore: '196 Marks',
       district: 'Kurunegala',
       image: ''
     },
     {
       name: 'Dilini Ranasinghe',
-      rankBadge: '🎖️ Island Rank 12',
-      stream: 'Physics & Combined Maths',
+      rankBadge: '🎖️ A/L District Rank 01',
+      stream: 'G.C.E. A/L Stream',
       zScore: '2.7650',
       district: 'Kandy',
       image: ''
@@ -1823,8 +1823,8 @@ const defaultLandingSettings = {
   visionBadge: 'OUR CORE PURPOSE',
   visionTitle: 'Vision & Mission',
   visionSub: 'Every initiative at Kingswood Connect is guided by an unyielding commitment to student transformation and academic integrity.',
-  visionText: 'To become Sri Lanka\'s benchmark educational institute, empowering a generation of analytical thinkers, problem solvers, and visionary leaders who excel in G.C.E. Advanced Level examinations and lead future frontiers in engineering, medicine, and technology.',
-  missionText: 'To unlock every student\'s highest potential by combining modern digital technology, rigorous paper series, clear concept delivery, and individual mentorship that guarantee outstanding Z-Scores and Island Ranks.',
+  visionText: 'To become Sri Lanka\'s benchmark educational institute, empowering students from Grade 1 to Grade 13 with analytical thinking, problem-solving skills, and academic excellence across all subjects and streams.',
+  missionText: 'To unlock every student\'s highest potential from Grade 1 through Grade 13 by combining modern digital technology, structured paper series, clear concept delivery, and individual mentorship.',
 
   // Technology Features
   featuresBadge: 'INSTITUTE & DIGITAL FEATURES',
