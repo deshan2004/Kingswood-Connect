@@ -103,7 +103,7 @@ const Scanner = () => {
     }
   };
 
-  const [isScannerActive, setIsScannerActive] = useState(false);
+  const [isScannerActive, setIsScannerActive] = useState(true);
 
   useEffect(() => {
     axios.get(`${API_URL}/students`).then(res => setStudents(res.data)).catch(console.error);
@@ -537,34 +537,7 @@ const Scanner = () => {
                 #reader__status_span { display: none !important; }
               `}</style>
 
-              {!isScannerActive ? (
-                <div className="flex flex-col items-center justify-center py-8 sm:py-12 px-2 text-center">
-                  <div className="bg-indigo-50 p-5 sm:p-6 rounded-full mb-4">
-                    <QrCode size={40} className="text-indigo-600 sm:w-12 sm:h-12" />
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-black text-slate-800 mb-1.5">Camera Scanner Ready</h3>
-                  <p className="text-slate-500 mb-6 text-xs sm:text-sm max-w-sm">Tap the button below to activate your phone or laptop camera for scanning.</p>
-                  <button
-                    onClick={() => setIsScannerActive(true)}
-                    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-8 py-3.5 rounded-2xl transition-all shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 text-base sm:text-lg cursor-pointer active:scale-95"
-                  >
-                    <QrCode size={22} />
-                    Open Camera
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <div className="flex justify-end mb-3">
-                    <button
-                      onClick={() => setIsScannerActive(false)}
-                      className="text-slate-600 hover:text-slate-800 text-xs sm:text-sm font-extrabold flex items-center gap-1 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl transition-colors cursor-pointer"
-                    >
-                      <X size={16} /> Close Camera
-                    </button>
-                  </div>
-                  <div id="reader" className="w-full rounded-2xl overflow-hidden"></div>
-                </div>
-              )}
+              <div id="reader" className="w-full rounded-2xl overflow-hidden min-h-[300px]"></div>
             </div>
           </div>
 
