@@ -113,9 +113,19 @@ function getGradeFeeStructure(item) {
     } else if (gradeNum >= 12 && gradeNum <= 13) {
       isWeekly = false;
     }
-  } else {
     const cleanText = fullText.replace(/general/g, '');
-    const isALText = cleanText.includes('12') || cleanText.includes('13') || cleanText.includes('a/l') || cleanText.includes('al') || cleanText.includes('combined') || cleanText.includes('advanced');
+    const isALText = cleanText.includes('12') || 
+                     cleanText.includes('13') || 
+                     cleanText.includes('a/l') || 
+                     cleanText.includes('al') || 
+                     cleanText.includes('combined') || 
+                     cleanText.includes('maths') || 
+                     cleanText.includes('biology') || 
+                     cleanText.includes('physics') || 
+                     cleanText.includes('chemistry') || 
+                     cleanText.includes('chem') || 
+                     cleanText.includes('bio') || 
+                     cleanText.includes('advanced');
     isWeekly = !isALText;
   }
 
@@ -1645,15 +1655,10 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
       const classDoc = await db.collection('classes').doc(classId).get();
       if (!classDoc.exists) continue;
       const classData = classDoc.data();
-      const isClassAL = String(classData.name || '').toLowerCase().includes('12') || 
-                       String(classData.name || '').toLowerCase().includes('13') || 
-                       String(classData.name || '').toLowerCase().includes('a/l') || 
-                       String(classData.name || '').toLowerCase().includes('al');
-      const classFeeType = classData.feeType || (isClassAL ? 'monthly' : 'weekly');
-      const classFee = classData.fee || defaultFee;
-      const sessionFee = classFeeType === 'weekly' 
-        ? (classData.weeklyFee || (classFee > 500 ? Math.round(classFee / 4) : classFee))
-        : classFee;
+      const feeStruct = getGradeFeeStructure(classData);
+      const classFeeType = feeStruct.feeType;
+      const classFee = feeStruct.displayFee;
+      const sessionFee = feeStruct.isWeekly ? feeStruct.displayFee : Math.round(feeStruct.displayFee / 4);
 
       const isPaidThisMonth = cardType === 'free' || payments.some(p => p.classId === classId && p.month === currentMonth);
       const attendanceThisMonth = attendance.filter(a => a.classId === classId && a.date.startsWith(currentMonth)).length;
