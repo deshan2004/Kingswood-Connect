@@ -965,9 +965,9 @@ app.get('/api/attendance/reports', async (req, res) => {
       }
     });
 
-    // 3. Calculate total distinct class days
+    // 3. Calculate total class sessions (defaulting to standard 4 weekly sessions per month)
     const classDates = new Set(attendanceData.map(a => a.date));
-    const totalClassDays = classDates.size;
+    const totalClassDays = Math.max(classDates.size, 4);
 
     // 4. Check payments for this class and month
     const paymentsSnapshot = await db.collection('payments')
