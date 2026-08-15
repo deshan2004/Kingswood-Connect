@@ -62,6 +62,49 @@ const Students = () => {
     }
   };
 
+  const getPaymentFeeLabel = (p) => {
+    if (p.feeBasis) return p.feeBasis;
+    const clsName = String(p.className || '').toLowerCase();
+    const isAL = clsName.includes('12') || clsName.includes('13') || clsName.includes('a/l') || clsName.includes('al');
+    if (p.feeType === 'weekly' || (!p.feeType && !isAL)) {
+      return 'Weekly Fee';
+    }
+    return 'Monthly Fee';
+  };
+
+  const sendReceiptWhatsApp = (p, student) => {
+    const contact = student?.contact || p.studentContact || '';
+    if (!contact) {
+      alert('No contact number found for this student.');
+      return;
+    }
+
+    const feeLabel = getPaymentFeeLabel(p);
+    const dateStr = p.datePaid ? format(new Date(p.datePaid), 'yyyy-MM-dd hh:mm a') : p.month;
+    
+    const message = `🧾 *OFFICIAL PAYMENT RECEIPT*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+Hello *${student?.name || 'Student'}*,
+Here is your official payment receipt details:
+
+📌 *PAYMENT DETAILS*
+> 🔢 *Receipt No:* *${p.receiptNo || 'REC-CONFIRMED'}*
+> 📚 *Class Name:* *${p.className || 'Class Fee'}*
+> 🗓️ *Fee Type:* *${feeLabel}*
+> 💰 *Amount Paid:* *Rs. ${p.amount}*
+> 📅 *Date:* *${dateStr}*
+
+Thank you for your payment!
+───────────────────────────
+🏛 *Kingswood Connect Finance Team*`;
+
+    const phoneFormatted = contact.replace(/^0/, '94');
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneFormatted}&text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   // Filters
   const [filterClass, setFilterClass] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');

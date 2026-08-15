@@ -33,7 +33,7 @@ const Scanner = () => {
 
   useEffect(() => {
     fetchClasses();
-    
+
     // Use a persistent session ID for this browser to keep the QR code the same
     let savedSessionId = localStorage.getItem('scanner_session_id');
     if (!savedSessionId) {
@@ -44,7 +44,7 @@ const Scanner = () => {
 
     // Listen to Firestore for scan results in this session
     const sessionRef = doc(db, 'scan_sessions', savedSessionId);
-    
+
     // Initialize session document
     setDoc(sessionRef, { createdAt: new Date().toISOString() }).catch(console.error);
 
@@ -53,7 +53,7 @@ const Scanner = () => {
         const data = snapshot.data();
         if (data.studentId && data.scannedAt && (!processScanRef.lastScannedAt || data.scannedAt > processScanRef.lastScannedAt)) {
           processScanRef.lastScannedAt = data.scannedAt;
-          
+
           if (data.result) {
             setScanResult({
               success: true,
@@ -91,7 +91,7 @@ const Scanner = () => {
     try {
       const response = await axios.get(`${API_URL}/classes`);
       setClassesList(response.data);
-      
+
       const savedClassId = localStorage.getItem('scanner_active_class');
       if (savedClassId && response.data.some(c => c.classId === savedClassId)) {
         setActiveClass(savedClassId);
@@ -114,8 +114,8 @@ const Scanner = () => {
 
     const scanner = new Html5QrcodeScanner(
       "reader",
-      { 
-        fps: 20, 
+      {
+        fps: 20,
         qrbox: { width: 250, height: 250 },
         disableFlip: false,
         videoConstraints: {
@@ -141,7 +141,7 @@ const Scanner = () => {
       return;
     }
     lastScannedRef.current = { id: studentId, time: now };
-    
+
     setLoading(true);
     setScanResult(null);
     setError(null);
@@ -206,13 +206,13 @@ const Scanner = () => {
     } else if (manualId.trim()) {
       const searchString = manualId.trim().toLowerCase();
       // Try exact match or partial match
-      const matchedStudent = students.find(s => 
-        s.studentId.toLowerCase() === searchString || 
-        s.name.toLowerCase() === searchString || 
+      const matchedStudent = students.find(s =>
+        s.studentId.toLowerCase() === searchString ||
+        s.name.toLowerCase() === searchString ||
         (s.contact && s.contact === searchString)
-      ) || students.find(s => 
-        s.studentId.toLowerCase().includes(searchString) || 
-        s.name.toLowerCase().includes(searchString) || 
+      ) || students.find(s =>
+        s.studentId.toLowerCase().includes(searchString) ||
+        s.name.toLowerCase().includes(searchString) ||
         (s.contact && s.contact.includes(searchString))
       );
 
@@ -235,7 +235,7 @@ const Scanner = () => {
   };
 
   // Filter enrolled students for currently active class
-  const enrolledStudents = students.filter(s => 
+  const enrolledStudents = students.filter(s =>
     s.enrolledClasses && Array.isArray(s.enrolledClasses) && s.enrolledClasses.includes(activeClass)
   );
 
@@ -287,7 +287,7 @@ const Scanner = () => {
                     <strong className="font-bold text-lg text-emerald-900">
                       {typeof scanResult.student === 'object' ? scanResult.student.name : scanResult.student}
                     </strong>
-                    
+
                     {/* CARD TYPE BADGE */}
                     {scanResult.student?.cardType === 'free' ? (
                       <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-600 text-white shadow-sm">
@@ -358,14 +358,14 @@ const Scanner = () => {
                         onClick={() => handlePaymentToggle(false)}
                         className="px-3 py-2.5 rounded-xl bg-rose-100 text-rose-700 hover:bg-rose-200 text-xs font-bold transition-colors cursor-pointer"
                       >
-                        Unpaid (ණය)
+                        Unpaid
                       </button>
                     </div>
                   )}
                 </div>
               )}
             </div>
-            
+
             {/* FEE ALERT UI FOR MONTHLY DUES */}
             {scanResult.student?.feeType === 'monthly' && scanResult.paymentAlert?.outstanding && (
               <div className="bg-rose-600 border border-rose-700 text-white px-6 py-4 rounded-2xl relative flex items-start shadow-xl shadow-rose-500/30">
@@ -384,7 +384,7 @@ const Scanner = () => {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12">
-      
+
       {/* Class Selection Header */}
       <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
         <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">
@@ -394,11 +394,11 @@ const Scanner = () => {
           <div className="text-sm text-amber-600 font-medium p-3 bg-amber-50 rounded-xl">Please add classes from the backend before scanning.</div>
         ) : (
           <Select
-            value={activeClass ? { 
-              value: activeClass, 
-              label: classesList.find(c => c.classId === activeClass) 
-                ? `${classesList.find(c => c.classId === activeClass).name} (${classesList.find(c => c.classId === activeClass).teacherName})` 
-                : 'Select Class' 
+            value={activeClass ? {
+              value: activeClass,
+              label: classesList.find(c => c.classId === activeClass)
+                ? `${classesList.find(c => c.classId === activeClass).name} (${classesList.find(c => c.classId === activeClass).teacherName})`
+                : 'Select Class'
             } : null}
             onChange={(selectedOption) => {
               setActiveClass(selectedOption.value);
@@ -444,22 +444,20 @@ const Scanner = () => {
       <div className="bg-slate-100 p-1.5 rounded-2xl flex gap-2">
         <button
           onClick={() => setActiveTab('qr')}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all text-sm ${
-            activeTab === 'qr'
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all text-sm ${activeTab === 'qr'
               ? 'bg-white text-indigo-600 shadow-md shadow-indigo-100'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-          }`}
+            }`}
         >
           <QrCode size={18} />
           QR Camera Scan
         </button>
         <button
           onClick={() => setActiveTab('manual')}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all text-sm ${
-            activeTab === 'manual'
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all text-sm ${activeTab === 'manual'
               ? 'bg-white text-indigo-600 shadow-md shadow-indigo-100'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-          }`}
+            }`}
         >
           <UserCheck size={18} />
           Manual Attendance (Search & Mark)
@@ -478,9 +476,9 @@ const Scanner = () => {
             </h2>
             <p className="text-slate-500 font-medium">Scan student ID card with camera or mobile bridge</p>
           </div>
-          
+
           <div className="flex justify-center">
-            <button 
+            <button
               onClick={() => setShowMobileLink(true)}
               className="flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-5 py-2.5 rounded-full transition-colors border border-indigo-200"
             >
@@ -492,7 +490,7 @@ const Scanner = () => {
           {showMobileLink && sessionId && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
               <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full relative animate-in zoom-in-95 duration-200">
-                <button 
+                <button
                   onClick={() => setShowMobileLink(false)}
                   className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition-colors"
                 >
@@ -505,9 +503,9 @@ const Scanner = () => {
                   </h3>
                   <p className="text-slate-500 font-medium mt-2">Scan this QR code with your phone to turn it into a scanner camera.</p>
                 </div>
-                
+
                 <div className="flex justify-center bg-white p-4 rounded-2xl shadow-inner border border-slate-100 mb-6">
-                  <QRCodeSVG 
+                  <QRCodeSVG
                     value={`${window.location.protocol}//${window.location.host}/mobile-scan/${sessionId}`}
                     size={220}
                     bgColor={"#ffffff"}
@@ -516,7 +514,7 @@ const Scanner = () => {
                     includeMargin={false}
                   />
                 </div>
-                
+
                 <div className="bg-indigo-50 text-indigo-700 text-sm font-medium p-4 rounded-xl text-center border border-indigo-100">
                   Keep this modal open while scanning with your mobile device.
                 </div>
@@ -527,7 +525,7 @@ const Scanner = () => {
           <div className="relative">
             {/* Glow effect behind scanner */}
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-[3rem] blur-xl opacity-20 animate-pulse"></div>
-            
+
             <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 border border-slate-100 relative z-10">
               <style>{`
                 #reader { border: none !important; position: relative; }
@@ -546,7 +544,7 @@ const Scanner = () => {
                 }
                 #reader button:hover { background-color: #4338ca !important; }
               `}</style>
-              
+
               {!isScannerActive ? (
                 <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                   <div className="bg-indigo-50 p-6 rounded-full mb-4">
@@ -554,7 +552,7 @@ const Scanner = () => {
                   </div>
                   <h3 className="text-xl font-bold text-slate-700 mb-2">Camera Scanner Inactive</h3>
                   <p className="text-slate-500 mb-6 max-w-sm">Click the button below to activate your computer/laptop camera for scanning.</p>
-                  <button 
+                  <button
                     onClick={() => setIsScannerActive(true)}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-200 flex items-center gap-2 text-lg"
                   >
@@ -565,7 +563,7 @@ const Scanner = () => {
               ) : (
                 <div>
                   <div className="flex justify-end mb-4">
-                    <button 
+                    <button
                       onClick={() => setIsScannerActive(false)}
                       className="text-slate-500 hover:text-slate-700 text-sm font-bold flex items-center gap-1 bg-slate-100 px-3 py-1.5 rounded-lg"
                     >
@@ -627,17 +625,17 @@ const Scanner = () => {
 
               <div className="flex items-center gap-3">
                 <span className="text-xs font-bold text-slate-400 uppercase">or type directly:</span>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={manualId}
                   onChange={(e) => setManualId(e.target.value)}
-                  placeholder="Student ID / Name / Phone..." 
+                  placeholder="Student ID / Name / Phone..."
                   className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-sm"
                 />
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={loading || (!selectedManualStudent && !manualId.trim())}
                 className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-indigo-200 text-lg flex items-center justify-center gap-2"
               >
@@ -661,7 +659,7 @@ const Scanner = () => {
               </div>
               <div className="relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input 
+                <input
                   type="text"
                   value={filterQuery}
                   onChange={(e) => setFilterQuery(e.target.value)}
@@ -679,7 +677,7 @@ const Scanner = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-1">
                 {displayedEnrolledStudents.map((s) => (
-                  <div 
+                  <div
                     key={s.studentId}
                     className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50/50 border border-slate-100 hover:border-indigo-200 transition-colors"
                   >
