@@ -119,10 +119,25 @@ const Scanner = () => {
         const html5QrCode = new Html5Qrcode("reader");
         html5QrCodeRef.current = html5QrCode;
 
-        const config = { fps: 20, qrbox: { width: 250, height: 250 } };
+        const config = { fps: 15, qrbox: { width: 250, height: 250 } };
+
+        let cameraTarget = { facingMode: "environment" };
+        try {
+          const devices = await Html5Qrcode.getCameras();
+          if (devices && devices.length > 0) {
+            const backCam = devices.find(d => 
+              d.label.toLowerCase().includes('back') || 
+              d.label.toLowerCase().includes('rear') || 
+              d.label.toLowerCase().includes('environment')
+            );
+            cameraTarget = backCam ? backCam.id : devices[devices.length - 1].id;
+          }
+        } catch (e) {
+          console.warn("Could not enumerate camera devices:", e);
+        }
 
         await html5QrCode.start(
-          { facingMode: "environment" },
+          cameraTarget,
           config,
           (decodedText) => {
             if (processScanRef.current) {
@@ -135,9 +150,9 @@ const Scanner = () => {
       } catch (err) {
         console.error("Camera start error:", err);
         setCameraLoading(false);
-        setCameraError("Camera permission denied or camera not found. Please allow camera access in browser settings.");
+        setCameraError("Camera permission denied or camera not found. Tap 'Open Camera' below to grant camera access.");
       }
-    }, 150);
+    }, 200);
   };
 
   const stopCamera = async () => {
@@ -567,7 +582,63 @@ const Scanner = () => {
                 #reader__status_span { display: none !important; }
               `}</style>
 
-              <div id="reader" className="w-full rounded-2xl overflow-hidden min-h-[300px]"></div>
+              {!isScannerActive ? (
+                <div className="flex flex-col items-center justify-center py-8 sm:py-12 px-2 text-center space-y-4">
+                  <div className="bg-indigo-50 p-5 rounded-full">
+                    <QrCode size={40} className="text-indigo-600 sm:w-12 sm:h-12" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-black text-slate-800 mb-1">Camera Scanner Ready</h3>
+                    <p className="text-slate-500 text-xs sm:text-sm max-w-sm">Tap the button below to activate phone/laptop camera for instant QR scanning.</p>
+                  </div>
+                  <button
+                    onClick={startCamera}
+                    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-8 py-3.5 rounded-2xl transition-all shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 text-base sm:text-lg cursor-pointer active:scale-95"
+                  >
+                    <QrCode size={22} />
+                    Open Camera Scanner
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-2 text-xs font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                      <span>Camera Live & Scanning</span>
+                    </div>
+                    <button
+                      onClick={stopCamera}
+                      className="text-slate-600 hover:text-slate-800 text-xs font-extrabold flex items-center gap-1 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl transition-colors cursor-pointer"
+                    >
+                      <X size={16} /> Stop Camera
+                    </button>
+                  </div>
+
+                  {cameraError && (
+                    <div className="mb-4 p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-bold rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle size={20} className="shrink-0 text-rose-600" />
+                        <span>{cameraError}</span>
+                      </div>
+                      <button
+                        onClick={startCamera}
+                        className="w-full sm:w-auto bg-rose-600 text-white px-4 py-2 rounded-xl font-bold text-xs shrink-0 cursor-pointer"
+                      >
+                        Grant Access
+                      </button>
+                    </div>
+                  )}
+
+                  {cameraLoading && (
+                    <div className="py-12 text-center text-slate-400 space-y-2">
+                      <div className="w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto"></div>
+                      <p className="text-xs font-bold text-slate-600">Starting camera stream & requesting permissions...</p>
+                    </div>
+                  )}
+
+                  <div id="reader" className="w-full rounded-2xl overflow-hidden min-h-[300px] bg-slate-950"></div>
+                </div>
+              )}
             </div>
           </div>
 
