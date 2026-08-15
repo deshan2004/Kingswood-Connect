@@ -262,94 +262,15 @@ const Scanner = () => {
     };
   });
 
-  return (
-    <div className="max-w-3xl mx-auto space-y-8 pb-12">
-      
-      {/* Class Selection Header */}
-      <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-        <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">
-          1. Select Class for Attendance:
-        </label>
-        {classesList.length === 0 ? (
-          <div className="text-sm text-amber-600 font-medium p-3 bg-amber-50 rounded-xl">Please add classes from the backend before scanning.</div>
-        ) : (
-          <Select
-            value={activeClass ? { 
-              value: activeClass, 
-              label: classesList.find(c => c.classId === activeClass) 
-                ? `${classesList.find(c => c.classId === activeClass).name} (${classesList.find(c => c.classId === activeClass).teacherName})` 
-                : 'Select Class' 
-            } : null}
-            onChange={(selectedOption) => {
-              setActiveClass(selectedOption.value);
-              localStorage.setItem('scanner_active_class', selectedOption.value);
-            }}
-            options={classesList.map(c => ({ value: c.classId, label: `${c.name} (${c.teacherName})` }))}
-            placeholder="Select a class"
-            styles={{
-              control: (base, state) => ({
-                ...base,
-                minHeight: '52px',
-                borderRadius: '0.85rem',
-                borderColor: state.isFocused ? '#4f46e5' : '#e2e8f0',
-                boxShadow: state.isFocused ? '0 0 0 2px rgba(79, 70, 229, 0.2)' : 'none',
-                '&:hover': {
-                  borderColor: state.isFocused ? '#4f46e5' : '#cbd5e1'
-                },
-                backgroundColor: '#ffffff',
-                fontSize: '1.125rem',
-                fontWeight: '700',
-                color: '#1e293b'
-              }),
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isSelected ? '#4f46e5' : state.isFocused ? '#f1f5f9' : 'transparent',
-                color: state.isSelected ? '#ffffff' : '#1e293b',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }),
-              menu: (base) => ({
-                ...base,
-                borderRadius: '0.85rem',
-                overflow: 'hidden',
-                zIndex: 50
-              })
-            }}
-          />
-        )}
-      </div>
+  const alertRef = React.useRef(null);
 
-      {/* Navigation Tabs: QR Scanner vs Manual Attendance */}
-      <div className="bg-slate-100 p-1.5 rounded-2xl flex gap-2">
-        <button
-          onClick={() => setActiveTab('qr')}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all text-sm ${
-            activeTab === 'qr'
-              ? 'bg-white text-indigo-600 shadow-md shadow-indigo-100'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-          }`}
-        >
-          <QrCode size={18} />
-          QR Camera Scan
-        </button>
-        <button
-          onClick={() => setActiveTab('manual')}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all text-sm ${
-            activeTab === 'manual'
-              ? 'bg-white text-indigo-600 shadow-md shadow-indigo-100'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-          }`}
-        >
-          <UserCheck size={18} />
-          Manual Attendance (Search & Mark)
-        </button>
-      </div>
+  const renderFeedbackAlert = () => {
+    if (!error && !scanResult) return null;
 
-      {/* Feedback Alerts - Single Container */}
-      <div className="min-h-[60px]">
+    return (
+      <div ref={alertRef} className="space-y-4 animate-in slide-in-from-top-4 fade-in duration-300 my-4">
         {error ? (
-          <div className="bg-rose-50 border border-rose-200 text-rose-700 px-6 py-5 rounded-2xl relative flex items-center shadow-lg shadow-rose-100/50 animate-in slide-in-from-top-4 fade-in duration-300" role="alert">
+          <div className="bg-rose-50 border border-rose-200 text-rose-700 px-6 py-5 rounded-2xl relative flex items-center shadow-lg shadow-rose-100/50" role="alert">
             <AlertCircle className="w-8 h-8 text-rose-500 mr-4 shrink-0" />
             <div>
               <strong className="font-bold text-lg block text-rose-900">Attendance Error</strong>
@@ -357,7 +278,7 @@ const Scanner = () => {
             </div>
           </div>
         ) : scanResult ? (
-          <div className="space-y-4 animate-in slide-in-from-top-4 fade-in duration-300">
+          <div className="space-y-4">
             <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-6 py-5 rounded-2xl relative flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-emerald-100/50">
               <div className="flex items-center">
                 <CheckCircle2 className="w-8 h-8 text-emerald-500 mr-4 shrink-0" />
@@ -458,6 +379,95 @@ const Scanner = () => {
           </div>
         ) : null}
       </div>
+    );
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-8 pb-12">
+      
+      {/* Class Selection Header */}
+      <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+        <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">
+          1. Select Class for Attendance:
+        </label>
+        {classesList.length === 0 ? (
+          <div className="text-sm text-amber-600 font-medium p-3 bg-amber-50 rounded-xl">Please add classes from the backend before scanning.</div>
+        ) : (
+          <Select
+            value={activeClass ? { 
+              value: activeClass, 
+              label: classesList.find(c => c.classId === activeClass) 
+                ? `${classesList.find(c => c.classId === activeClass).name} (${classesList.find(c => c.classId === activeClass).teacherName})` 
+                : 'Select Class' 
+            } : null}
+            onChange={(selectedOption) => {
+              setActiveClass(selectedOption.value);
+              localStorage.setItem('scanner_active_class', selectedOption.value);
+            }}
+            options={classesList.map(c => ({ value: c.classId, label: `${c.name} (${c.teacherName})` }))}
+            placeholder="Select a class"
+            styles={{
+              control: (base, state) => ({
+                ...base,
+                minHeight: '52px',
+                borderRadius: '0.85rem',
+                borderColor: state.isFocused ? '#4f46e5' : '#e2e8f0',
+                boxShadow: state.isFocused ? '0 0 0 2px rgba(79, 70, 229, 0.2)' : 'none',
+                '&:hover': {
+                  borderColor: state.isFocused ? '#4f46e5' : '#cbd5e1'
+                },
+                backgroundColor: '#ffffff',
+                fontSize: '1.125rem',
+                fontWeight: '700',
+                color: '#1e293b'
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isSelected ? '#4f46e5' : state.isFocused ? '#f1f5f9' : 'transparent',
+                color: state.isSelected ? '#ffffff' : '#1e293b',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }),
+              menu: (base) => ({
+                ...base,
+                borderRadius: '0.85rem',
+                overflow: 'hidden',
+                zIndex: 50
+              })
+            }}
+          />
+        )}
+      </div>
+
+      {/* Navigation Tabs: QR Scanner vs Manual Attendance */}
+      <div className="bg-slate-100 p-1.5 rounded-2xl flex gap-2">
+        <button
+          onClick={() => setActiveTab('qr')}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all text-sm ${
+            activeTab === 'qr'
+              ? 'bg-white text-indigo-600 shadow-md shadow-indigo-100'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+          }`}
+        >
+          <QrCode size={18} />
+          QR Camera Scan
+        </button>
+        <button
+          onClick={() => setActiveTab('manual')}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all text-sm ${
+            activeTab === 'manual'
+              ? 'bg-white text-indigo-600 shadow-md shadow-indigo-100'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+          }`}
+        >
+          <UserCheck size={18} />
+          Manual Attendance (Search & Mark)
+        </button>
+      </div>
+
+      {/* Feedback Alerts */}
+      {renderFeedbackAlert()}
 
       {/* TAB 1: QR CODE CAMERA SCANNER */}
       {activeTab === 'qr' && (
@@ -639,6 +649,8 @@ const Scanner = () => {
 
           {/* Option B: Quick List of Enrolled Students */}
           <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+            {renderFeedbackAlert()}
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
                 <BookOpen className="text-indigo-600" size={24} />
