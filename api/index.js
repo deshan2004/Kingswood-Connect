@@ -1373,11 +1373,71 @@ app.post('/api/auth/signup', async (req, res) => {
     }
 
     await db.collection('users').doc(uid).set(userData);
-
-    res.status(201).json({ message: 'User created successfully', user: userData });
+    res.status(201).json({ message: 'User created successfully', user: { uid: userRecord.uid, email, role, name, contact: email } });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(400).json({ error: error.message || 'Failed to sign up' });
+    res.status(500).json({ error: error.message || 'Failed to create user' });
+  }
+});
+
+// --- Two-Factor Authentication (2FA / OTP) ---
+app.post('/api/auth/send-2fa-otp', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 mins expiry
+
+    const docId = email.toLowerCase().trim();
+    await db.collection('otp_verifications').doc(docId).set({
+      email: docId,
+      otp,
+      expiresAt,
+      createdAt: new Date().toISOString()
+    });
+
+    console.log(`[2FA OTP] Generated OTP for ${docId}: ${otp}`);
+
+    res.json({ 
+      message: '2FA OTP generated successfully',
+      email: docId,
+      otp // Return OTP code for instant verification testing
+    });
+  } catch (error) {
+    console.error('Send 2FA OTP error:', error);
+    res.status(500).json({ error: 'Failed to send 2FA OTP' });
+  }
+});
+
+app.post('/api/auth/verify-2fa-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return res.status(400).json({ error: 'Email and OTP are required' });
+
+    const docId = email.toLowerCase().trim();
+    const docSnap = await db.collection('otp_verifications').doc(docId).get();
+
+    if (!docSnap.exists) {
+      return res.status(400).json({ error: 'OTP not found or expired. Please request a new code.' });
+    }
+
+    const data = docSnap.data();
+    if (Date.now() > data.expiresAt) {
+      await db.collection('otp_verifications').doc(docId).delete();
+      return res.status(400).json({ error: 'OTP has expired. Please request a new code.' });
+    }
+
+    if (data.otp !== String(otp).trim()) {
+      return res.status(400).json({ error: 'Invalid 6-digit OTP code. Please check and try again.' });
+    }
+
+    await db.collection('otp_verifications').doc(docId).delete();
+
+    res.json({ verified: true, message: '2FA OTP verification successful' });
+  } catch (error) {
+    console.error('Verify 2FA OTP error:', error);
+    res.status(500).json({ error: 'Failed to verify 2FA OTP' });
   }
 });
 

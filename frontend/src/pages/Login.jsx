@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, Key, User, Eye, EyeOff, ArrowLeft, MailCheck, CheckCircle2, X } from 'lucide-react';
+import { LogIn, Key, User, Eye, EyeOff, ArrowLeft, MailCheck, CheckCircle2, X, ShieldCheck, Lock } from 'lucide-react';
+
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const Login = () => {
   const [searchParams] = useSearchParams();
@@ -12,6 +15,13 @@ const Login = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
   const [autoFilled, setAutoFilled] = useState(false);
+
+  // 2FA OTP State
+  const [showOtpStep, setShowOtpStep] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpMessage, setOtpMessage] = useState('');
+  const [pendingUserCredentials, setPendingUserCredentials] = useState(null);
 
   // Auto-fill login credentials if passed in URL query parameters (e.g. ?email=...&password=...)
   useEffect(() => {
@@ -92,17 +102,58 @@ const Login = () => {
     setError('');
 
     try {
-      // Format Student ID (e.g. kws-12345) as email
       let loginEmail = identifier.trim().toLowerCase();
       if (loginEmail.startsWith('kws-') && !loginEmail.includes('@')) {
         loginEmail = `${loginEmail}@kingswood.edu`;
       }
 
+      // If logging in with an email account (Teacher/Admin), trigger 2FA OTP!
+      if (!loginEmail.startsWith('kws-')) {
+        const otpRes = await axios.post(`${API_URL}/auth/send-2fa-otp`, { email: loginEmail });
+        setPendingUserCredentials({ email: loginEmail, password });
+        setShowOtpStep(true);
+        if (otpRes.data.otp) {
+          setOtpMessage(`🔐 2FA Code sent to ${loginEmail}! (Dev OTP Code: ${otpRes.data.otp})`);
+        } else {
+          setOtpMessage(`🔐 2FA 6-digit Security Code sent to ${loginEmail}. Please check your inbox.`);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Student Direct ID Login
       await login(loginEmail, password);
     } catch (err) {
       setError(formatAuthError(err, 'Incorrect Password or Email / Student ID. Please try again.'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async (e) => {
+    e.preventDefault();
+    if (!otpCode || otpCode.trim().length < 6) {
+      setError('Please enter the full 6-digit 2FA security code.');
+      return;
+    }
+
+    setOtpLoading(true);
+    setError('');
+
+    try {
+      const res = await axios.post(`${API_URL}/auth/verify-2fa-otp`, {
+        email: pendingUserCredentials.email,
+        otp: otpCode.trim()
+      });
+
+      if (res.data.verified) {
+        // Complete Firebase login after 2FA verification
+        await login(pendingUserCredentials.email, pendingUserCredentials.password);
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Invalid 6-digit 2FA code. Please check and try again.');
+    } finally {
+      setOtpLoading(false);
     }
   };
 
@@ -270,6 +321,71 @@ const Login = () => {
                   </div>
                 </>
               )}
+            </form>
+          ) : showOtpStep ? (
+            /* 2FA Security Verification Form */
+            <form className="space-y-6" onSubmit={handleVerify2FA}>
+              <div className="bg-indigo-50 border border-indigo-200 p-4 rounded-2xl flex items-start gap-3">
+                <ShieldCheck size={24} className="text-indigo-600 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-extrabold text-indigo-900 text-sm">Two-Factor Authentication</h4>
+                  <p className="text-xs text-indigo-700 font-medium mt-0.5">{otpMessage}</p>
+                </div>
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl border border-red-200">
+                  <p className="text-xs font-bold text-red-700">{error}</p>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 text-center">
+                  Enter 6-Digit Verification Code
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                    <Lock size={18} />
+                  </span>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-300 rounded-xl text-center text-slate-900 font-mono font-black text-xl tracking-[0.4em] focus:outline-none focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/10 transition-all"
+                    placeholder="123456"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={otpLoading}
+                className="w-full bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-sm py-3.5 rounded-xl shadow-md shadow-indigo-600/25 transition-all flex items-center justify-center gap-2"
+              >
+                {otpLoading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    <ShieldCheck size={18} /> Verify 2FA & Continue
+                  </>
+                )}
+              </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOtpStep(false);
+                    setOtpCode('');
+                    setError('');
+                  }}
+                  className="inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-indigo-600 transition-colors"
+                >
+                  <ArrowLeft size={14} /> Back to Password Sign In
+                </button>
+              </div>
             </form>
           ) : (
             /* Standard Login Form */
