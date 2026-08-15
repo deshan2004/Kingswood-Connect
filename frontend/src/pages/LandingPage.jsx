@@ -546,9 +546,10 @@ const LandingPage = () => {
                 <div className="relative rounded-3xl overflow-hidden p-2.5 bg-gradient-to-tr from-indigo-950 via-indigo-600 to-blue-500 shadow-2xl shadow-indigo-950/20">
                   <div className="rounded-2xl overflow-hidden bg-slate-900 relative">
                     <img
-                      src={cmsSettings?.heroImage || '/images/sir_lecture.png'}
+                      src={cmsSettings?.heroImage || '/kc-logo.png'}
                       alt="Kingswood Connect Learning Environment"
-                      className="w-full h-[420px] object-cover object-center transform hover:scale-105 transition-transform duration-700"
+                      onError={(e) => { e.target.onerror = null; e.target.src = '/kc-logo.png'; }}
+                      className="w-full h-[420px] object-contain p-6 bg-indigo-950 object-center transform hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
 
@@ -618,19 +619,20 @@ const LandingPage = () => {
             {activeTeachers.map((teacher, idx) => {
               const badgeColors = ['bg-indigo-600', 'bg-blue-600', 'bg-emerald-600'];
               const cardBadgeColor = teacher.badgeColor || badgeColors[idx % badgeColors.length];
-              const teacherImg = teacher.image || (idx % 2 === 0 ? '/images/sir_portrait.png' : '/images/sir_physics.png');
+              const teacherImg = teacher.image || teacher.photo || '/kc-logo.png';
 
               return (
                 <div key={teacher.teacherId || idx} className="rounded-3xl bg-white border border-slate-200/90 hover:border-indigo-300 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden group flex flex-col justify-between">
                   <div>
                     <div 
                       onClick={() => setSelectedTeacherClasses(teacher)}
-                      className="relative h-72 overflow-hidden bg-slate-900 cursor-pointer"
+                      className="relative h-72 overflow-hidden bg-slate-900 cursor-pointer flex items-center justify-center p-2"
                       title="Click to view classes & timetable"
                     >
                       <img
                         src={teacherImg}
                         alt={`${teacher.name} - ${teacher.subject}`}
+                        onError={(e) => { e.target.onerror = null; e.target.src = '/kc-logo.png'; }}
                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className={`absolute top-3 right-3 ${cardBadgeColor} backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md border border-white/20 z-10`}>
@@ -716,17 +718,18 @@ const LandingPage = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             {activeTeachers.map((teacher, idx) => {
-              const teacherImg = teacher.image || (idx % 2 === 0 ? '/images/sir_portrait.png' : '/images/sir_physics.png');
+              const teacherImg = teacher.image || teacher.photo || '/kc-logo.png';
               return (
                 <div
                   key={idx}
                   onClick={() => setSelectedTeacherVideo(teacher)}
                   className="rounded-3xl bg-slate-950 border border-indigo-900/60 hover:border-indigo-500 overflow-hidden group cursor-pointer transition-all duration-300 shadow-xl hover:-translate-y-1"
                 >
-                  <div className="relative h-60 overflow-hidden bg-slate-900">
+                  <div className="relative h-60 overflow-hidden bg-slate-900 flex items-center justify-center p-2">
                     <img
                       src={teacherImg}
                       alt={teacher.name}
+                      onError={(e) => { e.target.onerror = null; e.target.src = '/kc-logo.png'; }}
                       className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-slate-950/50 group-hover:bg-slate-950/30 transition-all flex items-center justify-center">
@@ -844,20 +847,12 @@ const LandingPage = () => {
             {activeAchievers.map((ach, idx) => (
               <div key={idx} className="rounded-2xl bg-white border border-slate-200 hover:border-amber-400 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-xl group">
                 <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-900 h-56 flex items-center justify-center">
-                  {ach.image ? (
-                    <img
-                      src={ach.image}
-                      alt={ach.name}
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="text-center p-4">
-                      <div className="w-16 h-16 rounded-full bg-amber-400/20 text-amber-400 flex items-center justify-center mx-auto mb-2 border border-amber-400/40">
-                        <Trophy className="w-8 h-8" />
-                      </div>
-                      <span className="text-xs text-amber-300 font-extrabold uppercase tracking-wider">{ach.district || 'Top Achiever'}</span>
-                    </div>
-                  )}
+                  <img
+                    src={ach.image || '/kc-logo.png'}
+                    alt={ach.name}
+                    onError={(e) => { e.target.onerror = null; e.target.src = '/kc-logo.png'; }}
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
                   <div className="absolute top-3 left-3 bg-amber-400 text-slate-950 text-xs font-black px-3 py-1 rounded-full shadow-md">
                     {ach.rankBadge || '🏆 Top Ranker'}
                   </div>
