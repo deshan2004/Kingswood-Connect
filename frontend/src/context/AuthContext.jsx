@@ -9,8 +9,35 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    try {
+      const cached = localStorage.getItem('kc_user');
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [loading, setLoading] = useState(() => {
+    try {
+      return !localStorage.getItem('kc_user');
+    } catch (e) {
+      return true;
+    }
+  });
+
+  const updateUserState = (newUser) => {
+    setUser(newUser);
+    try {
+      if (newUser) {
+        localStorage.setItem('kc_user', JSON.stringify(newUser));
+      } else {
+        localStorage.removeItem('kc_user');
+      }
+    } catch (e) {
+      console.warn('Failed to update kc_user in localStorage', e);
+    }
+  };
 
   useEffect(() => {
     let unsubscribeSnapshot = null;
@@ -35,12 +62,12 @@ export const AuthProvider = ({ children }) => {
                  }
                }
                
-               setUser({ ...firebaseUser, ...userData });
+               updateUserState({ ...firebaseUser, ...userData });
             } else {
                // Fallback if user document does not exist yet
                const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
                const fallbackRole = (email.includes('admin') || email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
-               setUser({ ...firebaseUser, role: fallbackRole });
+               updateUserState({ ...firebaseUser, role: fallbackRole });
             }
             setLoading(false);
           },
@@ -48,12 +75,12 @@ export const AuthProvider = ({ children }) => {
              console.error("Error listening to user document:", error);
              const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
              const fallbackRole = (email.includes('admin') || email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
-             setUser({ ...firebaseUser, role: fallbackRole });
+             updateUserState({ ...firebaseUser, role: fallbackRole });
              setLoading(false);
           }
         );
       } else {
-        setUser(null);
+        updateUserState(null);
         setLoading(false);
         if (unsubscribeSnapshot) unsubscribeSnapshot();
       }
@@ -75,6 +102,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
+    updateUserState(null);
     await signOut(auth);
   };
 
@@ -110,7 +138,7 @@ export const AuthProvider = ({ children }) => {
           console.warn("Failed to sync email-verified to firestore", err);
         }
 
-        setUser(prev => prev ? { ...prev, emailVerified: true } : null);
+        updateUserState({ ...user, emailVerified: true });
       }
       return isVerified;
     } catch (err) {
@@ -154,14 +182,19 @@ export const AuthProvider = ({ children }) => {
     }
 
     // 3. Update local state
-    setUser(prev => prev ? { ...prev, email: formattedEmail, emailVerified: false } : null);
+    updateUserState({ ...user, email: formattedEmail, emailVerified: false });
 
     return res.data;
   };
 
   return (
     <AuthContext.Provider value={{ user, login, loginWithGoogle, logout, changePassword, resetPassword, sendVerification, checkVerificationStatus, updateStudentEmail, loading }}>
-      {!loading && children}
+      {loading && !user ? (
+        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 space-y-4">
+          <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+          <p className="text-sm font-bold text-slate-300">Loading Kingswood Connect...</p>
+        </div>
+      ) : children}
     </AuthContext.Provider>
   );
 };
