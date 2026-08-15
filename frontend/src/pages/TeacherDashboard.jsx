@@ -63,12 +63,15 @@ const TeacherDashboard = () => {
         </div>
 
         <div className="bg-gradient-to-br from-violet-600 to-indigo-600 p-6 rounded-3xl shadow-lg shadow-violet-200 flex items-center gap-4 text-white">
-          <div className="bg-white/20 p-4 rounded-2xl backdrop-blur-sm">
+          <div className="bg-white/20 p-4 rounded-2xl backdrop-blur-sm shrink-0">
             <Wallet size={24} />
           </div>
           <div>
-            <p className="text-sm font-bold text-violet-100">Expected Income (Rs.)</p>
-            <p className="text-2xl font-black">{data.expectedIncome.toLocaleString()}</p>
+            <p className="text-xs font-bold text-violet-100 uppercase tracking-wider mb-1">Expected Income / Cut</p>
+            <div className="flex flex-col sm:flex-row sm:items-baseline gap-x-4 gap-y-1">
+              <span className="text-xl font-black">Rs. {(data.expectedWeeklyIncome || 0).toLocaleString()} <span className="text-xs font-medium text-violet-200">/week</span></span>
+              <span className="text-xl font-black">Rs. {(data.expectedMonthlyIncome || 0).toLocaleString()} <span className="text-xs font-medium text-violet-200">/mo</span></span>
+            </div>
           </div>
         </div>
       </div>
@@ -91,12 +94,11 @@ const TeacherDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {data.classes.map((cls) => {
                 const commPct = Math.round((data.teacher?.commissionRate > 1 ? data.teacher.commissionRate / 100 : (data.teacher?.commissionRate || 0.5)) * 100);
-                const nameLower = String(cls.name || '').toLowerCase();
-                const gradeStr = String(cls.grade || '').toLowerCase();
-                const isAL = gradeStr.includes('12') || gradeStr.includes('13') || gradeStr.includes('a/l') || gradeStr.includes('al') || nameLower.includes('al') || nameLower.includes('a/l') || nameLower.includes('combined');
-                const isWeekly = cls.feeType === 'weekly' || !isAL;
+                const str = `${cls.name || ''} ${cls.grade || ''}`.toLowerCase();
+                const isAL = str.includes('12') || str.includes('13') || str.includes('a/l') || str.includes('al') || str.includes('combined');
+                const isWeekly = cls.feeType === 'weekly' || (!isAL);
                 const displayFee = cls.displayFee || (isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500));
-                const feeUnit = cls.feeUnit || (isWeekly ? 'session' : 'mo');
+                const feeUnit = cls.feeUnit || (isWeekly ? 'week' : 'mo');
                 const expectedCut = cls.expectedCut !== undefined ? cls.expectedCut : (isWeekly ? Math.round((cls.expectedIncome || 0) / 4) : (cls.expectedIncome || 0));
                 const cutUnit = cls.cutUnit || (isWeekly ? 'week' : 'mo');
 

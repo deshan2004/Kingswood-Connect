@@ -1697,7 +1697,8 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
     const classSnap = await db.collection('classes').where('teacherId', '==', teacherId).get();
     
     let totalStudents = 0;
-    let expectedIncome = 0;
+    let expectedWeeklyIncome = 0;
+    let expectedMonthlyIncome = 0;
     let classes = [];
 
     for (const classDoc of classSnap.docs) {
@@ -1706,7 +1707,6 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
       const studentCount = studentSnap.size;
       
       let classIncome = 0;
-
       studentSnap.forEach(sDoc => {
         const s = sDoc.data();
         const studentMonthlyFee = calculateStudentMonthlyFee(s, cls);
@@ -1714,22 +1714,26 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
       });
       
       totalStudents += studentCount;
-      expectedIncome += classIncome;
       
-      const nameLower = String(cls.name || '').toLowerCase();
-      const gradeStr = String(cls.grade || '').toLowerCase();
-      const isAL = gradeStr.includes('12') || gradeStr.includes('13') || gradeStr.includes('a/l') || gradeStr.includes('al') || nameLower.includes('al') || nameLower.includes('a/l') || nameLower.includes('combined');
-      const feeType = cls.feeType || (isAL ? 'monthly' : 'weekly');
-      const isWeekly = feeType === 'weekly' || !isAL;
+      const str = `${cls.name || ''} ${cls.grade || ''}`.toLowerCase();
+      const isAL = str.includes('12') || str.includes('13') || str.includes('a/l') || str.includes('al') || str.includes('combined');
+      const isWeekly = cls.feeType === 'weekly' || (!isAL);
+      
       const displayFee = isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500);
       const expectedCut = isWeekly ? Math.round(classIncome / 4) : Math.round(classIncome);
+
+      if (isWeekly) {
+        expectedWeeklyIncome += expectedCut;
+      } else {
+        expectedMonthlyIncome += expectedCut;
+      }
 
       classes.push({
         ...cls,
         classId: classDoc.id,
         feeType: isWeekly ? 'weekly' : 'monthly',
         displayFee,
-        feeUnit: isWeekly ? 'session' : 'mo',
+        feeUnit: isWeekly ? 'week' : 'mo',
         studentsCount: studentCount,
         expectedCut,
         cutUnit: isWeekly ? 'week' : 'mo',
@@ -1743,7 +1747,9 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
         commissionRate
       },
       totalStudents,
-      expectedIncome: Math.round(expectedIncome),
+      expectedIncome: Math.round(expectedMonthlyIncome + (expectedWeeklyIncome * 4)),
+      expectedWeeklyIncome,
+      expectedMonthlyIncome,
       classes
     });
   } catch (error) {
