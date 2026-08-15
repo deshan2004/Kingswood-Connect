@@ -157,14 +157,8 @@ const Scanner = () => {
       });
       setTimeout(() => setScanResult(null), 12000); // 12 seconds so operator has time to collect cash
     } catch (err) {
+      setScanResult(null);
       setError(err.response?.data?.message || err.response?.data?.error || 'Failed to scan student');
-      if (err.response?.data?.student) {
-        setScanResult({
-          alreadyMarked: true,
-          attendanceId: err.response.data.attendanceId,
-          student: err.response.data.existingData || { name: err.response.data.student, studentId }
-        });
-      }
       setTimeout(() => setError(null), 5000);
     } finally {
       setLoading(false);
@@ -352,9 +346,17 @@ const Scanner = () => {
         </button>
       </div>
 
-      {/* Feedback Alerts */}
-      <div className="min-h-[100px]">
-        {scanResult && (
+      {/* Feedback Alerts - Single Container */}
+      <div className="min-h-[60px]">
+        {error ? (
+          <div className="bg-rose-50 border border-rose-200 text-rose-700 px-6 py-5 rounded-2xl relative flex items-center shadow-lg shadow-rose-100/50 animate-in slide-in-from-top-4 fade-in duration-300" role="alert">
+            <AlertCircle className="w-8 h-8 text-rose-500 mr-4 shrink-0" />
+            <div>
+              <strong className="font-bold text-lg block text-rose-900">Attendance Error</strong>
+              <span className="block text-rose-700">{error}</span>
+            </div>
+          </div>
+        ) : scanResult ? (
           <div className="space-y-4 animate-in slide-in-from-top-4 fade-in duration-300">
             <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-6 py-5 rounded-2xl relative flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-emerald-100/50">
               <div className="flex items-center">
@@ -454,17 +456,7 @@ const Scanner = () => {
               </div>
             )}
           </div>
-        )}
-
-        {error && (
-          <div className="bg-rose-50 border border-rose-200 text-rose-700 px-6 py-5 rounded-2xl relative flex items-center shadow-lg shadow-rose-100/50 animate-in slide-in-from-top-4 fade-in duration-300" role="alert">
-            <AlertCircle className="w-8 h-8 text-rose-500 mr-4 shrink-0" />
-            <div>
-              <strong className="font-bold text-lg block text-rose-900">Attendance Error</strong>
-              <span className="block text-rose-700">{error}</span>
-            </div>
-          </div>
-        )}
+        ) : null}
       </div>
 
       {/* TAB 1: QR CODE CAMERA SCANNER */}

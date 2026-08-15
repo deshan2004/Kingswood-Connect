@@ -528,13 +528,19 @@ async function processAttendanceScan(studentId, classId, paidToday = false, amou
   }
 
   const cardType = student.cardType || 'normal'; // 'normal', 'half', 'free'
-  const defaults = getStudentFeeDefaults(student.grade, student.feeType, student.defaultFee);
-  const feeType = student.feeType || defaults.feeBasis; // 'weekly' or 'monthly'
-  const defaultFee = typeof student.defaultFee === 'number' ? student.defaultFee : defaults.defaultFee;
+  const gradeStr = String(classData.grade || student.grade || '').toLowerCase();
+  const isAL = gradeStr.includes('12') || gradeStr.includes('13') || gradeStr.includes('a/l') || gradeStr.includes('al');
   
-  let feeAmount = defaultFee;
+  // Use class feeType & grade first (Grade 1-11 = weekly session fee, Grade 12-13 = monthly fee)
+  const feeType = classData.feeType || (isAL ? 'monthly' : 'weekly');
+  
+  let baseFee = typeof classData.fee === 'number' && classData.fee > 0
+    ? classData.fee
+    : (typeof student.defaultFee === 'number' && student.defaultFee > 0 ? student.defaultFee : (feeType === 'monthly' ? 3500 : 250));
+
+  let feeAmount = baseFee;
   if (cardType === 'free') feeAmount = 0;
-  else if (cardType === 'half') feeAmount = defaultFee / 2;
+  else if (cardType === 'half') feeAmount = baseFee / 2;
 
   // Check Payments for this specific class for monthly check
   const paymentQuery = await db.collection('payments')
