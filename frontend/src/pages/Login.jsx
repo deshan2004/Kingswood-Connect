@@ -107,21 +107,7 @@ const Login = () => {
         loginEmail = `${loginEmail}@kingswood.edu`;
       }
 
-      // If logging in with an email account (Teacher/Admin), trigger 2FA OTP!
-      if (!loginEmail.startsWith('kws-')) {
-        const otpRes = await axios.post(`${API_URL}/auth/send-2fa-otp`, { email: loginEmail });
-        setPendingUserCredentials({ email: loginEmail, password });
-        setShowOtpStep(true);
-        if (otpRes.data.otp) {
-          setOtpMessage(`🔐 2FA Code sent to ${loginEmail}! (Dev OTP Code: ${otpRes.data.otp})`);
-        } else {
-          setOtpMessage(`🔐 2FA 6-digit Security Code sent to ${loginEmail}. Please check your inbox.`);
-        }
-        setLoading(false);
-        return;
-      }
-
-      // Student Direct ID Login
+      // Direct Login for Admin, Teachers, and Students
       await login(loginEmail, password);
     } catch (err) {
       setError(formatAuthError(err, 'Incorrect Password or Email / Student ID. Please try again.'));

@@ -1383,13 +1383,14 @@ app.post('/api/auth/signup', async (req, res) => {
 // --- Two-Factor Authentication (2FA / OTP) ---
 app.post('/api/auth/send-2fa-otp', async (req, res) => {
   try {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email is required' });
+    const { email, targetEmail } = req.body;
+    const recipientEmail = (targetEmail || email || '').toLowerCase().trim();
+    if (!recipientEmail) return res.status(400).json({ error: 'Email is required' });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 mins expiry
 
-    const docId = email.toLowerCase().trim();
+    const docId = recipientEmail;
     await db.collection('otp_verifications').doc(docId).set({
       email: docId,
       otp,
@@ -1399,10 +1400,53 @@ app.post('/api/auth/send-2fa-otp', async (req, res) => {
 
     console.log(`[2FA OTP] Generated OTP for ${docId}: ${otp}`);
 
+    let emailSent = false;
+    let nodemailer = null;
+    try {
+      nodemailer = require('nodemailer');
+    } catch (e) {
+      // Nodemailer optional fallback
+    }
+
+    if (nodemailer && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+          }
+        });
+
+        await transporter.sendMail({
+          from: `"Kingswood Connect Security" <${process.env.EMAIL_USER}>`,
+          to: recipientEmail,
+          subject: '🔒 Kingswood Connect - Your 2FA Verification Code',
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; max-width: 500px; margin: 0 auto; background-color: #ffffff;">
+              <h2 style="color: #1e293b; font-size: 20px; font-weight: 800; margin-bottom: 8px;">Kingswood Connect</h2>
+              <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Two-Factor Authentication (2FA) Code</p>
+              
+              <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Your 6-Digit Code</span>
+                <h1 style="font-size: 38px; letter-spacing: 8px; color: #4f46e5; margin: 0; font-family: monospace; font-weight: 900;">${otp}</h1>
+              </div>
+
+              <p style="color: #475569; font-size: 13px; line-height: 1.5;">This verification code is valid for <strong>5 minutes</strong>. If you did not request this login code, please secure your account immediately.</p>
+            </div>
+          `
+        });
+        emailSent = true;
+      } catch (mailErr) {
+        console.error('Failed to send real email via Nodemailer:', mailErr.message);
+      }
+    }
+
     res.json({ 
       message: '2FA OTP generated successfully',
-      email: docId,
-      otp // Return OTP code for instant verification testing
+      email: recipientEmail,
+      emailSent,
+      otp: emailSent ? undefined : otp
     });
   } catch (error) {
     console.error('Send 2FA OTP error:', error);
