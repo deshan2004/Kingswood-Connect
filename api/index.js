@@ -1345,7 +1345,7 @@ app.delete('/api/classes/:id', async (req, res) => {
 
 app.put('/api/classes/:id', async (req, res) => {
   try {
-    const { name, grade, teacherId, fee, schedule } = req.body;
+    const { name, grade, teacherId, fee, schedule, feeType } = req.body;
     const classId = req.params.id;
     
     let teacherName = 'Unknown';
@@ -1354,18 +1354,24 @@ app.put('/api/classes/:id', async (req, res) => {
       if (teacherDoc.exists) teacherName = teacherDoc.data().name;
     }
 
-    const classData = { 
+    const struct = getGradeFeeStructure({ name, grade, feeType, fee });
+
+    const updateData = { 
       name, 
-      grade: grade || 'General', 
+      grade: grade || 'Grade 6', 
       teacherId, 
       teacherName, 
-      fee: parseFloat(fee) || 0, 
+      feeType: struct.feeType,
+      fee: struct.displayFee,
+      weeklyFee: struct.isWeekly ? struct.displayFee : Math.round(struct.displayFee / 4),
+      displayFee: struct.displayFee,
       schedule: schedule || '', 
       updatedAt: new Date().toISOString() 
     };
-    await db.collection('classes').doc(classId).update(classData);
-    res.json({ classId, ...classData });
+    await db.collection('classes').doc(classId).update(updateData);
+    res.json({ classId, ...updateData });
   } catch (error) {
+    console.error('Update class error:', error);
     res.status(500).json({ error: 'Failed to update class' });
   }
 });

@@ -143,13 +143,36 @@ const Schedule = () => {
     }
   };
 
+  const handleEditGradeChange = (selectedGrade) => {
+    const numbers = selectedGrade.match(/\b(1[0-3]|[1-9])\b/g);
+    const gradeNum = numbers ? parseInt(numbers[0], 10) : 6;
+    const isAL = gradeNum >= 12;
+    const feeType = isAL ? 'monthly' : 'weekly';
+    const defaultFee = isAL ? 2500 : 250;
+
+    setEditClassData(prev => ({
+      ...prev,
+      grade: selectedGrade,
+      feeType,
+      fee: defaultFee
+    }));
+  };
+
   const handleEditClick = (cls) => {
     setEditingClass(cls);
     const parsed = parseSchedule(cls.schedule || '');
+    const currentGrade = cls.grade || 'Grade 6';
+    const numbers = (currentGrade + ' ' + cls.name).match(/\b(1[0-3]|[1-9])\b/g);
+    const gradeNum = numbers ? parseInt(numbers[0], 10) : 6;
+    const isAL = gradeNum >= 12;
+    const feeType = cls.feeType || (isAL ? 'monthly' : 'weekly');
+
     setEditClassData({
       name: cls.name || '',
+      grade: currentGrade,
       teacherId: cls.teacherId || '',
-      fee: cls.fee || 1000,
+      fee: cls.displayFee || (feeType === 'weekly' ? (cls.weeklyFee || 250) : (cls.fee || 2500)),
+      feeType,
       day: parsed.day,
       startTime: parsed.startTime,
       endTime: parsed.endTime
@@ -163,8 +186,10 @@ const Schedule = () => {
     try {
       await axios.put(`${API_URL}/classes/${editingClass.classId || editingClass.id}`, {
         name: editClassData.name,
+        grade: editClassData.grade,
         teacherId: editClassData.teacherId,
         fee: Number(editClassData.fee),
+        feeType: editClassData.feeType,
         schedule: `${editClassData.day} ${formatTimeStr(editClassData.startTime)} - ${formatTimeStr(editClassData.endTime)}`
       });
       setShowEditModal(false);
@@ -544,6 +569,30 @@ const Schedule = () => {
                   onChange={(e) => setEditClassData({...editClassData, name: e.target.value})}
                   className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Target Grade</label>
+                <select
+                  required
+                  value={editClassData.grade || 'Grade 6'}
+                  onChange={(e) => handleEditGradeChange(e.target.value)}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium"
+                >
+                  <option value="Grade 1">Grade 1 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 2">Grade 2 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 3">Grade 3 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 4">Grade 4 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 5">Grade 5 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 6">Grade 6 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 7">Grade 7 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 8">Grade 8 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 9">Grade 9 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 10">Grade 10 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 11">Grade 11 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 12 (A/L)">Grade 12 A/L (Monthly - Rs. 2,500 /mo)</option>
+                  <option value="Grade 13 (A/L)">Grade 13 A/L (Monthly - Rs. 2,500 /mo)</option>
+                </select>
               </div>
               
               <div>
