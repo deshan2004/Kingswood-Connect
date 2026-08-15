@@ -1096,95 +1096,155 @@ const LandingPage = () => {
 
 
       {/* Section 8: Contact Us & Location */}
-      <section id="contact" className="py-20 bg-slate-100/90 border-t border-slate-200 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="contact" className="py-24 bg-gradient-to-b from-slate-100/90 via-slate-50 to-indigo-950/5 border-t border-slate-200 relative overflow-hidden">
+        
+        {/* Background glow accents */}
+        <div className="absolute top-10 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 left-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="grid lg:grid-cols-12 gap-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
-            {/* Contact Details */}
-            <div className="lg:col-span-5 space-y-8">
-              <div className="space-y-4">
-                <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
-                  <Phone className="w-4 h-4 mr-1 text-indigo-600" />
+          <div className="grid lg:grid-cols-12 gap-8 xl:gap-12 items-start">
+
+            {/* Left Column: Contact Cards Grid */}
+            <div className="lg:col-span-5 space-y-6">
+              <div className="space-y-3">
+                <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-black uppercase tracking-wider shadow-xs">
+                  <Phone className="w-3.5 h-3.5 mr-1 text-emerald-600" />
                   {cmsSettings?.contactBadge || 'GET IN TOUCH'}
                 </div>
-                <h2 className="text-3xl font-black text-slate-900">
-                  {cmsSettings?.contactTitle || 'Contact Us & Class Enrollment'}
+                <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                  {cmsSettings?.contactTitle || 'Contact Us & Enrollment'}
                 </h2>
-                <p className="text-slate-600 text-sm leading-relaxed">
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-medium">
                   {cmsSettings?.contactSub || 'Have questions regarding upcoming tuition batches or online class registration? Send us an inquiry or reach out to our hotlines directly.'}
                 </p>
               </div>
 
-              <div className="space-y-4 text-sm text-slate-700">
-                <div className="flex items-start space-x-4 p-5 rounded-2xl bg-white border border-emerald-300 shadow-md hover:border-emerald-500 transition-all">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                    <MessageSquare className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-extrabold text-base text-slate-900">WhatsApp Official Support</h4>
-                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                        INSTANT CHAT
+              {/* 4 Organised Contact Cards */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                
+                {/* 1. Official WhatsApp */}
+                <div className="p-4 rounded-2xl bg-white border border-emerald-200 shadow-sm hover:shadow-md hover:border-emerald-400 transition-all space-y-2 flex flex-col justify-between group">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 group-hover:scale-110 transition-transform">
+                        <MessageSquare size={18} />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        INSTANT
                       </span>
                     </div>
-                    <p className="text-sm font-black text-emerald-700 mt-1">
-                      {cmsSettings?.whatsapp || '+94 77 123 4567'}
+                    <span className="text-xs font-bold text-slate-500 block">Official Support</span>
+                    <p className="text-sm font-black text-emerald-700 tracking-tight">
+                      {cmsSettings?.whatsapp || '+94 76 977 6315'}
                     </p>
-                    <button
-                      onClick={handleWhatsAppInquiry}
-                      type="button"
-                      className="inline-flex items-center px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold mt-3 shadow-sm transition-colors"
-                    >
-                      Click to Join / Chat on WhatsApp <ChevronRight className="w-4 h-4 ml-1" />
-                    </button>
                   </div>
+                  <button
+                    onClick={handleWhatsAppInquiry}
+                    type="button"
+                    className="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95"
+                  >
+                    Chat Now <ChevronRight size={14} />
+                  </button>
                 </div>
+
+                {/* 2. Student WhatsApp Gateway */}
+                <div className="p-4 rounded-2xl bg-white border border-indigo-200 shadow-sm hover:shadow-md hover:border-indigo-400 transition-all space-y-2 flex flex-col justify-between group">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 group-hover:scale-110 transition-transform">
+                        <Zap size={18} />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+                        QR ALERTS
+                      </span>
+                    </div>
+                    <span className="text-xs font-bold text-slate-500 block">Student Gateway</span>
+                    <p className="text-sm font-black text-indigo-700 tracking-tight">
+                      {cmsSettings?.studentWhatsApp || '+94 77 987 6543'}
+                    </p>
+                  </div>
+                  <span className="text-[11px] text-slate-500 font-semibold bg-slate-50 px-2 py-1 rounded-lg border border-slate-100 block text-center">
+                    Attendance & Receipts
+                  </span>
+                </div>
+
+                {/* 3. Hotlines */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all space-y-2 group">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 group-hover:scale-110 transition-transform mb-1">
+                    <Phone size={18} />
+                  </div>
+                  <span className="text-xs font-bold text-slate-500 block">Inquiry Hotlines</span>
+                  <p className="text-xs font-bold text-slate-800 leading-snug">
+                    {cmsSettings?.phone || '+94 81 222 3456 / +94 77 123 4567'}
+                  </p>
+                </div>
+
+                {/* 4. Institute Address */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-amber-300 transition-all space-y-2 group">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100 group-hover:scale-110 transition-transform mb-1">
+                    <MapPin size={18} />
+                  </div>
+                  <span className="text-xs font-bold text-slate-500 block">Auditorium Address</span>
+                  <p className="text-xs font-bold text-slate-800 leading-snug truncate" title={cmsSettings?.address || 'Kingswood Education Complex, Kandy'}>
+                    {cmsSettings?.address || 'Kingswood Complex, Kandy'}
+                  </p>
+                </div>
+
               </div>
             </div>
 
-            {/* Direct WhatsApp Inquiry Form */}
+            {/* Right Column: Direct WhatsApp Inquiry Form Card */}
             <div className="lg:col-span-7">
-              <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl relative">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
 
-                <h3 className="text-xl font-bold text-slate-900 mb-1 flex items-center gap-2">
-                  <MessageSquare className="text-emerald-600" size={22} /> Send an Instant WhatsApp Inquiry
-                </h3>
-                <p className="text-xs text-slate-600 mb-6">Fill out your details below to send your inquiry directly to our team via WhatsApp.</p>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/20 shrink-0">
+                    <MessageSquare size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 leading-tight">
+                      Send an Instant WhatsApp Inquiry
+                    </h3>
+                    <p className="text-xs text-slate-500 font-medium">Fill out your details to send your inquiry directly to our team via WhatsApp.</p>
+                  </div>
+                </div>
 
                 <form onSubmit={handleWhatsAppInquiry} className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+                      <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Full Name</label>
                       <input
                         type="text"
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="e.g. Kaveen Perera"
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Phone Number</label>
+                      <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">WhatsApp / Phone Number</label>
                       <input
                         type="tel"
                         required
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="0771234567"
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
                       />
                     </div>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Select Grade / Batch</label>
+                      <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Target Grade / Batch</label>
                       <select
                         value={formData.batch}
                         onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
                       >
                         <option value="Grade 1 - 5 (Primary & Scholarship)">Grade 1 - 5 (Primary & Scholarship)</option>
                         <option value="Grade 6 - 9 (Junior Secondary)">Grade 6 - 9 (Junior Secondary)</option>
@@ -1198,11 +1258,11 @@ const LandingPage = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Subject Preference</label>
+                      <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Subject Preference</label>
                       <select
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
                       >
                         <option value="Mathematics">Mathematics</option>
                         <option value="Science">Science</option>
@@ -1220,13 +1280,13 @@ const LandingPage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Your Message</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1 uppercase tracking-wider">Your Message / Inquiry</label>
                     <textarea
                       rows="3"
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="Write any specific questions or details you would like to know..."
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white text-base sm:text-sm font-medium transition-all"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
                     />
                   </div>
 
@@ -1245,34 +1305,61 @@ const LandingPage = () => {
 
           </div>
 
-          {/* Google Maps Location Embed & Timetable Download */}
+          {/* Integrated Google Maps Location Header + Frame Card */}
           {(() => {
             const rawUrl = cmsSettings?.googleMapsUrl;
             const address = cmsSettings?.address;
             const finalMapsUrl = getUniversalGoogleMapEmbed(rawUrl, address);
-            
+            const displayAddress = address || 'Kingswood Education Complex, Kandy';
+
             return (
-              <div className="mt-8 max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white p-2">
-                <iframe
-                  src={finalMapsUrl}
-                  title="Kingswood Connect Location"
-                  className="w-full h-56 sm:h-64 rounded-2xl border-0"
-                  loading="lazy"
-                  allowFullScreen
-                />
+              <div className="mt-12 rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white">
+                <div className="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 shadow-xs">
+                      <MapPin size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-sm sm:text-base text-white flex items-center gap-2">
+                        📍 Find Us on Google Maps
+                      </h4>
+                      <p className="text-xs text-slate-300 font-medium truncate max-w-md">{displayAddress}</p>
+                    </div>
+                  </div>
+
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(displayAddress)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="self-start sm:self-auto px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all inline-flex items-center gap-1.5 shrink-0"
+                  >
+                    Open in Google Maps ↗
+                  </a>
+                </div>
+
+                <div className="p-2 bg-slate-100">
+                  <iframe
+                    src={finalMapsUrl}
+                    title="Kingswood Connect Location"
+                    className="w-full h-64 sm:h-72 rounded-2xl border-0"
+                    loading="lazy"
+                    allowFullScreen
+                  />
+                </div>
               </div>
             );
           })()}
 
+          {/* Download Prospectus & Timetable PDF Button */}
           {cmsSettings?.prospectusUrl && (
-            <div className="mt-6 text-center">
+            <div className="mt-8 text-center">
               <a
                 href={cmsSettings.prospectusUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-black border border-indigo-200 shadow-sm transition-all"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs sm:text-sm font-black border border-indigo-400/30 shadow-lg shadow-indigo-600/20 transition-all transform hover:-translate-y-0.5 active:scale-95"
               >
-                <BookOpen size={16} /> Download 2026/2027 Class Prospectus & Timetable (PDF)
+                <BookOpen size={18} /> Download 2026/2027 Class Prospectus & Timetable (PDF)
               </a>
             </div>
           )}
