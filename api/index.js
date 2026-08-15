@@ -2307,7 +2307,22 @@ const defaultLandingSettings = {
   phone: '+94 81 222 3456 / +94 77 123 4567',
   whatsapp: '+94 77 123 4567',
   studentWhatsApp: '+94 77 987 6543',
-  email: 'info@kingswoodconnect.lk'
+  email: 'info@kingswoodconnect.lk',
+
+  // Announcement Bar & Branding
+  showAnnouncement: true,
+  announcementText: '🚀 New G.C.E. O/L & A/L 2026/2027 Batches Registration Now Open! Enroll Online Today.',
+  siteLogo: '',
+  demoVideoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  prospectusUrl: '',
+
+  // Social Media Links
+  facebookUrl: 'https://facebook.com',
+  youtubeUrl: 'https://youtube.com',
+  instagramUrl: 'https://instagram.com',
+  telegramUrl: 'https://t.me',
+  tiktokUrl: 'https://tiktok.com',
+  googleMapsUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.5!2d80.62!3d7.29'
 };
 
 app.get('/api/landing-settings', async (req, res) => {

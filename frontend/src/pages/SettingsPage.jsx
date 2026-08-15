@@ -312,7 +312,20 @@ const SettingsPage = () => {
     phone: '',
     whatsapp: '',
     studentWhatsApp: '',
-    email: ''
+    email: '',
+
+    showAnnouncement: true,
+    announcementText: '',
+    siteLogo: '',
+    demoVideoUrl: '',
+    prospectusUrl: '',
+
+    facebookUrl: '',
+    youtubeUrl: '',
+    instagramUrl: '',
+    telegramUrl: '',
+    tiktokUrl: '',
+    googleMapsUrl: ''
   });
 
   const [loadingCms, setLoadingCms] = useState(true);
@@ -1332,6 +1345,131 @@ const SettingsPage = () => {
                         placeholder="Kingswood Education Complex, Kandy"
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
                       />
+                    </div>
+                  </div>
+
+                  {/* Announcement Bar & Branding */}
+                  <div className="pt-6 border-t border-slate-200 space-y-4">
+                    <h4 className="text-base font-extrabold text-indigo-900">📢 10. Announcement Bar & Media Links</h4>
+                    
+                    <div className="bg-indigo-50/60 p-4 rounded-2xl border border-indigo-100 space-y-3">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          id="showAnnouncement"
+                          checked={cmsData.showAnnouncement !== false}
+                          onChange={(e) => setCmsData({ ...cmsData, showAnnouncement: e.target.checked })}
+                          className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <label htmlFor="showAnnouncement" className="text-xs font-bold text-indigo-900 cursor-pointer">
+                          Show Top Emergency Announcement Bar on Website Header
+                        </label>
+                      </div>
+
+                      <input
+                        type="text"
+                        value={cmsData.announcementText || ''}
+                        onChange={(e) => setCmsData({ ...cmsData, announcementText: e.target.value })}
+                        placeholder="e.g. 🚀 New G.C.E. O/L & A/L 2026/2027 Batches Registration Now Open!"
+                        className="w-full px-4 py-2.5 rounded-xl bg-white border border-indigo-200 text-slate-900 text-sm font-medium"
+                      />
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">🎥 Institute Demo Video URL (YouTube / Vimeo)</label>
+                        <input
+                          type="text"
+                          value={cmsData.demoVideoUrl || ''}
+                          onChange={(e) => setCmsData({ ...cmsData, demoVideoUrl: e.target.value })}
+                          placeholder="e.g. https://www.youtube.com/watch?v=..."
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">📄 Class Prospectus / Time Table Link (PDF URL)</label>
+                        <input
+                          type="text"
+                          value={cmsData.prospectusUrl || ''}
+                          onChange={(e) => setCmsData({ ...cmsData, prospectusUrl: e.target.value })}
+                          placeholder="e.g. https://example.com/timetable-2026.pdf"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Social Media & Google Maps */}
+                  <div className="pt-6 border-t border-slate-200 space-y-4">
+                    <h4 className="text-base font-extrabold text-indigo-900">🌐 11. Social Media Links & Google Maps</h4>
+                    
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Facebook Page URL</label>
+                        <input
+                          type="text"
+                          value={cmsData.facebookUrl || ''}
+                          onChange={(e) => setCmsData({ ...cmsData, facebookUrl: e.target.value })}
+                          placeholder="https://facebook.com/kingswoodconnect"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">YouTube Channel URL</label>
+                        <input
+                          type="text"
+                          value={cmsData.youtubeUrl || ''}
+                          onChange={(e) => setCmsData({ ...cmsData, youtubeUrl: e.target.value })}
+                          placeholder="https://youtube.com/@kingswoodconnect"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Instagram Profile URL</label>
+                        <input
+                          type="text"
+                          value={cmsData.instagramUrl || ''}
+                          onChange={(e) => setCmsData({ ...cmsData, instagramUrl: e.target.value })}
+                          placeholder="https://instagram.com/kingswoodconnect"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Telegram Channel URL</label>
+                        <input
+                          type="text"
+                          value={cmsData.telegramUrl || ''}
+                          onChange={(e) => setCmsData({ ...cmsData, telegramUrl: e.target.value })}
+                          placeholder="https://t.me/kingswoodconnect"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">TikTok Profile URL</label>
+                        <input
+                          type="text"
+                          value={cmsData.tiktokUrl || ''}
+                          onChange={(e) => setCmsData({ ...cmsData, tiktokUrl: e.target.value })}
+                          placeholder="https://tiktok.com/@kingswoodconnect"
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Google Maps Embed URL</label>
+                        <input
+                          type="text"
+                          value={cmsData.googleMapsUrl || ''}
+                          onChange={(e) => setCmsData({ ...cmsData, googleMapsUrl: e.target.value })}
+                          placeholder="https://www.google.com/maps/embed?pb=..."
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

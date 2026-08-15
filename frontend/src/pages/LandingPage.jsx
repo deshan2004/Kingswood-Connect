@@ -353,6 +353,14 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-600 selection:text-white relative overflow-x-clip">
 
+      {/* Emergency Announcement Bar */}
+      {cmsSettings?.showAnnouncement !== false && (cmsSettings?.announcementText || '🚀 New G.C.E. O/L & A/L 2026/2027 Batches Registration Now Open! Enroll Online Today.') && (
+        <div className="bg-gradient-to-r from-indigo-950 via-indigo-800 to-blue-950 text-white text-xs font-bold py-2.5 px-4 text-center border-b border-indigo-700/50 flex items-center justify-center gap-2 relative z-50 shadow-md">
+          <Sparkles size={16} className="text-amber-400 shrink-0 animate-pulse" />
+          <span>{cmsSettings?.announcementText || '🚀 New G.C.E. O/L & A/L 2026/2027 Batches Registration Now Open! Enroll Online Today.'}</span>
+        </div>
+      )}
+
       {/* Decorative Background Glow Filters */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-3xl pointer-events-none -z-0" />
       <div className="absolute top-[400px] right-10 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-3xl pointer-events-none -z-0" />
@@ -1149,19 +1157,43 @@ const LandingPage = () => {
                     </button>
                   </div>
                 </form>
-
               </div>
             </div>
 
           </div>
 
+          {/* Google Maps Location Embed & Timetable Download */}
+          {cmsSettings?.googleMapsUrl && (
+            <div className="mt-12 rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white p-2">
+              <iframe
+                src={cmsSettings.googleMapsUrl}
+                title="Kingswood Connect Location"
+                className="w-full h-72 rounded-2xl border-0"
+                loading="lazy"
+                allowFullScreen
+              />
+            </div>
+          )}
+
+          {cmsSettings?.prospectusUrl && (
+            <div className="mt-6 text-center">
+              <a
+                href={cmsSettings.prospectusUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-black border border-indigo-200 shadow-sm transition-all"
+              >
+                <BookOpen size={16} /> Download 2026/2027 Class Prospectus & Timetable (PDF)
+              </a>
+            </div>
+          )}
+
         </div>
       </section>
 
-
       {/* Footer */}
       <footer className="bg-indigo-950 border-t border-indigo-900 py-12 text-xs text-slate-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
 
             <div className="flex items-center space-x-3">
@@ -1169,6 +1201,35 @@ const LandingPage = () => {
                 <span className="text-white font-black text-sm tracking-tighter">KC</span>
               </div>
               <span className="text-base font-extrabold text-white">Kingswood Connect</span>
+            </div>
+
+            {/* Social Media Links */}
+            <div className="flex items-center gap-4">
+              {cmsSettings?.facebookUrl && (
+                <a href={cmsSettings.facebookUrl} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-indigo-900/60 hover:bg-indigo-800 text-indigo-200 hover:text-white transition-colors font-bold text-xs" title="Facebook">
+                  🌐 Facebook
+                </a>
+              )}
+              {cmsSettings?.youtubeUrl && (
+                <a href={cmsSettings.youtubeUrl} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-indigo-900/60 hover:bg-indigo-800 text-indigo-200 hover:text-white transition-colors font-bold text-xs" title="YouTube">
+                  ▶️ YouTube
+                </a>
+              )}
+              {cmsSettings?.instagramUrl && (
+                <a href={cmsSettings.instagramUrl} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-indigo-900/60 hover:bg-indigo-800 text-indigo-200 hover:text-white transition-colors font-bold text-xs" title="Instagram">
+                  📸 Instagram
+                </a>
+              )}
+              {cmsSettings?.telegramUrl && (
+                <a href={cmsSettings.telegramUrl} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-indigo-900/60 hover:bg-indigo-800 text-indigo-200 hover:text-white transition-colors font-bold text-xs" title="Telegram">
+                  ✈️ Telegram
+                </a>
+              )}
+              {cmsSettings?.tiktokUrl && (
+                <a href={cmsSettings.tiktokUrl} target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-xl bg-indigo-900/60 hover:bg-indigo-800 text-indigo-200 hover:text-white transition-colors font-bold text-xs" title="TikTok">
+                  🎵 TikTok
+                </a>
+              )}
             </div>
 
             <div className="flex flex-wrap justify-center gap-6 text-indigo-200 font-semibold">
@@ -1179,8 +1240,10 @@ const LandingPage = () => {
               <Link to="/login" className="text-blue-400 font-bold hover:underline">Portal Log In</Link>
             </div>
 
-            <p className="text-indigo-300/80">© {new Date().getFullYear()} Kingswood Connect. All Rights Reserved.</p>
+          </div>
 
+          <div className="pt-6 border-t border-indigo-900/60 text-center text-indigo-300/80 text-[11px]">
+            © {new Date().getFullYear()} Kingswood Connect Educational Institute. All Rights Reserved.
           </div>
         </div>
       </footer>
