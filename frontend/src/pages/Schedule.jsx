@@ -412,7 +412,9 @@ const Schedule = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Monthly Fee (Rs.)</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1">
+                  {(String(newClass.name || '').toLowerCase().includes('12') || String(newClass.name || '').toLowerCase().includes('13') || String(newClass.name || '').toLowerCase().includes('a/l') || String(newClass.name || '').toLowerCase().includes('al')) ? 'Monthly Fee (Rs.)' : 'Weekly Fee (Rs.)'}
+                </label>
                 <input 
                   type="number" 
                   required
@@ -512,7 +514,9 @@ const Schedule = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Monthly Fee (Rs.)</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1">
+                  {(String(editClassData.name || editClassData.grade || '').toLowerCase().includes('12') || String(editClassData.name || editClassData.grade || '').toLowerCase().includes('13') || String(editClassData.name || editClassData.grade || '').toLowerCase().includes('a/l') || String(editClassData.name || editClassData.grade || '').toLowerCase().includes('al')) ? 'Monthly Fee (Rs.)' : 'Weekly Fee (Rs.)'}
+                </label>
                 <input 
                   type="number" 
                   required

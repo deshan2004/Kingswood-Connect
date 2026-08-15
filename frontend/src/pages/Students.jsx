@@ -642,7 +642,7 @@ ${autoLoginLink}
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wide">
-                      Fee Amount (Rs.) <span className="text-[10px] text-indigo-600 font-bold ml-1">({feeType === 'monthly' ? 'Auto: Monthly' : 'Auto: Weekly'})</span>
+                      {feeType === 'monthly' ? 'Monthly Fee (Rs.)' : 'Weekly Fee (Rs.)'} <span className="text-[10px] text-indigo-600 font-bold ml-1">({feeType === 'monthly' ? 'Auto: Monthly' : 'Auto: Weekly'})</span>
                     </label>
                     <input 
                       type="number" 
@@ -779,7 +779,7 @@ ${autoLoginLink}
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                      Fee Amount (Rs.) <span className="text-[10px] text-indigo-600 font-bold ml-1">({editFeeType === 'monthly' ? 'Auto: Monthly' : 'Auto: Weekly'})</span>
+                      {editFeeType === 'monthly' ? 'Monthly Fee (Rs.)' : 'Weekly Fee (Rs.)'} <span className="text-[10px] text-indigo-600 font-bold ml-1">({editFeeType === 'monthly' ? 'Auto: Monthly' : 'Auto: Weekly'})</span>
                     </label>
                     <input
                       type="number"
