@@ -441,26 +441,27 @@ const Scanner = () => {
       </div>
 
       {/* Navigation Tabs: QR Scanner vs Manual Attendance */}
-      <div className="bg-slate-100 p-1.5 rounded-2xl flex gap-2">
+      <div className="bg-slate-100 p-1.5 rounded-2xl flex gap-1.5 sm:gap-2">
         <button
           onClick={() => setActiveTab('qr')}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all text-sm ${activeTab === 'qr'
+          className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-3.5 px-3 sm:px-4 rounded-xl font-extrabold transition-all text-xs sm:text-sm cursor-pointer ${activeTab === 'qr'
               ? 'bg-white text-indigo-600 shadow-md shadow-indigo-100'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
         >
-          <QrCode size={18} />
-          QR Camera Scan
+          <QrCode size={18} className="shrink-0" />
+          <span>QR Camera Scan</span>
         </button>
         <button
           onClick={() => setActiveTab('manual')}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all text-sm ${activeTab === 'manual'
+          className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-3.5 px-3 sm:px-4 rounded-xl font-extrabold transition-all text-xs sm:text-sm cursor-pointer ${activeTab === 'manual'
               ? 'bg-white text-indigo-600 shadow-md shadow-indigo-100'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
         >
-          <UserCheck size={18} />
-          Manual Attendance (Search & Mark)
+          <UserCheck size={18} className="shrink-0" />
+          <span className="hidden sm:inline">Manual Attendance (Search & Mark)</span>
+          <span className="sm:hidden">Manual Search</span>
         </button>
       </div>
 
@@ -471,37 +472,37 @@ const Scanner = () => {
       {activeTab === 'qr' && (
         <div className="space-y-6">
           <div className="text-center space-y-2">
-            <h2 className="text-3xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-3">
-              <QrCode className="text-indigo-600" size={32} /> Fast QR Scan
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-2 sm:gap-3">
+              <QrCode className="text-indigo-600 shrink-0" size={30} /> Fast QR Scan
             </h2>
-            <p className="text-slate-500 font-medium">Scan student ID card with camera or mobile bridge</p>
+            <p className="text-slate-500 font-medium text-xs sm:text-sm">Scan student ID card with camera or mobile bridge</p>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center px-2">
             <button
               onClick={() => setShowMobileLink(true)}
-              className="flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-5 py-2.5 rounded-full transition-colors border border-indigo-200"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold px-5 py-3 rounded-2xl transition-colors border border-indigo-200 text-xs sm:text-sm shadow-xs cursor-pointer active:scale-95"
             >
-              <Smartphone size={20} className="text-indigo-600" />
+              <Smartphone size={20} className="text-indigo-600 shrink-0" />
               Link Phone Camera / Mobile Scanner
             </button>
           </div>
 
           {showMobileLink && sessionId && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-              <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full relative animate-in zoom-in-95 duration-200">
+              <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-sm w-full relative animate-in zoom-in-95 duration-200">
                 <button
                   onClick={() => setShowMobileLink(false)}
-                  className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition-colors"
+                  className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition-colors cursor-pointer"
                 >
                   <X size={20} />
                 </button>
                 <div className="text-center mb-6 mt-2">
-                  <h3 className="text-2xl font-black text-slate-800 flex items-center justify-center gap-2">
-                    <Smartphone className="text-indigo-600" />
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-800 flex items-center justify-center gap-2">
+                    <Smartphone className="text-indigo-600 shrink-0" />
                     Mobile Scanner
                   </h3>
-                  <p className="text-slate-500 font-medium mt-2">Scan this QR code with your phone to turn it into a scanner camera.</p>
+                  <p className="text-slate-500 font-medium text-xs sm:text-sm mt-2">Scan this QR code with your phone to turn it into a scanner camera.</p>
                 </div>
 
                 <div className="flex justify-center bg-white p-4 rounded-2xl shadow-inner border border-slate-100 mb-6">
@@ -515,7 +516,7 @@ const Scanner = () => {
                   />
                 </div>
 
-                <div className="bg-indigo-50 text-indigo-700 text-sm font-medium p-4 rounded-xl text-center border border-indigo-100">
+                <div className="bg-indigo-50 text-indigo-700 text-xs sm:text-sm font-medium p-4 rounded-xl text-center border border-indigo-100">
                   Keep this modal open while scanning with your mobile device.
                 </div>
               </div>
@@ -524,37 +525,46 @@ const Scanner = () => {
 
           <div className="relative">
             {/* Glow effect behind scanner */}
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-[3rem] blur-xl opacity-20 animate-pulse"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-[2.5rem] sm:rounded-[3rem] blur-xl opacity-20 animate-pulse"></div>
 
-            <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 border border-slate-100 relative z-10">
+            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/50 p-4 sm:p-8 border border-slate-100 relative z-10">
               <style>{`
-                #reader { border: none !important; position: relative; }
-                #reader video { width: 100% !important; height: auto !important; border-radius: 1rem; max-height: 400px; object-fit: cover; }
+                #reader { border: none !important; position: relative; width: 100% !important; }
+                #reader video { width: 100% !important; height: auto !important; border-radius: 1rem; max-height: 480px; object-fit: cover; }
                 #reader canvas { max-width: 100% !important; height: auto !important; }
-                #reader__dashboard_section_csr span { color: #64748b !important; }
+                #reader__dashboard_section_csr span { color: #64748b !important; font-weight: 600; font-size: 0.9rem; }
+                #reader__dashboard_section_csr { padding: 0.5rem 0 !important; text-align: center !important; }
+                #reader__dashboard_section { padding: 0.5rem 0 !important; text-align: center !important; }
                 #reader button {
                   background-color: #4f46e5 !important;
                   color: white !important;
-                  border-radius: 0.5rem !important;
-                  padding: 0.5rem 1rem !important;
-                  font-weight: 500 !important;
+                  border-radius: 0.85rem !important;
+                  padding: 0.85rem 1.25rem !important;
+                  font-weight: 800 !important;
+                  font-size: 0.95rem !important;
                   border: none !important;
-                  margin: 0.5rem !important;
+                  margin: 0.5rem auto !important;
+                  display: block !important;
+                  width: 100% !important;
+                  max-width: 320px !important;
                   cursor: pointer;
+                  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+                  transition: all 0.2s ease;
                 }
-                #reader button:hover { background-color: #4338ca !important; }
+                #reader button:hover { background-color: #4338ca !important; transform: translateY(-1px); }
+                #reader button:active { transform: scale(0.98); }
               `}</style>
 
               {!isScannerActive ? (
-                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                  <div className="bg-indigo-50 p-6 rounded-full mb-4">
-                    <QrCode size={48} className="text-indigo-600" />
+                <div className="flex flex-col items-center justify-center py-8 sm:py-12 px-2 text-center">
+                  <div className="bg-indigo-50 p-5 sm:p-6 rounded-full mb-4">
+                    <QrCode size={40} className="text-indigo-600 sm:w-12 sm:h-12" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-700 mb-2">Camera Scanner Inactive</h3>
-                  <p className="text-slate-500 mb-6 max-w-sm">Click the button below to activate your computer/laptop camera for scanning.</p>
+                  <h3 className="text-lg sm:text-xl font-black text-slate-800 mb-1.5">Camera Scanner Ready</h3>
+                  <p className="text-slate-500 mb-6 text-xs sm:text-sm max-w-sm">Tap the button below to activate your phone or laptop camera for scanning.</p>
                   <button
                     onClick={() => setIsScannerActive(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-200 flex items-center gap-2 text-lg"
+                    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-8 py-3.5 rounded-2xl transition-all shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 text-base sm:text-lg cursor-pointer active:scale-95"
                   >
                     <QrCode size={22} />
                     Open Camera
@@ -562,10 +572,10 @@ const Scanner = () => {
                 </div>
               ) : (
                 <div>
-                  <div className="flex justify-end mb-4">
+                  <div className="flex justify-end mb-3">
                     <button
                       onClick={() => setIsScannerActive(false)}
-                      className="text-slate-500 hover:text-slate-700 text-sm font-bold flex items-center gap-1 bg-slate-100 px-3 py-1.5 rounded-lg"
+                      className="text-slate-600 hover:text-slate-800 text-xs sm:text-sm font-extrabold flex items-center gap-1 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl transition-colors cursor-pointer"
                     >
                       <X size={16} /> Close Camera
                     </button>
