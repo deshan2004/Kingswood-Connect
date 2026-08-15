@@ -465,9 +465,6 @@ const Scanner = () => {
         </button>
       </div>
 
-      {/* Feedback Alerts */}
-      {renderFeedbackAlert()}
-
       {/* TAB 1: QR CODE CAMERA SCANNER */}
       {activeTab === 'qr' && (
         <div className="space-y-6">
@@ -532,27 +529,12 @@ const Scanner = () => {
                 #reader { border: none !important; position: relative; width: 100% !important; }
                 #reader video { width: 100% !important; height: auto !important; border-radius: 1rem; max-height: 480px; object-fit: cover; }
                 #reader canvas { max-width: 100% !important; height: auto !important; }
-                #reader__dashboard_section_csr span { color: #64748b !important; font-weight: 600; font-size: 0.9rem; }
-                #reader__dashboard_section_csr { padding: 0.5rem 0 !important; text-align: center !important; }
-                #reader__dashboard_section { padding: 0.5rem 0 !important; text-align: center !important; }
-                #reader button {
-                  background-color: #4f46e5 !important;
-                  color: white !important;
-                  border-radius: 0.85rem !important;
-                  padding: 0.85rem 1.25rem !important;
-                  font-weight: 800 !important;
-                  font-size: 0.95rem !important;
-                  border: none !important;
-                  margin: 0.5rem auto !important;
-                  display: block !important;
-                  width: 100% !important;
-                  max-width: 320px !important;
-                  cursor: pointer;
-                  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
-                  transition: all 0.2s ease;
-                }
-                #reader button:hover { background-color: #4338ca !important; transform: translateY(-1px); }
-                #reader button:active { transform: scale(0.98); }
+                #reader__dashboard { display: none !important; }
+                #reader__dashboard_section { display: none !important; }
+                #reader__dashboard_section_csr { display: none !important; }
+                #reader__dashboard_section_swaplink { display: none !important; }
+                #reader__header_message { display: none !important; }
+                #reader__status_span { display: none !important; }
               `}</style>
 
               {!isScannerActive ? (
@@ -585,6 +567,9 @@ const Scanner = () => {
               )}
             </div>
           </div>
+
+          {/* Feedback Alert Banner At Bottom Of Scanner */}
+          {renderFeedbackAlert()}
         </div>
       )}
 
