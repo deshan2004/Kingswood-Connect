@@ -37,26 +37,30 @@ import {
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const getEmbedVideoUrl = (url) => {
-  if (!url) return 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+  if (!url) return 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ';
   if (url.startsWith('data:video') || url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov')) return url;
-  if (url.includes('embed/')) return url;
+  
+  let videoId = '';
   if (url.includes('youtube.com/watch?v=')) {
-    const videoId = url.split('v=')[1]?.split('&')[0];
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    videoId = url.split('v=')[1]?.split('&')[0];
+  } else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1]?.split('?')[0];
+  } else if (url.includes('youtube.com/shorts/')) {
+    videoId = url.split('shorts/')[1]?.split('?')[0];
+  } else if (url.includes('embed/')) {
+    videoId = url.split('embed/')[1]?.split('?')[0];
   }
-  if (url.includes('youtu.be/')) {
-    const videoId = url.split('youtu.be/')[1]?.split('?')[0];
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+
+  if (videoId) {
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=1&rel=0`;
   }
-  if (url.includes('youtube.com/shorts/')) {
-    const videoId = url.split('shorts/')[1]?.split('?')[0];
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-  }
+  
   if (url.includes('vimeo.com/')) {
-    const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
-    return `https://player.vimeo.com/video/${videoId}?autoplay=1`;
+    const vId = url.split('vimeo.com/')[1]?.split('?')[0];
+    return `https://player.vimeo.com/video/${vId}?autoplay=1&muted=1&loop=1`;
   }
-  return url;
+
+  return url.includes('?') ? `${url}&autoplay=1&mute=1` : `${url}?autoplay=1&mute=1`;
 };
 
 const LandingPage = () => {
@@ -716,41 +720,57 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {activeTeachers.map((teacher, idx) => {
-              const teacherImg = teacher.image || teacher.photo || '/kc-logo.png';
-              return (
-                <div
-                  key={idx}
-                  onClick={() => setSelectedTeacherVideo(teacher)}
-                  className="rounded-3xl bg-slate-950 border border-indigo-900/60 hover:border-indigo-500 overflow-hidden group cursor-pointer transition-all duration-300 shadow-xl hover:-translate-y-1"
-                >
-                  <div className="relative h-60 overflow-hidden bg-slate-900 flex items-center justify-center p-2">
-                    <img
-                      src={teacherImg}
-                      alt={teacher.name}
-                      onError={(e) => { e.target.onerror = null; e.target.src = '/kc-logo.png'; }}
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+          {/* Single Autoplay Video Player Banner */}
+          <div className="max-w-5xl mx-auto">
+            <div className="relative rounded-3xl overflow-hidden p-2 bg-gradient-to-tr from-indigo-950 via-indigo-600 to-blue-500 shadow-2xl shadow-indigo-950/40">
+              <div className="rounded-2xl overflow-hidden bg-slate-950 relative aspect-video flex items-center justify-center">
+                {(() => {
+                  const demoUrl = cmsSettings?.demoVideoUrl || activeTeachers[0]?.videoUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+                  const isDirectVideo = demoUrl.startsWith('data:video') || demoUrl.endsWith('.mp4') || demoUrl.endsWith('.webm') || demoUrl.endsWith('.mov');
+
+                  if (isDirectVideo) {
+                    return (
+                      <video
+                        src={demoUrl}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        controls
+                        className="w-full h-full object-cover"
+                      />
+                    );
+                  }
+
+                  return (
+                    <iframe
+                      src={getEmbedVideoUrl(demoUrl)}
+                      title="Kingswood Connect Class Demonstration"
+                      className="w-full h-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
                     />
-                    <div className="absolute inset-0 bg-slate-950/50 group-hover:bg-slate-950/30 transition-all flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-indigo-600/90 group-hover:bg-indigo-600 text-white flex items-center justify-center shadow-2xl border border-white/30 transform group-hover:scale-110 transition-transform">
-                        <Play size={28} className="fill-white ml-1" />
-                      </div>
-                    </div>
-                    <div className="absolute top-3 right-3 bg-indigo-600/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full border border-white/20">
-                      {teacher.subject}
-                    </div>
-                  </div>
-                  <div className="p-5 space-y-2">
-                    <h3 className="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">{teacher.name}</h3>
-                    <p className="text-xs text-indigo-300 font-medium">Lecture Demo & Conceptual Breakdown</p>
-                    <div className="pt-2 flex items-center text-xs font-bold text-indigo-400 group-hover:text-indigo-300">
-                      <Play size={12} className="mr-1.5 fill-indigo-400" /> Watch Video Demo
-                    </div>
-                  </div>
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* Video Footer Info Bar */}
+            <div className="mt-4 p-4 rounded-2xl bg-slate-800/80 border border-slate-700/60 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0">
+                  <Play size={20} className="fill-indigo-400 text-indigo-400" />
                 </div>
-              );
-            })}
+                <div>
+                  <h4 className="text-sm font-bold text-white">Kingswood Connect Institute Class Demonstration</h4>
+                  <p className="text-xs text-indigo-200">Continuous Autoplay Preview • Unmute player controls for sound</p>
+                </div>
+              </div>
+              <span className="px-3.5 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 self-center sm:self-auto">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                AUTOPLAY DEMO
+              </span>
+            </div>
           </div>
         </div>
       </section>
