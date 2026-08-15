@@ -1460,15 +1460,18 @@ const SettingsPage = () => {
                         />
                       </div>
 
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Google Maps Embed URL</label>
+                      <div className="md:col-span-3">
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          🗺️ Google Maps Embed Link / iframe Code (Google Maps -&gt; Share -&gt; Embed a map)
+                        </label>
                         <input
                           type="text"
                           value={cmsData.googleMapsUrl || ''}
                           onChange={(e) => setCmsData({ ...cmsData, googleMapsUrl: e.target.value })}
-                          placeholder="https://www.google.com/maps/embed?pb=..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
+                          placeholder='Paste Google Maps Embed URL or full <iframe src="https://www.google.com/maps/embed?pb=..."></iframe> tag'
+                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium focus:bg-white transition-all"
                         />
+                        <p className="text-[11px] text-slate-500 mt-1 font-medium">Tip: You can paste the direct map embed link OR the full HTML iframe tag copied from Google Maps!</p>
                       </div>
                     </div>
                   </div>
