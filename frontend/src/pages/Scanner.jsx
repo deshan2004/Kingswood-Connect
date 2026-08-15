@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import axios from 'axios';
 import { QrCode, AlertCircle, CheckCircle2, XOctagon, Smartphone, X, UserCheck, Search, User, Check, BookOpen } from 'lucide-react';
