@@ -979,6 +979,7 @@ ${autoLoginLink}
                         <th className="py-3 px-4">Class</th>
                         <th className="py-3 px-4">Type</th>
                         <th className="py-3 px-4 text-right">Amount</th>
+                        <th className="py-3 px-4 text-center">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-medium">
@@ -991,11 +992,21 @@ ${autoLoginLink}
                           <td className="py-3 px-4 font-bold text-slate-800">{p.className || 'Class Fee'}</td>
                           <td className="py-3 px-4">
                             <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-50 text-indigo-700 border border-indigo-100">
-                              {p.feeBasis || (p.feeType === 'weekly' ? 'Weekly Fee' : 'Monthly Fee')}
+                              {getPaymentFeeLabel(p)}
                             </span>
                           </td>
                           <td className="py-3 px-4 text-right font-extrabold text-emerald-700">
                             Rs. {p.amount}
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            <button
+                              type="button"
+                              onClick={() => sendReceiptWhatsApp(p, historyStudent)}
+                              title="Send Receipt via WhatsApp to Parent/Student"
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] px-2.5 py-1 rounded-lg transition-all shadow-sm flex items-center gap-1 mx-auto cursor-pointer active:scale-95 shrink-0"
+                            >
+                              <MessageSquare size={13} /> Send Receipt
+                            </button>
                           </td>
                         </tr>
                       ))}
