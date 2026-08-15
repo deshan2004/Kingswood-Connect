@@ -78,22 +78,51 @@ app.get('/api/debug', (req, res) => {
   });
 });
 
+function isALClass(cls) {
+  if (!cls) return false;
+  if (cls.feeType === 'weekly') return false;
+  if (cls.feeType === 'monthly') return true;
+
+  const nameStr = String(cls.name || '').toLowerCase();
+  const gradeStr = String(cls.grade || '').toLowerCase();
+
+  // Strip 'general' to avoid false positive matching 'generAL'!
+  const clean = `${nameStr} ${gradeStr.replace(/general/g, '')}`;
+
+  return (
+    clean.includes('12') ||
+    clean.includes('13') ||
+    clean.includes('a/l') ||
+    clean.includes(' a/l') ||
+    clean.includes('al ') ||
+    clean.includes(' al') ||
+    clean.includes('advanced level') ||
+    clean.includes('combined')
+  );
+}
+
 // Helper to determine feeBasis ('weekly' vs 'monthly') and default fee amount based on grade
 function getStudentFeeDefaults(grade, reqFeeType, reqDefaultFee) {
   let feeBasis = reqFeeType;
   let fee = reqDefaultFee;
 
   if (!feeBasis) {
-    const g = String(grade || '').toLowerCase();
-    if (g.includes('12') || g.includes('13') || g.includes('a/l') || g.includes('al')) {
+    const isAL = isALClass({ grade });
+    if (isAL) {
       feeBasis = 'monthly';
     } else {
       feeBasis = 'weekly';
     }
   }
 
-  if (typeof fee !== 'number') {
-    fee = feeBasis === 'monthly' ? 3500 : 250;
+  if (fee === undefined || fee === null || fee === '' || isNaN(fee)) {
+    if (feeBasis === 'weekly') {
+      fee = 250; // Weekly per-session fee default for Grade 1-11
+    } else {
+      fee = 2500; // Monthly fee default for Grade 12-13 A/L
+    }
+  } else {
+    fee = Number(fee);
   }
 
   return { feeBasis, defaultFee: fee };
@@ -1476,6 +1505,7 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
 app.get('/api/finance/class-breakdown', async (req, res) => {
   try {
     const month = req.query.month || new Date().toISOString().substring(0, 7);
+    const selectedDate = req.query.date || null;
 
     const [classSnap, teacherSnap, paymentSnap] = await Promise.all([
       db.collection('classes').get(),
@@ -1491,8 +1521,19 @@ app.get('/api/finance/class-breakdown', async (req, res) => {
     const payments = [];
     paymentSnap.forEach(doc => {
       const p = doc.data();
-      if (!month || p.month === month || (p.datePaid && p.datePaid.startsWith(month))) {
-        payments.push(p);
+      const pDate = p.datePaid ? p.datePaid.substring(0, 10) : (p.timestamp ? p.timestamp.substring(0, 10) : null);
+      
+      let matches = false;
+      if (selectedDate) {
+        matches = pDate === selectedDate;
+      } else if (month) {
+        matches = p.month === month || (pDate && pDate.startsWith(month));
+      } else {
+        matches = true;
+      }
+
+      if (matches) {
+        payments.push({ ...p, pDate });
       }
     });
 
@@ -1507,14 +1548,33 @@ app.get('/api/finance/class-breakdown', async (req, res) => {
       const teacher = teachersMap[cls.teacherId] || {};
       const commRate = getNormalizedCommissionRate(teacher.commissionRate);
 
-      const str = `${cls.name || ''} ${cls.grade || ''}`.toLowerCase();
-      const isAL = str.includes('12') || str.includes('13') || str.includes('a/l') || str.includes('al') || str.includes('combined');
-      const isWeekly = cls.feeType === 'weekly' || (!isAL);
-      const displayFee = isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500);
+      const isAL = isALClass(cls);
+      const isWeekly = !isAL;
+
+      let displayFee = 250;
+      if (isWeekly) {
+        displayFee = cls.weeklyFee || (cls.fee && cls.fee <= 500 ? cls.fee : Math.round((cls.fee || 1000) / 4));
+        if (!displayFee || displayFee > 500) displayFee = 250;
+      } else {
+        displayFee = cls.fee || 2500;
+      }
 
       const classPayments = payments.filter(p => p.classId === classDoc.id || p.className === cls.name);
       const totalCollected = classPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
       const paidStudentsCount = classPayments.length;
+
+      // Group payments by date for daily breakdown
+      const dailyMap = {};
+      classPayments.forEach(p => {
+        const d = p.pDate || (p.timestamp ? p.timestamp.substring(0, 10) : 'Unknown');
+        if (!dailyMap[d]) {
+          dailyMap[d] = { date: d, amount: 0, count: 0 };
+        }
+        dailyMap[d].amount += (Number(p.amount) || 0);
+        dailyMap[d].count += 1;
+      });
+
+      const dailyBreakdown = Object.values(dailyMap).sort((a, b) => new Date(b.date) - new Date(a.date));
 
       const teacherCut = Math.round(totalCollected * commRate);
       const instituteCut = totalCollected - teacherCut;
@@ -1538,12 +1598,14 @@ app.get('/api/finance/class-breakdown', async (req, res) => {
         paidStudentsCount,
         totalCollected,
         teacherCut,
-        instituteCut
+        instituteCut,
+        dailyBreakdown
       });
     }
 
     res.json({
       month,
+      selectedDate,
       totalCollectedAll,
       totalWeeklyCollected,
       totalMonthlyCollected,
@@ -1798,14 +1860,13 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
       
       totalStudents += studentCount;
       
-      const str = `${cls.name || ''} ${cls.grade || ''}`.toLowerCase();
-      const isAL = str.includes('12') || str.includes('13') || str.includes('a/l') || str.includes('al') || str.includes('combined');
-      const isWeekly = cls.feeType === 'weekly' || (!isAL);
+      const isAL = isALClass(cls);
+      const isWeekly = !isAL;
       
       let displayFee = 250;
       if (isWeekly) {
         displayFee = cls.weeklyFee || (cls.fee && cls.fee <= 500 ? cls.fee : Math.round((cls.fee || 1000) / 4));
-        if (displayFee > 500) displayFee = 250;
+        if (!displayFee || displayFee > 500) displayFee = 250;
       } else {
         displayFee = cls.fee || 2500;
       }

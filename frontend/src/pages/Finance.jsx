@@ -29,8 +29,32 @@ const Finance = () => {
 
   // Breakdown State
   const [breakdownMonth, setBreakdownMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [breakdownDate, setBreakdownDate] = useState('');
+  const [breakdownSearch, setBreakdownSearch] = useState('');
+  const [expandedClassId, setExpandedClassId] = useState(null);
   const [breakdownData, setBreakdownData] = useState(null);
   const [breakdownLoading, setBreakdownLoading] = useState(false);
+
+  const fetchClassBreakdown = async () => {
+    setBreakdownLoading(true);
+    try {
+      const url = `${API_URL}/finance/class-breakdown?month=${breakdownMonth}${breakdownDate ? `&date=${breakdownDate}` : ''}`;
+      const res = await axios.get(url);
+      setBreakdownData(res.data);
+    } catch (err) {
+      console.error('Error fetching class breakdown:', err);
+    } finally {
+      setBreakdownLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (activeTab === 'reports') {
+      fetchReports();
+    } else if (activeTab === 'breakdown') {
+      fetchClassBreakdown();
+    }
+  }, [activeTab, reportClass, reportMonth, breakdownMonth, breakdownDate]);
 
   React.useEffect(() => {
     fetchData();
@@ -96,25 +120,7 @@ const Finance = () => {
     }
   };
 
-  const fetchClassBreakdown = async () => {
-    setBreakdownLoading(true);
-    try {
-      const res = await axios.get(`${API_URL}/finance/class-breakdown?month=${breakdownMonth}`);
-      setBreakdownData(res.data);
-    } catch (err) {
-      console.error('Error fetching class breakdown:', err);
-    } finally {
-      setBreakdownLoading(false);
-    }
-  };
 
-  React.useEffect(() => {
-    if (activeTab === 'reports') {
-      fetchReports();
-    } else if (activeTab === 'breakdown') {
-      fetchClassBreakdown();
-    }
-  }, [activeTab, reportClass, reportMonth, breakdownMonth]);
 
   const handlePayment = async (e) => {
     e.preventDefault();
@@ -503,31 +509,59 @@ Thank you for your prompt payment!
       </div>
       ) : activeTab === 'breakdown' ? (
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
               <h3 className="text-xl font-black text-slate-800 flex items-center gap-2">
                 <BarChart3 className="text-indigo-600" size={24} />
                 Class Revenue Breakdown
               </h3>
-              <p className="text-xs font-medium text-slate-500 mt-1">View total funds collected from each class separately (Weekly vs Monthly)</p>
+              <p className="text-xs font-medium text-slate-500 mt-1">View total funds collected from each class separately (Daily & Monthly)</p>
             </div>
-            <div className="flex items-center gap-2">
-              <label className="text-xs font-bold text-slate-500 uppercase">Select Month:</label>
-              <input
-                type="month"
-                value={breakdownMonth}
-                onChange={(e) => setBreakdownMonth(e.target.value)}
-                className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-              />
+            
+            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+              <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                <label className="text-[11px] font-bold text-slate-500 uppercase">Month:</label>
+                <input
+                  type="month"
+                  value={breakdownMonth}
+                  onChange={(e) => {
+                    setBreakdownMonth(e.target.value);
+                    setBreakdownDate(''); // clear date when month changes
+                  }}
+                  className="bg-transparent font-bold text-slate-700 text-xs outline-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                <label className="text-[11px] font-bold text-slate-500 uppercase">Specific Date:</label>
+                <input
+                  type="date"
+                  value={breakdownDate}
+                  onChange={(e) => setBreakdownDate(e.target.value)}
+                  className="bg-transparent font-bold text-slate-700 text-xs outline-none"
+                />
+                {breakdownDate && (
+                  <button
+                    onClick={() => setBreakdownDate('')}
+                    className="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-0.5 rounded font-bold transition-colors ml-1"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Summary Stat Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Revenue Collected</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                {breakdownDate ? `Total Revenue (${breakdownDate})` : `Total Revenue (${format(new Date(breakdownMonth), 'MMMM yyyy')})`}
+              </p>
               <h3 className="text-3xl font-black text-slate-800">Rs. {(breakdownData?.totalCollectedAll || 0).toLocaleString()}</h3>
-              <p className="text-xs font-semibold text-slate-500 mt-1">{format(new Date(breakdownMonth), 'MMMM yyyy')}</p>
+              <p className="text-xs font-semibold text-slate-500 mt-1">
+                {breakdownDate ? `Exact Daily Collection` : `Monthly Cumulative Collection`}
+              </p>
             </div>
 
             <div className="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm">
@@ -545,11 +579,17 @@ Thank you for your prompt payment!
 
           {/* Breakdown Table */}
           <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+            <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <h4 className="font-extrabold text-slate-800 text-lg">Class-Wise Money Collection Table</h4>
-              <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-100">
-                {breakdownData?.classes?.length || 0} Classes Listed
-              </span>
+              <div className="w-full sm:w-72">
+                <input
+                  type="text"
+                  placeholder="Search class, teacher, or grade..."
+                  value={breakdownSearch}
+                  onChange={(e) => setBreakdownSearch(e.target.value)}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
             </div>
 
             {breakdownLoading ? (
@@ -568,37 +608,94 @@ Thank you for your prompt payment!
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Total Collected</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Teacher Cut</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Institute Net</th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Daily View</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {breakdownData?.classes?.map(c => (
-                      <tr key={c.classId} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="py-4 px-6">
-                          <div className="font-bold text-slate-800">{c.className}</div>
-                          <div className="text-xs text-slate-500 font-medium">{c.grade}</div>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className="text-sm font-semibold text-slate-700">{c.teacherName}</span>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-extrabold border ${c.isWeekly ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-indigo-50 text-indigo-700 border-indigo-200'}`}>
-                            {c.feeLabel}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-center font-bold text-slate-700">
-                          {c.paidStudentsCount} payments
-                        </td>
-                        <td className="py-4 px-6 text-right font-black text-slate-900">
-                          Rs. {c.totalCollected.toLocaleString()}
-                        </td>
-                        <td className="py-4 px-6 text-right font-bold text-violet-700">
-                          Rs. {c.teacherCut.toLocaleString()}
-                        </td>
-                        <td className="py-4 px-6 text-right font-black text-emerald-600">
-                          Rs. {c.instituteCut.toLocaleString()}
-                        </td>
-                      </tr>
-                    ))}
+                    {breakdownData?.classes
+                      ?.filter(c => {
+                        if (!breakdownSearch.trim()) return true;
+                        const q = breakdownSearch.toLowerCase();
+                        return (
+                          c.className.toLowerCase().includes(q) ||
+                          c.grade.toLowerCase().includes(q) ||
+                          c.teacherName.toLowerCase().includes(q)
+                        );
+                      })
+                      .map(c => {
+                        const isExpanded = expandedClassId === c.classId;
+
+                        return (
+                          <React.Fragment key={c.classId}>
+                            <tr className="hover:bg-slate-50/50 transition-colors">
+                              <td className="py-4 px-6">
+                                <div className="font-bold text-slate-800">{c.className}</div>
+                                <div className="text-xs text-slate-500 font-medium">{c.grade}</div>
+                              </td>
+                              <td className="py-4 px-6">
+                                <span className="text-sm font-semibold text-slate-700">{c.teacherName}</span>
+                              </td>
+                              <td className="py-4 px-6">
+                                <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-extrabold border ${c.isWeekly ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-indigo-50 text-indigo-700 border-indigo-200'}`}>
+                                  {c.feeLabel}
+                                </span>
+                              </td>
+                              <td className="py-4 px-6 text-center font-bold text-slate-700">
+                                {c.paidStudentsCount} payments
+                              </td>
+                              <td className="py-4 px-6 text-right font-black text-slate-900">
+                                Rs. {c.totalCollected.toLocaleString()}
+                              </td>
+                              <td className="py-4 px-6 text-right font-bold text-violet-700">
+                                Rs. {c.teacherCut.toLocaleString()}
+                              </td>
+                              <td className="py-4 px-6 text-right font-black text-emerald-600">
+                                Rs. {c.instituteCut.toLocaleString()}
+                              </td>
+                              <td className="py-4 px-6 text-center">
+                                <button
+                                  onClick={() => setExpandedClassId(isExpanded ? null : c.classId)}
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${isExpanded ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'}`}
+                                >
+                                  {isExpanded ? 'Hide Days' : `Daily (${c.dailyBreakdown?.length || 0})`}
+                                </button>
+                              </td>
+                            </tr>
+                            
+                            {/* Expandable Daily Breakdown Sub-Row */}
+                            {isExpanded && (
+                              <tr className="bg-indigo-50/30">
+                                <td colSpan={8} className="p-4 px-6">
+                                  <div className="bg-white rounded-2xl p-4 border border-indigo-100 shadow-sm space-y-3">
+                                    <h5 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider flex items-center justify-between">
+                                      <span>📅 Daily Collection History for {c.className}</span>
+                                      <span className="text-indigo-600 font-bold">{c.dailyBreakdown?.length || 0} Class Days Recorded</span>
+                                    </h5>
+                                    
+                                    {c.dailyBreakdown && c.dailyBreakdown.length > 0 ? (
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                        {c.dailyBreakdown.map((dayItem, dIdx) => (
+                                          <div key={dIdx} className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center">
+                                            <div>
+                                              <p className="text-xs font-extrabold text-slate-800">{dayItem.date}</p>
+                                              <p className="text-[11px] font-medium text-slate-500">{dayItem.count} payments collected</p>
+                                            </div>
+                                            <span className="font-black text-sm text-emerald-600">
+                                              Rs. {dayItem.amount.toLocaleString()}
+                                            </span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <p className="text-xs text-slate-400 font-medium italic">No daily payment records for this period.</p>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>

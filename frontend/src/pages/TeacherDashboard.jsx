@@ -94,14 +94,19 @@ const TeacherDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {data.classes.map((cls) => {
                 const commPct = Math.round((data.teacher?.commissionRate > 1 ? data.teacher.commissionRate / 100 : (data.teacher?.commissionRate || 0.5)) * 100);
-                const str = `${cls.name || ''} ${cls.grade || ''}`.toLowerCase();
-                const isAL = str.includes('12') || str.includes('13') || str.includes('a/l') || str.includes('al') || str.includes('combined');
-                const isWeekly = cls.feeType === 'weekly' || (!isAL);
+                
+                const nameStr = String(cls.name || '').toLowerCase();
+                const gradeStr = String(cls.grade || '').toLowerCase();
+                const clean = `${nameStr} ${gradeStr.replace(/general/g, '')}`;
+                const isAL = cls.feeType === 'monthly' || (cls.feeType !== 'weekly' && (
+                  clean.includes('12') || clean.includes('13') || clean.includes('a/l') || clean.includes(' a/l') || clean.includes('al ') || clean.includes(' al') || clean.includes('advanced level') || clean.includes('combined')
+                ));
+                const isWeekly = !isAL;
 
                 let displayFee = 250;
                 if (isWeekly) {
                   displayFee = cls.weeklyFee || (cls.fee && cls.fee <= 500 ? cls.fee : Math.round((cls.fee || 1000) / 4));
-                  if (displayFee > 500) displayFee = 250;
+                  if (!displayFee || displayFee > 500) displayFee = 250;
                 } else {
                   displayFee = cls.fee || 2500;
                 }
