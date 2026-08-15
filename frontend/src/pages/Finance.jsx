@@ -269,14 +269,14 @@ Thank you for your cooperation!
                 value={selectedClass ? (() => {
                   const c = classesList.find(cls => cls.classId === selectedClass);
                   if (!c) return null;
-                  const isAL = String(c.name || '').toLowerCase().includes('12') || 
-                               String(c.name || '').toLowerCase().includes('13') || 
-                               String(c.name || '').toLowerCase().includes('a/l') || 
-                               String(c.name || '').toLowerCase().includes('al');
+                  const nameLower = String(c.name || '').toLowerCase();
+                  const isAL = nameLower.includes('12') || nameLower.includes('13') || nameLower.includes('a/l') || nameLower.includes('al') || nameLower.includes('combined');
                   const isWeekly = c.feeType === 'weekly' || (!c.feeType && !isAL);
+                  const displayFee = c.displayFee || (isWeekly ? (c.weeklyFee || Math.round((c.fee || 1000) / 4)) : c.fee);
                   return {
                     value: c.classId,
-                    label: `${c.name} (${c.teacherName}) - ${isWeekly ? 'Weekly Fee' : 'Monthly Fee'}: Rs. ${c.fee}`
+                    label: `${c.name} (${c.teacherName}) - ${isWeekly ? 'Weekly Fee' : 'Monthly Fee'}: Rs. ${displayFee}`,
+                    fee: displayFee
                   };
                 })() : null}
                 onChange={(selectedOption) => {
@@ -286,15 +286,14 @@ Thank you for your cooperation!
                   }
                 }}
                 options={classesList.map(c => {
-                  const isAL = String(c.name || '').toLowerCase().includes('12') || 
-                               String(c.name || '').toLowerCase().includes('13') || 
-                               String(c.name || '').toLowerCase().includes('a/l') || 
-                               String(c.name || '').toLowerCase().includes('al');
+                  const nameLower = String(c.name || '').toLowerCase();
+                  const isAL = nameLower.includes('12') || nameLower.includes('13') || nameLower.includes('a/l') || nameLower.includes('al') || nameLower.includes('combined');
                   const isWeekly = c.feeType === 'weekly' || (!c.feeType && !isAL);
+                  const displayFee = c.displayFee || (isWeekly ? (c.weeklyFee || Math.round((c.fee || 1000) / 4)) : c.fee);
                   return {
                     value: c.classId,
-                    label: `${c.name} (${c.teacherName}) - ${isWeekly ? 'Weekly Fee' : 'Monthly Fee'}: Rs. ${c.fee}`,
-                    fee: c.fee,
+                    label: `${c.name} (${c.teacherName}) - ${isWeekly ? 'Weekly Fee' : 'Monthly Fee'}: Rs. ${displayFee}`,
+                    fee: displayFee,
                     isWeekly
                   };
                 })}

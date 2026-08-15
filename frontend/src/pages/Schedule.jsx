@@ -319,12 +319,27 @@ const Schedule = () => {
                     </div>
                   </div>
                   
-                  <div className="bg-slate-50 rounded-xl p-3 flex items-center justify-between border border-slate-100">
+                  <div className="bg-slate-50 rounded-xl p-3 flex items-center justify-between border border-slate-100 mb-2">
                     <span className="flex items-center text-sm font-bold text-slate-600">
                       <Clock size={16} className="mr-2 text-slate-400" /> Time
                     </span>
                     <span className="text-sm font-bold text-indigo-700">
                       {cls.schedule}
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-50 rounded-xl p-3 flex items-center justify-between border border-slate-100">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                      Fee Basis
+                    </span>
+                    <span className="text-xs font-black text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                      {(() => {
+                        const nameLower = String(cls.name || '').toLowerCase();
+                        const isAL = nameLower.includes('12') || nameLower.includes('13') || nameLower.includes('a/l') || nameLower.includes('al') || nameLower.includes('combined');
+                        const isWeekly = cls.feeType === 'weekly' || (!cls.feeType && !isAL);
+                        const displayFee = cls.displayFee || (isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500));
+                        return `Rs. ${displayFee.toLocaleString()}/${isWeekly ? 'session' : 'mo'}`;
+                      })()}
                     </span>
                   </div>
                 </div>

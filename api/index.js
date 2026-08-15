@@ -1716,14 +1716,18 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
       totalStudents += studentCount;
       expectedIncome += classIncome;
       
+      const nameLower = String(cls.name || '').toLowerCase();
       const gradeStr = String(cls.grade || '').toLowerCase();
-      const isAL = gradeStr.includes('12') || gradeStr.includes('13') || gradeStr.includes('a/l') || gradeStr.includes('al');
+      const isAL = gradeStr.includes('12') || gradeStr.includes('13') || gradeStr.includes('a/l') || gradeStr.includes('al') || nameLower.includes('al') || nameLower.includes('a/l') || nameLower.includes('combined');
       const feeType = cls.feeType || (isAL ? 'monthly' : 'weekly');
+      const isWeekly = feeType === 'weekly' || !isAL;
+      const displayFee = isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500);
 
       classes.push({
         ...cls,
         classId: classDoc.id,
-        feeType,
+        feeType: isWeekly ? 'weekly' : 'monthly',
+        displayFee,
         studentsCount: studentCount,
         expectedIncome: Math.round(classIncome)
       });

@@ -91,11 +91,18 @@ const TeacherDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {data.classes.map((cls) => {
                 const commPct = Math.round((data.teacher?.commissionRate > 1 ? data.teacher.commissionRate / 100 : (data.teacher?.commissionRate || 0.5)) * 100);
+                const nameLower = String(cls.name || '').toLowerCase();
+                const gradeStr = String(cls.grade || '').toLowerCase();
+                const isAL = gradeStr.includes('12') || gradeStr.includes('13') || gradeStr.includes('a/l') || gradeStr.includes('al') || nameLower.includes('al') || nameLower.includes('a/l') || nameLower.includes('combined');
+                const isWeekly = cls.feeType === 'weekly' || !isAL;
+                const displayFee = cls.displayFee || (isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500));
+                const feeUnit = isWeekly ? 'session' : 'mo';
+
                 return (
                   <div key={cls.classId} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col justify-between">
                     <div>
                       <h4 className="font-bold text-slate-800 text-lg mb-1">{cls.name}</h4>
-                      <p className="text-sm font-medium text-slate-500 mb-4">{cls.schedule} • Grade: {cls.grade}</p>
+                      <p className="text-sm font-medium text-slate-500 mb-4">{cls.schedule} • Grade: {cls.grade || 'General'}</p>
                     </div>
                     <div className="flex items-center justify-between mt-2 pt-4 border-t border-slate-200 border-dashed">
                       <div>
@@ -105,7 +112,7 @@ const TeacherDashboard = () => {
                       <div>
                         <p className="text-xs font-bold text-slate-500 uppercase">Class Fee</p>
                         <p className="font-bold text-slate-700">
-                          Rs. {cls.fee} <span className="text-[10px] text-slate-400 font-medium">/{cls.feeType === 'monthly' ? 'mo' : 'session'}</span>
+                          Rs. {displayFee.toLocaleString()} <span className="text-[10px] text-slate-400 font-medium">/{feeUnit}</span>
                         </p>
                       </div>
                       <div className="text-right">
