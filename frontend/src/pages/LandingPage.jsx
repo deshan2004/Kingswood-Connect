@@ -63,9 +63,13 @@ const getEmbedVideoUrl = (url) => {
   return url.includes('?') ? `${url}&autoplay=1&mute=1` : `${url}?autoplay=1&mute=1`;
 };
 
-const getUniversalGoogleMapEmbed = (url) => {
-  if (!url || typeof url !== 'string') {
-    return 'https://maps.google.com/maps?q=Kingswood%20College%2C%20Peradeniya%20Road%2C%20Kandy&t=&z=16&ie=UTF8&iwloc=&output=embed';
+const getUniversalGoogleMapEmbed = (url, fallbackAddress) => {
+  const defaultLoc = fallbackAddress && fallbackAddress.trim().length > 3
+    ? `https://maps.google.com/maps?q=${encodeURIComponent(fallbackAddress.trim())}&t=&z=16&ie=UTF8&iwloc=&output=embed`
+    : 'https://maps.google.com/maps?q=Kingswood%20College%2C%20Peradeniya%20Road%2C%20Kandy&t=&z=16&ie=UTF8&iwloc=&output=embed';
+
+  if (!url || typeof url !== 'string' || !url.trim()) {
+    return defaultLoc;
   }
   let str = url.trim();
 
@@ -109,7 +113,7 @@ const getUniversalGoogleMapEmbed = (url) => {
     return `https://maps.google.com/maps?q=${encodeURIComponent(str)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
   }
 
-  return 'https://maps.google.com/maps?q=Kingswood%20College%2C%20Peradeniya%20Road%2C%20Kandy&t=&z=16&ie=UTF8&iwloc=&output=embed';
+  return defaultLoc;
 };
 
 const FacebookIcon = () => (
@@ -1244,7 +1248,8 @@ const LandingPage = () => {
           {/* Google Maps Location Embed & Timetable Download */}
           {(() => {
             const rawUrl = cmsSettings?.googleMapsUrl;
-            const finalMapsUrl = getUniversalGoogleMapEmbed(rawUrl);
+            const address = cmsSettings?.address;
+            const finalMapsUrl = getUniversalGoogleMapEmbed(rawUrl, address);
             
             return (
               <div className="mt-8 max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white p-2">
