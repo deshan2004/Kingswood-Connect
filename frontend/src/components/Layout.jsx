@@ -24,7 +24,7 @@ const Layout = () => {
     { name: 'Students', href: '/admin/students', icon: Users },
     { name: 'Attendance', href: '/admin/attendance', icon: ClipboardList },
     { name: 'Fees & Payments', href: '/admin/finance', icon: CreditCard },
-    { name: 'Faculty', href: '/admin/teachers', icon: UserCog },
+    { name: 'Teachers', href: '/admin/teachers', icon: UserCog },
     {name: 'Schedule', href: '/admin/schedule', icon: Calendar },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];

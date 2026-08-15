@@ -37,7 +37,7 @@ const TeacherLayout = () => {
             </div>
             <div>
               <h1 className="font-black text-white text-lg tracking-tight leading-none">Kingswood</h1>
-              <span className="text-xs font-bold text-indigo-300 uppercase tracking-widest">Faculty</span>
+              <span className="text-xs font-bold text-indigo-300 uppercase tracking-widest">Teachers</span>
             </div>
           </div>
           <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-indigo-300 hover:text-white">

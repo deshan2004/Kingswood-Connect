@@ -79,8 +79,8 @@ const Teachers = () => {
     <div className="max-w-6xl mx-auto space-y-8 pb-12">
       <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
         <div>
-          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Faculty Management</h2>
-          <p className="text-slate-500 font-medium mt-1">Manage instructors and view active student counts</p>
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight">Teachers Management</h2>
+          <p className="text-slate-500 font-medium mt-1">Manage teachers and view active student counts</p>
         </div>
         <button 
           onClick={() => {
@@ -104,7 +104,7 @@ const Teachers = () => {
             <div className="bg-violet-100 p-2 rounded-lg text-violet-600 mr-3">
               <UserCog size={20} />
             </div>
-            <h3 className="font-bold text-lg">Active Faculty Members</h3>
+            <h3 className="font-bold text-lg">Active Teachers</h3>
           </div>
           <div className="flex items-center gap-2 text-sm font-bold text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
             <Briefcase size={16} className="text-slate-400" /> {teachers.length} Active Staff
@@ -122,7 +122,7 @@ const Teachers = () => {
               <thead>
                 <tr className="bg-white border-b border-slate-100">
                   <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Teacher ID</th>
-                  <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Faculty Member</th>
+                  <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Teacher</th>
                   <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Subject</th>
                   <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Active Students</th>
                   <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
