@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import axios from 'axios';
 import { QrCode, AlertCircle, CheckCircle2, XOctagon, Smartphone, X, UserCheck, Search, User, Check, BookOpen } from 'lucide-react';
 import { io } from 'socket.io-client';
@@ -24,6 +23,11 @@ const Scanner = () => {
   const [activeTab, setActiveTab] = useState('qr'); // 'qr' or 'manual'
   const [filterQuery, setFilterQuery] = useState('');
 
+  const [isScannerActive, setIsScannerActive] = useState(false);
+  const [cameraLoading, setCameraLoading] = useState(false);
+  const [cameraError, setCameraError] = useState(null);
+  const html5QrCodeRef = React.useRef(null);
+
   const processScanRef = React.useRef();
   const lastScannedRef = React.useRef({ id: null, time: 0 });
 
@@ -33,8 +37,8 @@ const Scanner = () => {
 
   useEffect(() => {
     fetchClasses();
+    axios.get(`${API_URL}/students`).then(res => setStudents(res.data)).catch(console.error);
 
-    // Use a persistent session ID for this browser to keep the QR code the same
     let savedSessionId = localStorage.getItem('scanner_session_id');
     if (!savedSessionId) {
       savedSessionId = Math.random().toString(36).substring(2, 15);
@@ -42,10 +46,7 @@ const Scanner = () => {
     }
     setSessionId(savedSessionId);
 
-    // Listen to Firestore for scan results in this session
     const sessionRef = doc(db, 'scan_sessions', savedSessionId);
-
-    // Initialize session document
     setDoc(sessionRef, { createdAt: new Date().toISOString() }).catch(console.error);
 
     const unsubscribe = onSnapshot(sessionRef, (snapshot) => {
@@ -53,7 +54,6 @@ const Scanner = () => {
         const data = snapshot.data();
         if (data.studentId && data.scannedAt && (!processScanRef.lastScannedAt || data.scannedAt > processScanRef.lastScannedAt)) {
           processScanRef.lastScannedAt = data.scannedAt;
-
           if (data.result) {
             setScanResult({
               success: true,
@@ -79,7 +79,6 @@ const Scanner = () => {
     return () => unsubscribe();
   }, []);
 
-  // Update session doc whenever activeClass changes so mobile scanner knows which class
   useEffect(() => {
     if (sessionId && activeClass) {
       const sessionRef = doc(db, 'scan_sessions', sessionId);
@@ -103,34 +102,65 @@ const Scanner = () => {
     }
   };
 
-  const [isScannerActive, setIsScannerActive] = useState(true);
+  const startCamera = async () => {
+    setCameraLoading(true);
+    setCameraError(null);
+    setIsScannerActive(true);
 
-  useEffect(() => {
-    axios.get(`${API_URL}/students`).then(res => setStudents(res.data)).catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    if (!isScannerActive || activeTab !== 'qr') return;
-
-    const scanner = new Html5QrcodeScanner(
-      "reader",
-      {
-        fps: 20,
-        qrbox: { width: 250, height: 250 },
-        disableFlip: false,
-        videoConstraints: {
-          facingMode: "environment"
+    setTimeout(async () => {
+      try {
+        if (html5QrCodeRef.current) {
+          try {
+            await html5QrCodeRef.current.stop();
+            html5QrCodeRef.current.clear();
+          } catch (e) {}
         }
-      },
-      false
-    );
 
-    scanner.render(onScanSuccess, onScanFailure);
+        const html5QrCode = new Html5Qrcode("reader");
+        html5QrCodeRef.current = html5QrCode;
 
+        const config = { fps: 20, qrbox: { width: 250, height: 250 } };
+
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          config,
+          (decodedText) => {
+            if (processScanRef.current) {
+              processScanRef.current(decodedText);
+            }
+          },
+          () => {} // routine seek failure
+        );
+        setCameraLoading(false);
+      } catch (err) {
+        console.error("Camera start error:", err);
+        setCameraLoading(false);
+        setCameraError("Camera permission denied or camera not found. Please allow camera access in browser settings.");
+      }
+    }, 150);
+  };
+
+  const stopCamera = async () => {
+    if (html5QrCodeRef.current) {
+      try {
+        await html5QrCodeRef.current.stop();
+        html5QrCodeRef.current.clear();
+      } catch (e) {}
+      html5QrCodeRef.current = null;
+    }
+    setIsScannerActive(false);
+  };
+
+  useEffect(() => {
+    if (activeTab === 'qr') {
+      startCamera();
+    } else {
+      stopCamera();
+    }
     return () => {
-      scanner.clear().catch(error => console.error("Failed to clear scanner", error));
+      stopCamera();
     };
-  }, [isScannerActive, activeTab]);
+  }, [activeTab]);
 
   const processScan = async (studentId, paidToday = false) => {
     if (!studentId || !activeClass) return;
