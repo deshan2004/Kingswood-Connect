@@ -1426,7 +1426,16 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
       const classDoc = await db.collection('classes').doc(classId).get();
       if (!classDoc.exists) continue;
       const classData = classDoc.data();
-      
+      const isClassAL = String(classData.name || '').toLowerCase().includes('12') || 
+                       String(classData.name || '').toLowerCase().includes('13') || 
+                       String(classData.name || '').toLowerCase().includes('a/l') || 
+                       String(classData.name || '').toLowerCase().includes('al');
+      const classFeeType = classData.feeType || (isClassAL ? 'monthly' : 'weekly');
+      const classFee = classData.fee || defaultFee;
+      const sessionFee = classFeeType === 'weekly' 
+        ? (classData.weeklyFee || (classFee > 500 ? Math.round(classFee / 4) : classFee))
+        : classFee;
+
       const isPaidThisMonth = cardType === 'free' || payments.some(p => p.classId === classId && p.month === currentMonth);
       const attendanceThisMonth = attendance.filter(a => a.classId === classId && a.date.startsWith(currentMonth)).length;
 
@@ -1434,10 +1443,11 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
         classId: classData.classId,
         name: classData.name,
         teacherName: classData.teacherName,
-        fee: classData.fee || defaultFee,
+        fee: classFee,
+        sessionFee,
         cardType,
         cardGrantedBy: student.cardGrantedBy || null,
-        feeType,
+        feeType: classFeeType,
         isFreeCard: cardType === 'free',
         isHalfCard: cardType === 'half',
         isPaidThisMonth,

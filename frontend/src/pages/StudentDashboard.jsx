@@ -141,7 +141,7 @@ const StudentDashboard = () => {
                         </div>
                         <p className="text-xs font-medium text-slate-500 mb-3">{cls.teacherName}</p>
                         <p className="text-xs font-bold text-slate-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200 inline-block">
-                          {cls.feeType === 'weekly' ? `🗓️ Weekly Fee: Rs. ${cls.fee}/session` : `📅 Monthly Fee: Rs. ${cls.fee}/month`}
+                          {cls.feeType === 'weekly' ? `🗓️ Weekly Fee: Rs. ${cls.sessionFee || (cls.fee > 500 ? Math.round(cls.fee / 4) : cls.fee)}/session` : `📅 Monthly Fee: Rs. ${cls.fee}/month`}
                         </p>
                       </div>
                       
