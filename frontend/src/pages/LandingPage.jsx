@@ -725,13 +725,31 @@ const LandingPage = () => {
             <div className="relative rounded-3xl overflow-hidden p-2 bg-gradient-to-tr from-indigo-950 via-indigo-600 to-blue-500 shadow-2xl shadow-indigo-950/40">
               <div className="rounded-2xl overflow-hidden bg-slate-950 relative aspect-video flex items-center justify-center">
                 {(() => {
-                  const demoUrl = cmsSettings?.demoVideoUrl || activeTeachers[0]?.videoUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
-                  const isDirectVideo = demoUrl.startsWith('data:video') || demoUrl.endsWith('.mp4') || demoUrl.endsWith('.webm') || demoUrl.endsWith('.mov');
+                  const rawUrl = cmsSettings?.demoVideoUrl || activeTeachers.find(t => t.videoUrl)?.videoUrl || '';
+                  const hasVideo = rawUrl && !rawUrl.includes('dQw4w9WgXcQ');
+
+                  if (!hasVideo) {
+                    return (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-slate-900/90 relative">
+                        <img
+                          src="/kc-logo.png"
+                          alt="Kingswood Connect Preview"
+                          onError={(e) => { e.target.onerror = null; e.target.src = '/kc-logo.png'; }}
+                          className="w-48 sm:w-64 h-auto object-contain drop-shadow-2xl mb-4"
+                        />
+                        <div className="flex items-center gap-2 bg-indigo-600/90 border border-indigo-400/40 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-full shadow-lg">
+                          <Video size={18} /> Kingswood Connect Learning Environment
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  const isDirectVideo = rawUrl.startsWith('data:video') || rawUrl.endsWith('.mp4') || rawUrl.endsWith('.webm') || rawUrl.endsWith('.mov');
 
                   if (isDirectVideo) {
                     return (
                       <video
-                        src={demoUrl}
+                        src={rawUrl}
                         autoPlay
                         loop
                         muted
@@ -744,7 +762,7 @@ const LandingPage = () => {
 
                   return (
                     <iframe
-                      src={getEmbedVideoUrl(demoUrl)}
+                      src={getEmbedVideoUrl(rawUrl)}
                       title="Kingswood Connect Class Demonstration"
                       className="w-full h-full border-0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

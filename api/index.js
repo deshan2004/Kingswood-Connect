@@ -1781,7 +1781,7 @@ const defaultLandingSettings = {
       qualification: 'B.Sc. Engineering (Hons) - Peradeniya',
       desc: 'Master lecturer specializing in Mathematics from Grade 6 to 11 O/L as well as A/L Combined Mathematics, simplifying complex algebra, geometry, and calculus.',
       image: '/kc-logo.png',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      videoUrl: '',
       experience: '12+ Years',
       ranks: '150+ Top Ranks',
       badgeColor: 'bg-indigo-600'
@@ -1793,7 +1793,7 @@ const defaultLandingSettings = {
       qualification: 'Ph.D., B.Sc. Physics Special (Hons) - Colombo',
       desc: 'Senior Science & Physics educator covering Junior Secondary Science (Grades 6-9), O/L Science (Grades 10-11), and A/L Physics with visual laboratory concepts.',
       image: '/kc-logo.png',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      videoUrl: '',
       experience: '14+ Years',
       ranks: '120+ Top Ranks',
       badgeColor: 'bg-blue-600'
@@ -1805,7 +1805,7 @@ const defaultLandingSettings = {
       qualification: 'B.Ed. Primary Education, M.A. Linguistics',
       desc: 'Expert educator dedicated to Grade 1 to 5 foundation learning and Grade 5 Scholarship preparation, building strong literacy, numerical, and analytical skills.',
       image: '/kc-logo.png',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      videoUrl: '',
       experience: '10+ Years',
       ranks: '95+ Island Ranks',
       badgeColor: 'bg-emerald-600'
