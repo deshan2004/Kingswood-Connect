@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Calculator, UserCog, Briefcase, GraduationCap, Edit } from 'lucide-react';
+import { Calculator, UserCog, Briefcase, GraduationCap, Edit, Trash2 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -24,6 +24,18 @@ const Teachers = () => {
       console.error('Error fetching teachers:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteTeacher = async (teacherId, teacherName) => {
+    if (!window.confirm(`Are you sure you want to delete teacher "${teacherName}"? This action cannot be undone.`)) {
+      return;
+    }
+    try {
+      await axios.delete(`${API_URL}/teachers/${teacherId}`);
+      fetchTeachers();
+    } catch (error) {
+      alert('Failed to delete teacher: ' + (error.response?.data?.error || error.message));
     }
   };
 
@@ -66,8 +78,8 @@ const Teachers = () => {
     setEditingTeacher(teacher);
     setNewTeacher({
       name: teacher.name,
-      email: '', // Not editable via this modal
-      password: '', // Not editable via this modal
+      email: teacher.email || '',
+      password: '',
       contact: teacher.contact,
       subject: teacher.subject,
       commissionRate: teacher.commissionRate > 1 ? teacher.commissionRate : Math.round((teacher.commissionRate || 0.5) * 100)
@@ -96,7 +108,6 @@ const Teachers = () => {
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden relative">
-        {/* Subtle background decoration */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-violet-50 rounded-full blur-3xl -z-10 translate-x-32 -translate-y-32"></div>
         
         <div className="p-6 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
@@ -134,10 +145,13 @@ const Teachers = () => {
                     <td className="py-4 px-6 text-sm font-mono font-bold text-slate-500">{teacher.teacherId}</td>
                     <td className="py-4 px-6">
                       <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-violet-100 to-fuchsia-100 flex items-center justify-center text-violet-700 font-bold mr-3 border border-violet-200/50 shadow-inner">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-violet-100 to-fuchsia-100 flex items-center justify-center text-violet-700 font-bold mr-3 border border-violet-200/50 shadow-inner shrink-0">
                           {teacher.name.charAt(0)}
                         </div>
-                        <span className="font-bold text-slate-800 group-hover:text-violet-600 transition-colors">{teacher.name}</span>
+                        <div>
+                          <div className="font-bold text-slate-800 group-hover:text-violet-600 transition-colors">{teacher.name}</div>
+                          <div className="text-xs font-medium text-slate-400">{teacher.email || 'No email registered'}</div>
+                        </div>
                       </div>
                     </td>
                     <td className="py-4 px-6">
@@ -150,12 +164,22 @@ const Teachers = () => {
                       <span className="font-bold text-slate-700">{teacher.students}</span>
                     </td>
                     <td className="py-4 px-6 text-right">
-                      <button 
-                        onClick={() => openEditModal(teacher)}
-                        className="p-2 bg-slate-100 hover:bg-violet-100 text-slate-500 hover:text-violet-600 rounded-lg transition-colors"
-                      >
-                        <Edit size={16} />
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button 
+                          onClick={() => openEditModal(teacher)}
+                          title="Edit Teacher"
+                          className="p-2 bg-slate-100 hover:bg-violet-100 text-slate-500 hover:text-violet-600 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteTeacher(teacher.teacherId, teacher.name)}
+                          title="Delete Teacher"
+                          className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-500 hover:text-rose-700 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -1217,8 +1217,18 @@ app.get('/api/teachers/commission', async (req, res) => {
         });
       }
 
+      // Fetch email from users collection if linked
+      let email = teacher.email || '';
+      if (!email) {
+        const usersSnap = await db.collection('users').where('linkedId', '==', teacherId).get();
+        if (!usersSnap.empty) {
+          email = usersSnap.docs[0].data().email || '';
+        }
+      }
+
       teachers.push({
         ...teacher,
+        email,
         commissionRate: commRate,
         students: totalStudents,
         expectedIncome: Math.round(expectedIncome)
@@ -1231,6 +1241,29 @@ app.get('/api/teachers/commission', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch teachers commission' });
   }
 });
+
+// Delete teacher
+app.delete('/api/teachers/:id', async (req, res) => {
+  try {
+    const teacherId = req.params.id;
+    await db.collection('teachers').doc(teacherId).delete();
+
+    // Delete linked user auth account if exists
+    const usersSnap = await db.collection('users').where('linkedId', '==', teacherId).get();
+    for (const doc of usersSnap.docs) {
+      try {
+        await getAuth().deleteUser(doc.id);
+      } catch (e) {}
+      await db.collection('users').doc(doc.id).delete();
+    }
+
+    res.json({ message: 'Teacher deleted successfully', teacherId });
+  } catch (error) {
+    console.error('Delete teacher error:', error);
+    res.status(500).json({ error: 'Failed to delete teacher' });
+  }
+});
+
 // 6. Classes
 app.get('/api/classes', async (req, res) => {
   try {
@@ -1256,23 +1289,27 @@ app.get('/api/classes', async (req, res) => {
 
 app.post('/api/classes', async (req, res) => {
   try {
-    const { name, grade, teacherId, fee, schedule } = req.body;
+    const { name, grade, teacherId, fee, schedule, feeType } = req.body;
     const classId = generateId('CLS');
     
-    // Fetch teacher details to store name along with ID for easy display
     let teacherName = 'Unknown';
     if (teacherId) {
       const teacherDoc = await db.collection('teachers').doc(teacherId).get();
       if (teacherDoc.exists) teacherName = teacherDoc.data().name;
     }
 
+    const struct = getGradeFeeStructure({ name, grade, feeType, fee });
+
     const classData = { 
       classId, 
       name, 
-      grade: grade || 'General', 
+      grade: grade || 'Grade 6', 
       teacherId, 
       teacherName, 
-      fee: parseFloat(fee) || 0, 
+      feeType: struct.feeType,
+      fee: struct.displayFee, 
+      weeklyFee: struct.isWeekly ? struct.displayFee : Math.round(struct.displayFee / 4),
+      displayFee: struct.displayFee,
       schedule: schedule || '', 
       createdAt: new Date().toISOString() 
     };
@@ -1280,6 +1317,17 @@ app.post('/api/classes', async (req, res) => {
     res.status(201).json(classData);
   } catch (error) {
     res.status(500).json({ error: 'Failed to add class' });
+  }
+});
+
+app.delete('/api/classes/:id', async (req, res) => {
+  try {
+    const classId = req.params.id;
+    await db.collection('classes').doc(classId).delete();
+    res.json({ message: 'Class deleted successfully', classId });
+  } catch (error) {
+    console.error('Delete class error:', error);
+    res.status(500).json({ error: 'Failed to delete class' });
   }
 });
 

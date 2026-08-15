@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Calendar as CalendarIcon, Clock, BellRing, ChevronRight, MessageSquareWarning, Edit2, X, Search, Filter, User } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, BellRing, ChevronRight, MessageSquareWarning, Edit2, Trash2, X, Search, Filter, User } from 'lucide-react';
 
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -10,7 +10,16 @@ const Schedule = () => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [newClass, setNewClass] = useState({ name: '', teacherId: '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 1000 });
+  const [newClass, setNewClass] = useState({ 
+    name: '', 
+    grade: 'Grade 6', 
+    teacherId: '', 
+    day: 'Monday', 
+    startTime: '08:00', 
+    endTime: '10:00', 
+    fee: 250, 
+    feeType: 'weekly' 
+  });
   const [submitting, setSubmitting] = useState(false);
 
   // Filter & Search States
@@ -21,8 +30,35 @@ const Schedule = () => {
   // Edit State
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
-  const [editClassData, setEditClassData] = useState({ name: '', teacherId: '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 1000 });
+  const [editClassData, setEditClassData] = useState({ name: '', grade: 'Grade 6', teacherId: '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 250 });
   const [updating, setUpdating] = useState(false);
+
+  const handleGradeChange = (selectedGrade) => {
+    const numbers = selectedGrade.match(/\b(1[0-3]|[1-9])\b/g);
+    const gradeNum = numbers ? parseInt(numbers[0], 10) : 6;
+    const isAL = gradeNum >= 12;
+    const feeType = isAL ? 'monthly' : 'weekly';
+    const defaultFee = isAL ? 2500 : 250;
+
+    setNewClass(prev => ({
+      ...prev,
+      grade: selectedGrade,
+      feeType,
+      fee: defaultFee
+    }));
+  };
+
+  const handleDeleteClass = async (classId, className) => {
+    if (!window.confirm(`Are you sure you want to delete class "${className}"? This action cannot be undone.`)) {
+      return;
+    }
+    try {
+      await axios.delete(`${API_URL}/classes/${classId}`);
+      fetchData();
+    } catch (error) {
+      alert('Failed to delete class: ' + (error.response?.data?.error || error.message));
+    }
+  };
 
   // Helper to format 24h time string to 12h AM/PM
   const formatTimeStr = (time24) => {
@@ -71,17 +107,14 @@ const Schedule = () => {
 
   const fetchData = async () => {
     try {
-      const [classesRes, teachersRes] = await Promise.all([
+      const [classRes, teacherRes] = await Promise.all([
         axios.get(`${API_URL}/classes`),
         axios.get(`${API_URL}/teachers/commission`)
       ]);
-      setClasses(classesRes.data);
-      setTeachers(teachersRes.data);
-      if (teachersRes.data.length > 0) {
-        setNewClass(prev => ({ ...prev, teacherId: teachersRes.data[0].teacherId }));
-      }
+      setClasses(classRes.data);
+      setTeachers(teacherRes.data);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error loading schedule data:', error);
     } finally {
       setLoading(false);
     }
@@ -91,16 +124,17 @@ const Schedule = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const selectedTeacherObj = teachers.find(t => t.teacherId === newClass.teacherId);
+      const scheduleString = `${newClass.day} ${formatTimeStr(newClass.startTime)} - ${formatTimeStr(newClass.endTime)}`;
       await axios.post(`${API_URL}/classes`, {
         name: newClass.name,
+        grade: newClass.grade,
         teacherId: newClass.teacherId,
-        teacherName: selectedTeacherObj ? selectedTeacherObj.name : 'Unknown',
-        schedule: `${newClass.day} ${formatTimeStr(newClass.startTime)} - ${formatTimeStr(newClass.endTime)}`,
-        fee: Number(newClass.fee)
+        fee: Number(newClass.fee),
+        feeType: newClass.feeType,
+        schedule: scheduleString
       });
       setShowModal(false);
-      setNewClass({ name: '', teacherId: teachers[0]?.teacherId || '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 1000 });
+      setNewClass({ name: '', grade: 'Grade 6', teacherId: '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 250, feeType: 'weekly' });
       fetchData();
     } catch (error) {
       alert('Failed to add class');
@@ -298,17 +332,26 @@ const Schedule = () => {
               <div key={cls.id || cls.classId} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md hover:border-indigo-200 transition-all relative">
                 <div className="h-2 w-full bg-gradient-to-r from-indigo-500 to-blue-500"></div>
                 
-                {/* Edit Button */}
-                <button
-                  onClick={() => handleEditClick(cls)}
-                  className="absolute top-4 right-4 p-2 bg-indigo-50 text-indigo-600 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-indigo-100 cursor-pointer"
-                  title="Edit Class"
-                >
-                  <Edit2 size={18} />
-                </button>
+                {/* Class Action Buttons */}
+                <div className="absolute top-4 right-4 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all">
+                  <button
+                    onClick={() => handleEditClick(cls)}
+                    className="p-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-100 transition-colors cursor-pointer"
+                    title="Edit Class"
+                  >
+                    <Edit2 size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClass(cls.classId || cls.id, cls.name)}
+                    className="p-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-100 transition-colors cursor-pointer"
+                    title="Delete Class"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
 
                 <div className="p-6">
-                  <div className="flex justify-between items-start mb-4 pr-10">
+                  <div className="flex justify-between items-start mb-4 pr-16">
                     <div>
                       <h3 className="text-lg font-bold text-slate-800 leading-tight">
                         {cls.name}
@@ -373,8 +416,32 @@ const Schedule = () => {
                   value={newClass.name}
                   onChange={(e) => setNewClass({...newClass, name: e.target.value})}
                   className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="e.g. A/L Science 2026"
+                  placeholder="e.g. Science - Grade 6"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Target Grade</label>
+                <select
+                  required
+                  value={newClass.grade}
+                  onChange={(e) => handleGradeChange(e.target.value)}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium"
+                >
+                  <option value="Grade 1">Grade 1 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 2">Grade 2 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 3">Grade 3 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 4">Grade 4 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 5">Grade 5 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 6">Grade 6 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 7">Grade 7 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 8">Grade 8 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 9">Grade 9 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 10">Grade 10 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 11">Grade 11 (Weekly - Rs. 250 /session)</option>
+                  <option value="Grade 12 (A/L)">Grade 12 A/L (Monthly - Rs. 2,500 /mo)</option>
+                  <option value="Grade 13 (A/L)">Grade 13 A/L (Monthly - Rs. 2,500 /mo)</option>
+                </select>
               </div>
               
               <div>
