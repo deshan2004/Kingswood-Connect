@@ -2306,6 +2306,7 @@ const defaultLandingSettings = {
   address: 'Kingswood Education Complex, Peradeniya Road, Kandy, Sri Lanka',
   phone: '+94 81 222 3456 / +94 77 123 4567',
   whatsapp: '+94 77 123 4567',
+  studentWhatsApp: '+94 77 987 6543',
   email: 'info@kingswoodconnect.lk'
 };
 

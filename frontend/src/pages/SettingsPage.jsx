@@ -311,6 +311,7 @@ const SettingsPage = () => {
     address: '',
     phone: '',
     whatsapp: '',
+    studentWhatsApp: '',
     email: ''
   });
 
@@ -1282,32 +1283,51 @@ const SettingsPage = () => {
                 <div className="space-y-4">
                   <h4 className="text-base font-extrabold text-indigo-900 border-b border-slate-200 pb-2">📞 9. Contact Info & WhatsApp Hotline</h4>
                   
-                  <div className="grid md:grid-cols-3 gap-4">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        📱 Student Messaging WhatsApp (Attendance & Receipts)
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsData.studentWhatsApp || ''}
+                        onChange={(e) => setCmsData({ ...cmsData, studentWhatsApp: e.target.value })}
+                        placeholder="+94 77 987 6543"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-indigo-200 text-indigo-900 text-sm font-bold focus:bg-white transition-all"
+                      />
+                      <p className="text-[11px] text-slate-500 mt-1 font-medium">Used for sending QR attendance scan alerts & payment receipts to students</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        🏢 Official Institute WhatsApp (Public Landing Page)
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsData.whatsapp || ''}
+                        onChange={(e) => setCmsData({ ...cmsData, whatsapp: e.target.value })}
+                        placeholder="+94 77 123 4567"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium focus:bg-white transition-all"
+                      />
+                      <p className="text-[11px] text-slate-500 mt-1 font-medium">Displayed on the website & contact us page for general inquiries</p>
+                    </div>
+
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">Inquiry Hotlines</label>
                       <input
                         type="text"
-                        value={cmsData.phone}
+                        value={cmsData.phone || ''}
                         onChange={(e) => setCmsData({ ...cmsData, phone: e.target.value })}
                         placeholder="+94 81 222 3456 / +94 77 123 4567"
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
                       />
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp Support Number</label>
-                      <input
-                        type="text"
-                        value={cmsData.whatsapp}
-                        onChange={(e) => setCmsData({ ...cmsData, whatsapp: e.target.value })}
-                        placeholder="+94 77 123 4567"
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
-                      />
-                    </div>
+
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">Auditorium Address / Location</label>
                       <input
                         type="text"
-                        value={cmsData.address}
+                        value={cmsData.address || ''}
                         onChange={(e) => setCmsData({ ...cmsData, address: e.target.value })}
                         placeholder="Kingswood Education Complex, Kandy"
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
