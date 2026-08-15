@@ -1472,6 +1472,89 @@ app.get('/api/student/:id/dashboard', async (req, res) => {
   }
 });
 
+// --- Class-wise Revenue Breakdown for Admin ---
+app.get('/api/finance/class-breakdown', async (req, res) => {
+  try {
+    const month = req.query.month || new Date().toISOString().substring(0, 7);
+
+    const [classSnap, teacherSnap, paymentSnap] = await Promise.all([
+      db.collection('classes').get(),
+      db.collection('teachers').get(),
+      db.collection('payments').get()
+    ]);
+
+    const teachersMap = {};
+    teacherSnap.forEach(doc => {
+      teachersMap[doc.id] = doc.data();
+    });
+
+    const payments = [];
+    paymentSnap.forEach(doc => {
+      const p = doc.data();
+      if (!month || p.month === month || (p.datePaid && p.datePaid.startsWith(month))) {
+        payments.push(p);
+      }
+    });
+
+    let totalCollectedAll = 0;
+    let totalWeeklyCollected = 0;
+    let totalMonthlyCollected = 0;
+
+    const classBreakdown = [];
+
+    for (const classDoc of classSnap.docs) {
+      const cls = classDoc.data();
+      const teacher = teachersMap[cls.teacherId] || {};
+      const commRate = getNormalizedCommissionRate(teacher.commissionRate);
+
+      const str = `${cls.name || ''} ${cls.grade || ''}`.toLowerCase();
+      const isAL = str.includes('12') || str.includes('13') || str.includes('a/l') || str.includes('al') || str.includes('combined');
+      const isWeekly = cls.feeType === 'weekly' || (!isAL);
+      const displayFee = isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500);
+
+      const classPayments = payments.filter(p => p.classId === classDoc.id || p.className === cls.name);
+      const totalCollected = classPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+      const paidStudentsCount = classPayments.length;
+
+      const teacherCut = Math.round(totalCollected * commRate);
+      const instituteCut = totalCollected - teacherCut;
+
+      totalCollectedAll += totalCollected;
+      if (isWeekly) {
+        totalWeeklyCollected += totalCollected;
+      } else {
+        totalMonthlyCollected += totalCollected;
+      }
+
+      classBreakdown.push({
+        classId: classDoc.id,
+        className: cls.name,
+        grade: cls.grade || 'General',
+        teacherName: cls.teacherName || teacher.name || 'N/A',
+        isWeekly,
+        feeType: isWeekly ? 'weekly' : 'monthly',
+        displayFee,
+        feeLabel: `Rs. ${displayFee.toLocaleString()}/${isWeekly ? 'session' : 'mo'}`,
+        paidStudentsCount,
+        totalCollected,
+        teacherCut,
+        instituteCut
+      });
+    }
+
+    res.json({
+      month,
+      totalCollectedAll,
+      totalWeeklyCollected,
+      totalMonthlyCollected,
+      classes: classBreakdown
+    });
+  } catch (error) {
+    console.error('Class breakdown error:', error);
+    res.status(500).json({ error: 'Failed to fetch class breakdown' });
+  }
+});
+
 // --- Materials / Tutes & Exams ---
 app.post('/api/materials', async (req, res) => {
   try {
@@ -1719,7 +1802,14 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
       const isAL = str.includes('12') || str.includes('13') || str.includes('a/l') || str.includes('al') || str.includes('combined');
       const isWeekly = cls.feeType === 'weekly' || (!isAL);
       
-      const displayFee = isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500);
+      let displayFee = 250;
+      if (isWeekly) {
+        displayFee = cls.weeklyFee || (cls.fee && cls.fee <= 500 ? cls.fee : Math.round((cls.fee || 1000) / 4));
+        if (displayFee > 500) displayFee = 250;
+      } else {
+        displayFee = cls.fee || 2500;
+      }
+
       const expectedCut = isWeekly ? Math.round(classIncome / 4) : Math.round(classIncome);
 
       if (isWeekly) {

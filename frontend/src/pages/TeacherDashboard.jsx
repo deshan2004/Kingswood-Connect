@@ -97,10 +97,18 @@ const TeacherDashboard = () => {
                 const str = `${cls.name || ''} ${cls.grade || ''}`.toLowerCase();
                 const isAL = str.includes('12') || str.includes('13') || str.includes('a/l') || str.includes('al') || str.includes('combined');
                 const isWeekly = cls.feeType === 'weekly' || (!isAL);
-                const displayFee = cls.displayFee || (isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500));
-                const feeUnit = cls.feeUnit || (isWeekly ? 'week' : 'mo');
+
+                let displayFee = 250;
+                if (isWeekly) {
+                  displayFee = cls.weeklyFee || (cls.fee && cls.fee <= 500 ? cls.fee : Math.round((cls.fee || 1000) / 4));
+                  if (displayFee > 500) displayFee = 250;
+                } else {
+                  displayFee = cls.fee || 2500;
+                }
+
+                const feeUnit = isWeekly ? 'week' : 'mo';
                 const expectedCut = cls.expectedCut !== undefined ? cls.expectedCut : (isWeekly ? Math.round((cls.expectedIncome || 0) / 4) : (cls.expectedIncome || 0));
-                const cutUnit = cls.cutUnit || (isWeekly ? 'week' : 'mo');
+                const cutUnit = isWeekly ? 'week' : 'mo';
 
                 return (
                   <div key={cls.classId} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col justify-between">
