@@ -822,13 +822,21 @@ app.post('/api/payments', async (req, res) => {
     if (!classDoc.exists) {
       return res.status(404).json({ error: 'Class not found' });
     }
-    const className = classDoc.data().name;
+    const classData = classDoc.data();
+    const className = classData.name || '';
+    const isAL = String(className).toLowerCase().includes('12') || 
+                 String(className).toLowerCase().includes('13') || 
+                 String(className).toLowerCase().includes('a/l') || 
+                 String(className).toLowerCase().includes('al');
+    const feeType = classData.feeType || (isAL ? 'monthly' : 'weekly');
 
     const receiptNo = generateId('REC');
     const paymentData = { 
       studentId, 
       classId,
       className,
+      feeType,
+      feeBasis: feeType === 'weekly' ? 'Weekly Fee' : 'Monthly Fee',
       amount: parseFloat(amount), 
       month, 
       datePaid: new Date().toISOString(), 
@@ -836,9 +844,35 @@ app.post('/api/payments', async (req, res) => {
     };
 
     await db.collection('payments').add(paymentData);
+
+    // Update corresponding attendance record (if unpaid previously)
+    try {
+      const attSnapshot = await db.collection('attendance')
+        .where('studentId', '==', studentId)
+        .where('classId', '==', classId)
+        .get();
+
+      if (!attSnapshot.empty) {
+        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        let targetDoc = attSnapshot.docs.find(d => d.data().date === todayStr && d.data().feeStatus !== 'Paid');
+        if (!targetDoc) {
+          targetDoc = attSnapshot.docs.find(d => d.data().feeStatus !== 'Paid');
+        }
+        if (targetDoc) {
+          await db.collection('attendance').doc(targetDoc.id).update({
+            feeStatus: feeType === 'monthly' ? 'Paid (Monthly)' : 'Paid',
+            feePaid: parseFloat(amount),
+            monthlyPaid: feeType === 'monthly' ? true : false,
+            updatedAt: new Date().toISOString()
+          });
+        }
+      }
+    } catch (attErr) {
+      console.error('Failed to sync payment with attendance:', attErr);
+    }
     
     // MOCK SMS NOTIFICATION HERE
-    console.log(`[SMS NOTIFICATION] Receipt ${receiptNo}: Received Rs.${amount} for student ${studentId} for ${className} (${month}).`);
+    console.log(`[SMS NOTIFICATION] Receipt ${receiptNo}: Received Rs.${amount} (${feeType}) for student ${studentId} for ${className} (${month}).`);
 
     res.status(201).json({ message: 'Payment recorded', paymentData });
   } catch (error) {

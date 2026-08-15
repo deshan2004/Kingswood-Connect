@@ -241,13 +241,20 @@ Thank you for your cooperation!
                           <span className="text-xs text-slate-500 ml-2">Rs. {status.fee}</span>
                         </div>
                         {status.isPaid ? (
-                          <span className="flex items-center text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-md text-xs">
+                          <span className="flex items-center text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-md text-xs">
                             <CheckCircle2 size={14} className="mr-1" /> Paid
                           </span>
                         ) : (
-                          <span className="flex items-center text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md text-xs">
-                            Unpaid
-                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedClass(status.classId);
+                              setAmount(status.fee);
+                            }}
+                            className="flex items-center gap-1 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-2.5 py-1 rounded-md transition-all cursor-pointer shadow-sm active:scale-95"
+                          >
+                            <AlertCircle size={14} /> Unpaid (ණය) - Pay Now
+                          </button>
                         )}
                       </div>
                     ))}
@@ -259,9 +266,38 @@ Thank you for your cooperation!
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Payment For Class</label>
               <Select
-                value={selectedClass ? { value: selectedClass, label: classesList.find(c => c.classId === selectedClass)?.name || '' } : null}
-                onChange={(selectedOption) => setSelectedClass(selectedOption.value)}
-                options={classesList.map(c => ({ value: c.classId, label: `${c.name} (${c.teacherName}) - Rs. ${c.fee}` }))}
+                value={selectedClass ? (() => {
+                  const c = classesList.find(cls => cls.classId === selectedClass);
+                  if (!c) return null;
+                  const isAL = String(c.name || '').toLowerCase().includes('12') || 
+                               String(c.name || '').toLowerCase().includes('13') || 
+                               String(c.name || '').toLowerCase().includes('a/l') || 
+                               String(c.name || '').toLowerCase().includes('al');
+                  const isWeekly = c.feeType === 'weekly' || (!c.feeType && !isAL);
+                  return {
+                    value: c.classId,
+                    label: `${c.name} (${c.teacherName}) - ${isWeekly ? 'Weekly Fee' : 'Monthly Fee'}: Rs. ${c.fee}`
+                  };
+                })() : null}
+                onChange={(selectedOption) => {
+                  setSelectedClass(selectedOption.value);
+                  if (selectedOption?.fee) {
+                    setAmount(selectedOption.fee);
+                  }
+                }}
+                options={classesList.map(c => {
+                  const isAL = String(c.name || '').toLowerCase().includes('12') || 
+                               String(c.name || '').toLowerCase().includes('13') || 
+                               String(c.name || '').toLowerCase().includes('a/l') || 
+                               String(c.name || '').toLowerCase().includes('al');
+                  const isWeekly = c.feeType === 'weekly' || (!c.feeType && !isAL);
+                  return {
+                    value: c.classId,
+                    label: `${c.name} (${c.teacherName}) - ${isWeekly ? 'Weekly Fee' : 'Monthly Fee'}: Rs. ${c.fee}`,
+                    fee: c.fee,
+                    isWeekly
+                  };
+                })}
                 placeholder="Select a class"
                 styles={{
                   control: (base, state) => ({
