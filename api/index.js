@@ -1722,13 +1722,17 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
       const feeType = cls.feeType || (isAL ? 'monthly' : 'weekly');
       const isWeekly = feeType === 'weekly' || !isAL;
       const displayFee = isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500);
+      const expectedCut = isWeekly ? Math.round(classIncome / 4) : Math.round(classIncome);
 
       classes.push({
         ...cls,
         classId: classDoc.id,
         feeType: isWeekly ? 'weekly' : 'monthly',
         displayFee,
+        feeUnit: isWeekly ? 'session' : 'mo',
         studentsCount: studentCount,
+        expectedCut,
+        cutUnit: isWeekly ? 'week' : 'mo',
         expectedIncome: Math.round(classIncome)
       });
     }

@@ -96,7 +96,9 @@ const TeacherDashboard = () => {
                 const isAL = gradeStr.includes('12') || gradeStr.includes('13') || gradeStr.includes('a/l') || gradeStr.includes('al') || nameLower.includes('al') || nameLower.includes('a/l') || nameLower.includes('combined');
                 const isWeekly = cls.feeType === 'weekly' || !isAL;
                 const displayFee = cls.displayFee || (isWeekly ? (cls.weeklyFee || Math.round((cls.fee || 1000) / 4)) : (cls.fee || 2500));
-                const feeUnit = isWeekly ? 'session' : 'mo';
+                const feeUnit = cls.feeUnit || (isWeekly ? 'session' : 'mo');
+                const expectedCut = cls.expectedCut !== undefined ? cls.expectedCut : (isWeekly ? Math.round((cls.expectedIncome || 0) / 4) : (cls.expectedIncome || 0));
+                const cutUnit = cls.cutUnit || (isWeekly ? 'week' : 'mo');
 
                 return (
                   <div key={cls.classId} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col justify-between">
@@ -117,7 +119,9 @@ const TeacherDashboard = () => {
                       </div>
                       <div className="text-right">
                         <p className="text-xs font-bold text-slate-500 uppercase">Est. Cut ({commPct}%)</p>
-                        <p className="font-black text-violet-700">Rs. {cls.expectedIncome.toLocaleString()}</p>
+                        <p className="font-black text-violet-700">
+                          Rs. {expectedCut.toLocaleString()} <span className="text-[10px] text-violet-400 font-medium">/{cutUnit}</span>
+                        </p>
                       </div>
                     </div>
                   </div>
