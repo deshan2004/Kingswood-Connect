@@ -93,7 +93,9 @@ function getGradeFeeStructure(item) {
     customFee = item.fee ? Number(item.fee) : (item.weeklyFee ? Number(item.weeklyFee) : null);
   }
 
-  const fullText = `${nameStr} ${gradeStr}`;
+  // Strip 4-digit years (e.g. 2025, 2026, 2027) so 2027 doesn't match '2' as Grade 2!
+  const fullText = `${nameStr} ${gradeStr}`.replace(/\b202[0-9]\b/g, '').replace(/general/g, '');
+
   const numbers = fullText.match(/\b(1[0-3]|[1-9])\b/g);
   let gradeNum = null;
   if (numbers && numbers.length > 0) {
@@ -106,26 +108,26 @@ function getGradeFeeStructure(item) {
     isWeekly = true;
   } else if (feeTypeOverride === 'monthly') {
     isWeekly = false;
-  } else if (gradeNum !== null) {
-    // Grade 1-11 = Weekly; Grade 12-13 = Monthly
-    if (gradeNum >= 1 && gradeNum <= 11) {
-      isWeekly = true;
-    } else if (gradeNum >= 12 && gradeNum <= 13) {
-      isWeekly = false;
-    }
-    const cleanText = fullText.replace(/general/g, '');
-    const isALText = cleanText.includes('12') || 
-                     cleanText.includes('13') || 
-                     cleanText.includes('a/l') || 
-                     cleanText.includes('al') || 
-                     cleanText.includes('combined') || 
-                     cleanText.includes('maths') || 
-                     cleanText.includes('biology') || 
-                     cleanText.includes('physics') || 
-                     cleanText.includes('chemistry') || 
-                     cleanText.includes('chem') || 
-                     cleanText.includes('bio') || 
-                     cleanText.includes('advanced');
+  } else if (gradeNum !== null && gradeNum >= 1 && gradeNum <= 11) {
+    // Explicit Grade 1 to 11 -> Weekly
+    isWeekly = true;
+  } else if (gradeNum !== null && gradeNum >= 12 && gradeNum <= 13) {
+    // Explicit Grade 12 to 13 -> Monthly A/L
+    isWeekly = false;
+  } else {
+    // Keyword based check for A/L vs Primary/Secondary
+    const isALText = fullText.includes('12') || 
+                     fullText.includes('13') || 
+                     fullText.includes('a/l') || 
+                     fullText.includes('al') || 
+                     fullText.includes('combined') || 
+                     fullText.includes('maths') || 
+                     fullText.includes('biology') || 
+                     fullText.includes('physics') || 
+                     fullText.includes('chemistry') || 
+                     fullText.includes('chem') || 
+                     fullText.includes('bio') || 
+                     fullText.includes('advanced');
     isWeekly = !isALText;
   }
 
