@@ -48,7 +48,7 @@ const Teachers = () => {
           role: 'teacher',
           contact: newTeacher.contact,
           subject: newTeacher.subject,
-          commissionRate: newTeacher.commissionRate
+          commissionRate: newTeacher.commissionRate / 100
         });
       }
       setShowModal(false);
@@ -70,7 +70,7 @@ const Teachers = () => {
       password: '', // Not editable via this modal
       contact: teacher.contact,
       subject: teacher.subject,
-      commissionRate: (teacher.commissionRate || 0) * 100
+      commissionRate: teacher.commissionRate > 1 ? teacher.commissionRate : Math.round((teacher.commissionRate || 0.5) * 100)
     });
     setShowModal(true);
   };

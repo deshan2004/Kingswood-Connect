@@ -82,35 +82,38 @@ const TeacherDashboard = () => {
             <h3 className="text-lg font-bold text-slate-800">My Classes & Commission Breakdown</h3>
           </div>
           <div className="text-sm font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-            Rate: {data.teacher.commissionRate * 100}%
+            Rate: {Math.round((data.teacher?.commissionRate > 1 ? data.teacher.commissionRate / 100 : (data.teacher?.commissionRate || 0.5)) * 100)}%
           </div>
         </div>
         
         <div className="p-6">
           {data.classes.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {data.classes.map((cls) => (
-                <div key={cls.classId} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col justify-between">
-                  <div>
-                    <h4 className="font-bold text-slate-800 text-lg mb-1">{cls.name}</h4>
-                    <p className="text-sm font-medium text-slate-500 mb-4">{cls.schedule} • Grade: {cls.grade}</p>
-                  </div>
-                  <div className="flex items-center justify-between mt-2 pt-4 border-t border-slate-200 border-dashed">
+              {data.classes.map((cls) => {
+                const commPct = Math.round((data.teacher?.commissionRate > 1 ? data.teacher.commissionRate / 100 : (data.teacher?.commissionRate || 0.5)) * 100);
+                return (
+                  <div key={cls.classId} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col justify-between">
                     <div>
-                      <p className="text-xs font-bold text-slate-500 uppercase">Students</p>
-                      <p className="font-bold text-slate-700">{cls.studentsCount}</p>
+                      <h4 className="font-bold text-slate-800 text-lg mb-1">{cls.name}</h4>
+                      <p className="text-sm font-medium text-slate-500 mb-4">{cls.schedule} • Grade: {cls.grade}</p>
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-500 uppercase">Class Fee</p>
-                      <p className="font-bold text-slate-700">Rs. {cls.fee}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs font-bold text-slate-500 uppercase">Est. Cut</p>
-                      <p className="font-black text-violet-700">Rs. {cls.expectedIncome.toLocaleString()}</p>
+                    <div className="flex items-center justify-between mt-2 pt-4 border-t border-slate-200 border-dashed">
+                      <div>
+                        <p className="text-xs font-bold text-slate-500 uppercase">Students</p>
+                        <p className="font-bold text-slate-700">{cls.studentsCount}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-500 uppercase">Class Fee</p>
+                        <p className="font-bold text-slate-700">Rs. {cls.fee}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs font-bold text-slate-500 uppercase">Est. Cut ({commPct}%)</p>
+                        <p className="font-black text-violet-700">Rs. {cls.expectedIncome.toLocaleString()}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center text-slate-400 py-12">

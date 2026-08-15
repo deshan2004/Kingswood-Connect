@@ -99,6 +99,39 @@ function getStudentFeeDefaults(grade, reqFeeType, reqDefaultFee) {
   return { feeBasis, defaultFee: fee };
 }
 
+// Helper to normalize teacher commission rate (e.g. 50 -> 0.5, 0.5 -> 0.5)
+function getNormalizedCommissionRate(rawRate) {
+  if (typeof rawRate !== 'number' || isNaN(rawRate)) return 0.5;
+  return rawRate > 1 ? rawRate / 100 : rawRate;
+}
+
+// Helper to calculate a student's monthly class fee taking into account class fee, custom student fee, and cardType
+function calculateStudentMonthlyFee(student, classData) {
+  const clsFee = typeof classData?.fee === 'number' && classData.fee > 0 ? classData.fee : 0;
+  let monthlyFee = 0;
+  
+  if (typeof student.defaultFee === 'number' && student.defaultFee > 0) {
+    if (student.feeType === 'weekly' && student.defaultFee < clsFee) {
+      monthlyFee = student.defaultFee * 4;
+    } else {
+      monthlyFee = student.defaultFee;
+    }
+  } else if (clsFee > 0) {
+    monthlyFee = clsFee;
+  } else {
+    const defaults = getStudentFeeDefaults(student.grade, student.feeType, student.defaultFee);
+    monthlyFee = defaults.feeBasis === 'weekly' ? defaults.defaultFee * 4 : defaults.defaultFee;
+  }
+
+  if (student.cardType === 'free') {
+    return 0;
+  } else if (student.cardType === 'half') {
+    return monthlyFee / 2;
+  }
+  
+  return monthlyFee;
+}
+
 // 1. Register a new student
 app.post('/api/students', async (req, res) => {
   try {
@@ -986,7 +1019,8 @@ app.post('/api/teachers', async (req, res) => {
   try {
     const { name, subject, contact, commissionRate } = req.body;
     const teacherId = generateId('TCH');
-    const teacherData = { teacherId, name, subject, contact, commissionRate: parseFloat(commissionRate) || 0, createdAt: new Date().toISOString() };
+    const commRate = getNormalizedCommissionRate(parseFloat(commissionRate));
+    const teacherData = { teacherId, name, subject, contact, commissionRate: commRate, createdAt: new Date().toISOString() };
     await db.collection('teachers').doc(teacherId).set(teacherData);
     res.status(201).json(teacherData);
   } catch (error) {
@@ -1043,7 +1077,7 @@ app.put('/api/teachers/:id', async (req, res) => {
       name, 
       subject, 
       contact, 
-      commissionRate: parseFloat(commissionRate) || 0,
+      commissionRate: getNormalizedCommissionRate(parseFloat(commissionRate)),
       updatedAt: new Date().toISOString() 
     };
     await db.collection('teachers').doc(teacherId).update(updateData);
@@ -1053,6 +1087,7 @@ app.put('/api/teachers/:id', async (req, res) => {
     res.status(500).json({ error: error.message || 'Failed to update teacher' });
   }
 });
+
 // Get all teachers with commission calculations
 app.get('/api/teachers/commission', async (req, res) => {
   try {
@@ -1062,6 +1097,7 @@ app.get('/api/teachers/commission', async (req, res) => {
     for (const doc of snapshot.docs) {
       const teacher = doc.data();
       const teacherId = teacher.teacherId;
+      const commRate = getNormalizedCommissionRate(teacher.commissionRate);
       
       // Fetch classes for this teacher
       const classSnap = await db.collection('classes').where('teacherId', '==', teacherId).get();
@@ -1070,7 +1106,6 @@ app.get('/api/teachers/commission', async (req, res) => {
 
       for (const classDoc of classSnap.docs) {
         const classData = classDoc.data();
-        const classFee = classData.fee || 0;
         
         // Count students enrolled in this class
         const studentSnap = await db.collection('students')
@@ -1078,25 +1113,16 @@ app.get('/api/teachers/commission', async (req, res) => {
         
         totalStudents += studentSnap.size;
 
-        const rawComm = teacher.commissionRate;
-        const commRate = typeof rawComm === 'number' 
-          ? (rawComm > 1 ? rawComm / 100 : rawComm) 
-          : 0.5;
-
         studentSnap.forEach(sDoc => {
           const s = sDoc.data();
-          let baseFee = (typeof s.defaultFee === 'number' && s.defaultFee > 0) ? s.defaultFee : classFee;
-          if (s.cardType === 'free') {
-            baseFee = 0;
-          } else if (s.cardType === 'half') {
-            baseFee = baseFee / 2;
-          }
-          expectedIncome += baseFee * commRate;
+          const studentMonthlyFee = calculateStudentMonthlyFee(s, classData);
+          expectedIncome += studentMonthlyFee * commRate;
         });
       }
 
       teachers.push({
         ...teacher,
+        commissionRate: commRate,
         students: totalStudents,
         expectedIncome: Math.round(expectedIncome)
       });
@@ -1211,12 +1237,13 @@ app.post('/api/auth/signup', async (req, res) => {
       await db.collection('students').doc(studentId).set(studentData);
     } else if (role === 'teacher') {
       const teacherId = generateId('TCH');
+      const commRate = getNormalizedCommissionRate(parseFloat(req.body.commissionRate));
       const teacherData = {
         teacherId,
         name,
         subject: req.body.subject || 'General',
         contact: email,
-        commissionRate: req.body.commissionRate ? parseFloat(req.body.commissionRate) : 50,
+        commissionRate: commRate,
         createdAt: new Date().toISOString()
       };
       await db.collection('teachers').doc(teacherId).set(teacherData);
@@ -1615,6 +1642,7 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
     }
     
     const teacherData = teacherDoc.data();
+    const commissionRate = getNormalizedCommissionRate(teacherData.commissionRate);
     const classSnap = await db.collection('classes').where('teacherId', '==', teacherId).get();
     
     let totalStudents = 0;
@@ -1627,23 +1655,11 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
       const studentCount = studentSnap.size;
       
       let classIncome = 0;
-      const commissionRate = typeof teacherData.commissionRate === 'number' ? teacherData.commissionRate : 0.7;
 
       studentSnap.forEach(sDoc => {
         const s = sDoc.data();
-        const defaults = getStudentFeeDefaults(s.grade, s.feeType, s.defaultFee);
-        const fType = s.feeType || defaults.feeBasis;
-        let baseFee = typeof s.defaultFee === 'number' ? s.defaultFee : (cls.fee || defaults.defaultFee);
-
-        if (s.cardType === 'free') {
-          baseFee = 0;
-        } else if (s.cardType === 'half') {
-          baseFee = baseFee / 2;
-        }
-
-        // Multiply weekly session fee by 4 for estimated monthly class income
-        const monthlyStudentFee = fType === 'weekly' ? baseFee * 4 : baseFee;
-        classIncome += monthlyStudentFee * commissionRate;
+        const studentMonthlyFee = calculateStudentMonthlyFee(s, cls);
+        classIncome += studentMonthlyFee * commissionRate;
       });
       
       totalStudents += studentCount;
@@ -1658,14 +1674,17 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
     }
 
     res.json({
-      teacher: teacherData,
+      teacher: {
+        ...teacherData,
+        commissionRate
+      },
       totalStudents,
-      expectedIncome,
+      expectedIncome: Math.round(expectedIncome),
       classes
     });
   } catch (error) {
-    console.error('Teacher dashboard error:', error);
-    res.status(500).json({ error: 'Failed to load teacher dashboard' });
+    console.error('Error fetching teacher dashboard:', error);
+    res.status(500).json({ error: 'Failed to fetch teacher dashboard data' });
   }
 });
 
