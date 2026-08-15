@@ -367,7 +367,7 @@ const Scanner = () => {
             </div>
             
             {/* FEE ALERT UI FOR MONTHLY DUES */}
-            {scanResult.paymentAlert?.outstanding && (
+            {scanResult.student?.feeType === 'monthly' && scanResult.paymentAlert?.outstanding && (
               <div className="bg-rose-600 border border-rose-700 text-white px-6 py-4 rounded-2xl relative flex items-start shadow-xl shadow-rose-500/30">
                 <XOctagon className="w-7 h-7 text-white mr-4 shrink-0 mt-0.5" />
                 <div>

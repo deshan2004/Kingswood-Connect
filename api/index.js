@@ -580,12 +580,12 @@ async function processAttendanceScan(studentId, classId, paidToday = false, amou
   const dayOfMonth = todayDate.getDate();
   
   let paymentStatus = { outstanding: false, message: 'Fees up to date' };
-  if (cardType !== 'free' && !monthlyPaid && feeStatus !== 'Paid') {
+  if (feeType === 'monthly' && cardType !== 'free' && !monthlyPaid && feeStatus !== 'Paid (Monthly)') {
     if (dayOfMonth >= 15) {
-      paymentStatus = { outstanding: true, message: `Fees pending for ${classData.name} (${currentMonth})` };
+      paymentStatus = { outstanding: true, message: `Monthly fees pending for ${classData.name} (${currentMonth})` };
     } else {
       // Grace period until 15th
-      paymentStatus = { outstanding: false, message: `Grace Period: Fees pending for ${currentMonth}` };
+      paymentStatus = { outstanding: false, message: `Grace Period: Monthly fees pending for ${currentMonth}` };
     }
   }
 
