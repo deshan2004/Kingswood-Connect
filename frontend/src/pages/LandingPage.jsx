@@ -63,13 +63,53 @@ const getEmbedVideoUrl = (url) => {
   return url.includes('?') ? `${url}&autoplay=1&mute=1` : `${url}?autoplay=1&mute=1`;
 };
 
-const extractMapUrl = (url) => {
-  if (!url) return '';
-  if (url.includes('src=')) {
-    const match = url.match(/src=["']([^"']+)["']/);
-    if (match && match[1]) return match[1];
+const getUniversalGoogleMapEmbed = (url) => {
+  if (!url || typeof url !== 'string') {
+    return 'https://maps.google.com/maps?q=Kingswood%20College%2C%20Peradeniya%20Road%2C%20Kandy&t=&z=16&ie=UTF8&iwloc=&output=embed';
   }
-  return url.trim();
+  let str = url.trim();
+
+  // 1. If user pasted full <iframe src="..."> tag:
+  if (str.includes('src=')) {
+    const match = str.match(/src=["']([^"']+)["']/);
+    if (match && match[1]) str = match[1];
+  }
+
+  // 2. If it's already an official embed URL (/maps/embed) with valid parameters:
+  if (str.includes('google.com/maps/embed') && str.length > 50 && !str.endsWith('3d7.29')) {
+    return str;
+  }
+
+  // 3. If it's a regular Google Maps Place/Search URL (e.g. /maps/place/Name/@lat,lng,... or maps?q=...):
+  if (str.includes('google.com/maps') || str.includes('maps.app.goo.gl') || str.includes('maps.google.com')) {
+    // Check if place name is inside URL e.g. /place/Ananda+tailoring+center/
+    if (str.includes('/place/')) {
+      const placeSegment = str.split('/place/')[1];
+      if (placeSegment) {
+        const placeName = placeSegment.split('/')[0];
+        if (placeName) {
+          const cleanName = decodeURIComponent(placeName).replace(/\+/g, ' ');
+          return `https://maps.google.com/maps?q=${encodeURIComponent(cleanName)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+        }
+      }
+    }
+
+    // Check if lat/lng coordinates are in URL e.g. @7.1220109,80.2872696
+    const coordMatch = str.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (coordMatch) {
+      return `https://maps.google.com/maps?q=${coordMatch[1]},${coordMatch[2]}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+    }
+
+    // Fallback for any other Google Maps share link:
+    return `https://maps.google.com/maps?q=${encodeURIComponent(str)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+  }
+
+  // 4. If user typed a plain location or address:
+  if (str.length > 2) {
+    return `https://maps.google.com/maps?q=${encodeURIComponent(str)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+  }
+
+  return 'https://maps.google.com/maps?q=Kingswood%20College%2C%20Peradeniya%20Road%2C%20Kandy&t=&z=16&ie=UTF8&iwloc=&output=embed';
 };
 
 const FacebookIcon = () => (
@@ -1203,18 +1243,15 @@ const LandingPage = () => {
 
           {/* Google Maps Location Embed & Timetable Download */}
           {(() => {
-            const mapsUrl = cmsSettings?.googleMapsUrl;
-            const isValidMapsUrl = mapsUrl && mapsUrl.includes('google.com/maps/embed') && mapsUrl.length > 50 && !mapsUrl.endsWith('3d7.29');
-            const finalMapsUrl = isValidMapsUrl 
-              ? mapsUrl 
-              : 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.514785461937!2d80.6288673147748!3d7.284698994742095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae3662bb1e2cfeb%3A0x6b87d55df2a9b36d!2sKingswood%20College%2C%20Kandy!5e0!3m2!1sen!2slk!4v1700000000000';
+            const rawUrl = cmsSettings?.googleMapsUrl;
+            const finalMapsUrl = getUniversalGoogleMapEmbed(rawUrl);
             
             return (
-              <div className="mt-12 rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white p-2">
+              <div className="mt-8 max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-white p-2">
                 <iframe
                   src={finalMapsUrl}
                   title="Kingswood Connect Location"
-                  className="w-full h-72 rounded-2xl border-0"
+                  className="w-full h-56 sm:h-64 rounded-2xl border-0"
                   loading="lazy"
                   allowFullScreen
                 />
