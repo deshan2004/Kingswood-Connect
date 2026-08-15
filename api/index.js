@@ -105,27 +105,28 @@ function getNormalizedCommissionRate(rawRate) {
   return rawRate > 1 ? rawRate / 100 : rawRate;
 }
 
-// Helper to calculate a student's monthly class fee taking into account class fee, custom student fee, and cardType
+// Helper to calculate a student's monthly class fee taking into account class fee, custom student fee, feeType (weekly vs monthly), and cardType
 function calculateStudentMonthlyFee(student, classData) {
-  const clsFee = typeof classData?.fee === 'number' && classData.fee > 0 ? classData.fee : 0;
-  let monthlyFee = 0;
-  
-  if (typeof student.defaultFee === 'number' && student.defaultFee > 0) {
-    if (student.feeType === 'weekly' && student.defaultFee < clsFee) {
-      monthlyFee = student.defaultFee * 4;
-    } else {
-      monthlyFee = student.defaultFee;
-    }
-  } else if (clsFee > 0) {
-    monthlyFee = clsFee;
+  const gradeStr = String(classData?.grade || student?.grade || '').toLowerCase();
+  const isAL = gradeStr.includes('12') || gradeStr.includes('13') || gradeStr.includes('a/l') || gradeStr.includes('al');
+  const feeType = classData?.feeType || student?.feeType || (isAL ? 'monthly' : 'weekly');
+
+  let baseFee = 0;
+  if (typeof student?.defaultFee === 'number' && student.defaultFee > 0) {
+    baseFee = student.defaultFee;
+  } else if (typeof classData?.fee === 'number' && classData.fee > 0) {
+    baseFee = classData.fee;
   } else {
-    const defaults = getStudentFeeDefaults(student.grade, student.feeType, student.defaultFee);
-    monthlyFee = defaults.feeBasis === 'weekly' ? defaults.defaultFee * 4 : defaults.defaultFee;
+    const defaults = getStudentFeeDefaults(student?.grade || classData?.grade, feeType);
+    baseFee = defaults.defaultFee;
   }
 
-  if (student.cardType === 'free') {
+  // Grade 1 to 11 are collected weekly on attendance day (4 sessions per month)
+  let monthlyFee = feeType === 'weekly' ? baseFee * 4 : baseFee;
+
+  if (student?.cardType === 'free') {
     return 0;
-  } else if (student.cardType === 'half') {
+  } else if (student?.cardType === 'half') {
     return monthlyFee / 2;
   }
   
@@ -1665,9 +1666,14 @@ app.get('/api/teacher/:id/dashboard', async (req, res) => {
       totalStudents += studentCount;
       expectedIncome += classIncome;
       
+      const gradeStr = String(cls.grade || '').toLowerCase();
+      const isAL = gradeStr.includes('12') || gradeStr.includes('13') || gradeStr.includes('a/l') || gradeStr.includes('al');
+      const feeType = cls.feeType || (isAL ? 'monthly' : 'weekly');
+
       classes.push({
         ...cls,
         classId: classDoc.id,
+        feeType,
         studentsCount: studentCount,
         expectedIncome: Math.round(classIncome)
       });

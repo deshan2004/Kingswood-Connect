@@ -104,7 +104,9 @@ const TeacherDashboard = () => {
                       </div>
                       <div>
                         <p className="text-xs font-bold text-slate-500 uppercase">Class Fee</p>
-                        <p className="font-bold text-slate-700">Rs. {cls.fee}</p>
+                        <p className="font-bold text-slate-700">
+                          Rs. {cls.fee} <span className="text-[10px] text-slate-400 font-medium">/{cls.feeType === 'monthly' ? 'mo' : 'session'}</span>
+                        </p>
                       </div>
                       <div className="text-right">
                         <p className="text-xs font-bold text-slate-500 uppercase">Est. Cut ({commPct}%)</p>
