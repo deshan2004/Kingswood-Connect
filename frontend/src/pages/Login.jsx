@@ -307,9 +307,23 @@ const Login = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Password
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResetIdentifier(identifier);
+                      setIsResetMode(true);
+                      setError('');
+                      setResetSuccess('');
+                    }}
+                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline transition-colors"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
                     <Key size={18} />
