@@ -1357,7 +1357,7 @@ const SettingsPage = () => {
                         <input
                           type="checkbox"
                           id="showAnnouncement"
-                          checked={cmsData.showAnnouncement !== false}
+                          checked={cmsData.showAnnouncement === true}
                           onChange={(e) => setCmsData({ ...cmsData, showAnnouncement: e.target.checked })}
                           className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500"
                         />

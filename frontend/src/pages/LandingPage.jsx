@@ -437,7 +437,7 @@ const LandingPage = () => {
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-600 selection:text-white relative overflow-x-clip">
 
       {/* Emergency Announcement Bar */}
-      {cmsSettings?.showAnnouncement !== false && (cmsSettings?.announcementText || '🚀 New G.C.E. O/L & A/L 2026/2027 Batches Registration Now Open! Enroll Online Today.') && (
+      {cmsSettings?.showAnnouncement === true && (
         <div className="bg-gradient-to-r from-indigo-950 via-indigo-800 to-blue-950 text-white text-xs font-bold py-2.5 px-4 text-center border-b border-indigo-700/50 flex items-center justify-center gap-2 relative z-50 shadow-md">
           <Sparkles size={16} className="text-amber-400 shrink-0 animate-pulse" />
           <span>{cmsSettings?.announcementText || '🚀 New G.C.E. O/L & A/L 2026/2027 Batches Registration Now Open! Enroll Online Today.'}</span>
