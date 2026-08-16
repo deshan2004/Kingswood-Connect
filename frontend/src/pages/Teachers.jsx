@@ -46,12 +46,21 @@ const Teachers = () => {
       return;
     }
 
+    let finalEmail = (newTeacher.email || '').trim();
+    if (!finalEmail && newTeacher.contact) {
+      finalEmail = newTeacher.contact.trim();
+    }
+    if (finalEmail && !finalEmail.includes('@')) {
+      const cleanPhone = finalEmail.replace(/[^0-9a-zA-Z]/g, '');
+      finalEmail = `${cleanPhone}@kingswood.edu`;
+    }
+
     setSubmitting(true);
     try {
       if (editingTeacher) {
         await axios.put(`${API_URL}/teachers/${editingTeacher.teacherId}`, {
           name: newTeacher.name,
-          email: newTeacher.email,
+          email: finalEmail,
           password: newTeacher.password,
           contact: newTeacher.contact,
           subject: newTeacher.subject,
@@ -60,7 +69,7 @@ const Teachers = () => {
       } else {
         await axios.post(`${API_URL}/auth/signup`, {
           name: newTeacher.name,
-          email: newTeacher.email,
+          email: finalEmail,
           password: newTeacher.password,
           role: 'teacher',
           contact: newTeacher.contact,
@@ -196,7 +205,7 @@ const Teachers = () => {
       {/* Add Teacher Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full relative animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto relative animate-in zoom-in-95 duration-200">
             <button 
               onClick={() => setShowModal(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition-colors"
@@ -221,14 +230,14 @@ const Teachers = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Email</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Email or Phone Number</label>
                 <input 
-                  type="email" 
+                  type="text" 
                   required={!editingTeacher} // Only required when adding
                   value={newTeacher.email}
                   onChange={(e) => setNewTeacher({...newTeacher, email: e.target.value})}
                   className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                  placeholder={editingTeacher ? "Leave blank to keep unchanged" : "e.g. nimal@example.com"}
+                  placeholder={editingTeacher ? "Leave blank to keep unchanged" : "e.g. nimal@example.com or 0771234567"}
                 />
               </div>
               <div>

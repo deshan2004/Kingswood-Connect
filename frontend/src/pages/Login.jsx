@@ -103,8 +103,9 @@ const Login = () => {
 
     try {
       let loginEmail = identifier.trim().toLowerCase();
-      if (loginEmail.startsWith('kws-') && !loginEmail.includes('@')) {
-        loginEmail = `${loginEmail}@kingswood.edu`;
+      if (!loginEmail.includes('@')) {
+        const cleanId = loginEmail.replace(/[^0-9a-z-]/g, '');
+        loginEmail = `${cleanId}@kingswood.edu`;
       }
 
       // Direct Login for Admin, Teachers, and Students
