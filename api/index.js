@@ -2253,54 +2253,85 @@ app.get('/api/landing-settings', async (req, res) => {
   }
 });
 
-// Dedicated Endpoint to handle Media/Video Uploads to Server Uploads Directory
-const handleMediaUpload = (req, res) => {
+// Dedicated Endpoint to handle Media/Video Uploads (Vercel Serverless & Local Compatible)
+const handleMediaUpload = async (req, res) => {
   try {
     const { fileData, fileName, fileType } = req.body;
     if (!fileData) {
       return res.status(400).json({ error: 'No file data provided' });
     }
 
-    const matches = fileData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
     let buffer;
-    let ext = 'mp4';
+    let mimeType = fileType || 'video/mp4';
 
-    if (matches && matches.length === 3) {
-      const mime = matches[1];
-      ext = mime.split('/')[1] || 'mp4';
-      buffer = Buffer.from(matches[2], 'base64');
+    if (typeof fileData === 'string' && fileData.startsWith('data:')) {
+      const matches = fileData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        mimeType = matches[1];
+        buffer = Buffer.from(matches[2], 'base64');
+      } else {
+        const cleanBase64 = fileData.replace(/^data:(video|image)\/\w+;base64,/, '');
+        buffer = Buffer.from(cleanBase64, 'base64');
+      }
     } else {
-      const cleanBase64 = fileData.replace(/^data:(video|image)\/\w+;base64,/, '');
+      const cleanBase64 = String(fileData).replace(/^data:(video|image)\/\w+;base64,/, '');
       buffer = Buffer.from(cleanBase64, 'base64');
     }
 
-    const uploadsDir = path.join(__dirname, 'uploads');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
+    const mediaId = `media_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const ext = mimeType.split('/')[1] || 'mp4';
 
-    const safeName = `media_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
-    const filePath = path.join(uploadsDir, safeName);
-
-    fs.writeFileSync(filePath, buffer);
-
-    // Also copy to frontend public directory if running in local dev mode
+    // 1. Safely attempt local disk write if environment allows it (e.g. local dev server)
     try {
-      const devPublicUploads = path.join(__dirname, '../frontend/public/uploads');
-      if (fs.existsSync(path.join(__dirname, '../frontend/public'))) {
-        if (!fs.existsSync(devPublicUploads)) {
-          fs.mkdirSync(devPublicUploads, { recursive: true });
-        }
-        fs.writeFileSync(path.join(devPublicUploads, safeName), buffer);
+      const uploadsDir = path.join(__dirname, 'uploads');
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
       }
+      fs.writeFileSync(path.join(uploadsDir, `${mediaId}.${ext}`), buffer);
     } catch (e) {
-      // Ignore if dev dir is missing
+      // Ignore read-only filesystem errors on Vercel
     }
 
-    const publicUrl = `/uploads/${safeName}`;
-    console.log(`Saved uploaded media file (${(buffer.length / 1024 / 1024).toFixed(2)} MB) to ${publicUrl}`);
+    // 2. Store in Firestore collection 'media' (Chunked if > 700KB for serverless compliance)
+    const CHUNK_SIZE = 700 * 1024;
 
-    return res.json({ success: true, url: publicUrl, size: buffer.length });
+    if (buffer.length <= CHUNK_SIZE) {
+      await db.collection('media').doc(mediaId).set({
+        mediaId,
+        mimeType,
+        ext,
+        size: buffer.length,
+        data: buffer.toString('base64'),
+        chunked: false,
+        createdAt: new Date().toISOString()
+      });
+    } else {
+      const totalChunks = Math.ceil(buffer.length / CHUNK_SIZE);
+      await db.collection('media').doc(mediaId).set({
+        mediaId,
+        mimeType,
+        ext,
+        size: buffer.length,
+        chunked: true,
+        totalChunks,
+        createdAt: new Date().toISOString()
+      });
+
+      for (let i = 0; i < totalChunks; i++) {
+        const start = i * CHUNK_SIZE;
+        const end = Math.min(buffer.length, start + CHUNK_SIZE);
+        const chunkBuffer = buffer.slice(start, end);
+        await db.collection('media').doc(mediaId).collection('chunks').doc(String(i)).set({
+          index: i,
+          data: chunkBuffer.toString('base64')
+        });
+      }
+    }
+
+    const publicUrl = `/api/media/${mediaId}`;
+    console.log(`Successfully stored media ${mediaId} (${(buffer.length / 1024 / 1024).toFixed(2)} MB) to Firestore & Storage`);
+
+    return res.json({ success: true, url: publicUrl, size: buffer.length, mediaId });
   } catch (error) {
     console.error('Error uploading media file:', error);
     return res.status(500).json({ error: 'Failed to upload media file: ' + error.message });
@@ -2309,6 +2340,55 @@ const handleMediaUpload = (req, res) => {
 
 app.post('/api/upload-media', handleMediaUpload);
 app.post('/upload-media', handleMediaUpload);
+
+// Streaming Media Endpoint (Serves videos & images directly from Firestore/Disk)
+const handleMediaServe = async (req, res) => {
+  try {
+    const { mediaId } = req.params;
+    if (!mediaId) return res.status(400).send('Media ID required');
+
+    // 1. Check local disk first
+    const uploadsDir = path.join(__dirname, 'uploads');
+    const possibleFiles = ['mp4', 'webm', 'mov', 'jpg', 'png', 'webp', 'jpeg'];
+    for (const ext of possibleFiles) {
+      const diskPath = path.join(uploadsDir, `${mediaId}.${ext}`);
+      if (fs.existsSync(diskPath)) {
+        return res.sendFile(diskPath);
+      }
+    }
+
+    // 2. Fetch from Firestore
+    const docSnap = await db.collection('media').doc(mediaId).get();
+    if (!docSnap.exists) {
+      return res.status(404).send('Media file not found');
+    }
+
+    const mediaData = docSnap.data();
+    res.setHeader('Content-Type', mediaData.mimeType || 'video/mp4');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+
+    if (!mediaData.chunked) {
+      const buffer = Buffer.from(mediaData.data, 'base64');
+      return res.send(buffer);
+    }
+
+    // Reconstruct chunked media
+    const chunksSnap = await db.collection('media').doc(mediaId).collection('chunks').orderBy('index').get();
+    const chunkBuffers = [];
+    chunksSnap.forEach(doc => {
+      chunkBuffers.push(Buffer.from(doc.data().data, 'base64'));
+    });
+
+    const fullBuffer = Buffer.concat(chunkBuffers);
+    return res.send(fullBuffer);
+  } catch (error) {
+    console.error('Error serving media file:', error);
+    return res.status(500).send('Error retrieving media file');
+  }
+};
+
+app.get('/api/media/:mediaId', handleMediaServe);
+app.get('/media/:mediaId', handleMediaServe);
 
 // Helper function to auto-extract any base64 media strings into disk files to prevent Firestore 1MB document errors
 const processBase64MediaFields = (data) => {

@@ -40,7 +40,7 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const getEmbedVideoUrl = (url) => {
   if (!url) return 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ';
-  if (url.startsWith('data:video') || url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov')) return url;
+  if (url.startsWith('data:video') || url.includes('/api/media/') || url.includes('/uploads/') || url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov')) return url;
   
   let videoId = '';
   if (url.includes('youtube.com/watch?v=')) {
@@ -1375,7 +1375,7 @@ const LandingPage = () => {
               </button>
             </div>
             <div className="p-4 bg-slate-950 aspect-video relative flex items-center justify-center">
-              {selectedTeacherVideo.videoUrl && (selectedTeacherVideo.videoUrl.startsWith('data:video') || selectedTeacherVideo.videoUrl.endsWith('.mp4') || selectedTeacherVideo.videoUrl.endsWith('.webm') || selectedTeacherVideo.videoUrl.endsWith('.mov')) ? (
+              {selectedTeacherVideo.videoUrl && (selectedTeacherVideo.videoUrl.startsWith('data:video') || selectedTeacherVideo.videoUrl.includes('/api/media/') || selectedTeacherVideo.videoUrl.includes('/uploads/') || selectedTeacherVideo.videoUrl.endsWith('.mp4') || selectedTeacherVideo.videoUrl.endsWith('.webm') || selectedTeacherVideo.videoUrl.endsWith('.mov')) ? (
                 <video
                   src={selectedTeacherVideo.videoUrl}
                   controls
