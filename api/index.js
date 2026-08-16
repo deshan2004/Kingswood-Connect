@@ -2159,40 +2159,7 @@ const defaultLandingSettings = {
   resultsSub: 'True success is measured by consistent results. Highlighting our outstanding performers across Grade 1 to Grade 13 examinations.',
   resultsCtaTitle: 'Be the Next Academic Success Story!',
   resultsCtaSub: 'Enroll today and gain instant access to Kingswood Connect student portal, tutes, and exam schedules.',
-  achievers: [
-    {
-      name: 'Kaveen Perera',
-      rankBadge: '🏆 A/L Island Rank 01',
-      stream: 'G.C.E. A/L Stream',
-      zScore: '2.8942',
-      district: 'Kandy District',
-      image: '/images/top_student_male.png'
-    },
-    {
-      name: 'Shenali Fernando',
-      rankBadge: '🌟 O/L 9 A Stars',
-      stream: 'G.C.E. O/L Batch',
-      zScore: '9 A Passes',
-      district: 'Colombo District',
-      image: '/images/top_student_female.png'
-    },
-    {
-      name: 'Nipuna Jayasinghe',
-      rankBadge: '🥇 Grade 5 Scholarship Top Ranker',
-      stream: 'Primary Section (Grade 5)',
-      zScore: '196 Marks',
-      district: 'Kurunegala',
-      image: ''
-    },
-    {
-      name: 'Dilini Ranasinghe',
-      rankBadge: '🎖️ A/L District Rank 01',
-      stream: 'G.C.E. A/L Stream',
-      zScore: '2.7650',
-      district: 'Kandy',
-      image: ''
-    }
-  ],
+  achievers: [],
 
   // Vision & Mission
   visionBadge: 'OUR CORE PURPOSE',
@@ -2205,45 +2172,12 @@ const defaultLandingSettings = {
   featuresBadge: 'INSTITUTE & DIGITAL FEATURES',
   featuresTitle: 'Modern Tuition & Technology Features',
   featuresSub: 'Engineered specifically to maximize student productivity and keep parents informed in real-time.',
-  features: [
-    {
-      title: 'Smart QR Attendance',
-      desc: 'Instant QR code scanning upon class entry automatically logs attendance and dispatches instant SMS alerts to parents.'
-    },
-    {
-      title: 'Exam Analytics & Ranks',
-      desc: 'Instant score dashboards, district-level rank indices, and progress trend graphs available right after evaluation.'
-    },
-    {
-      title: 'HD Lecture Recordings',
-      desc: 'On-demand access to high-definition recordings of missed or previous lectures anytime on student portal.'
-    },
-    {
-      title: 'Digital Materials & Tutes',
-      desc: 'Downloadable PDF tutes, lesson summaries, past paper marking schemes, and speed revision guides.'
-    }
-  ],
+  features: [],
 
   // Testimonials
   testimonialsBadge: 'STUDENT & PARENT REVIEWS',
   testimonialsTitle: 'Trusted by Thousands',
-  testimonials: [
-    {
-      name: 'Kaveen Perera',
-      role: 'Engineering Faculty - Moratuwa (2024 A/L)',
-      text: '"Combined Maths felt overwhelming until I joined Kasun Sir\'s class. His visual problem-solving techniques gave me immense clarity, leading directly to my Island Rank 01 achievement."'
-    },
-    {
-      name: 'Shenali Fernando',
-      role: 'Medical Student - Colombo (2024 A/L)',
-      text: '"The Kingswood Connect Student Portal made studying so effortless. Being able to rewatch HD recordings and check paper results instantly boosted my overall Z-Score tremendously."'
-    },
-    {
-      name: 'N. Jayasinghe',
-      role: 'Parent of Nipuna (District Rank 01)',
-      text: '"As a parent, receiving real-time QR attendance SMS alerts gave us peace of mind. Sir\'s personal dedication and continuous mentorship are truly commendable."'
-    }
-  ],
+  testimonials: [],
 
   // Contact Info & WhatsApp
   contactBadge: 'GET IN TOUCH',
