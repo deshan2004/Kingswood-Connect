@@ -595,32 +595,17 @@ Thank you for your prompt payment!
                 <h4 className="font-extrabold text-slate-800 text-lg flex items-center gap-2">
                   Class-Wise Daily Fees Collection
                 </h4>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">Showing active fee-collecting classes for today (Resets every 24h)</p>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">Showing classes with fee payments collected today (Resets every 24h)</p>
               </div>
 
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={() => setShowOnlyActiveToday(!showOnlyActiveToday)}
-                  className={`px-3 py-2 rounded-xl border text-xs font-extrabold transition-all shadow-sm shrink-0 ${
-                    showOnlyActiveToday
-                      ? 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'
-                      : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-                  }`}
-                  title="Toggle between showing only active classes vs all classes"
-                >
-                  {showOnlyActiveToday ? '⚡ Active Classes Only' : '📋 All Classes'}
-                </button>
-
-                <div className="w-full sm:w-64">
-                  <input
-                    type="text"
-                    placeholder="Search class, teacher, or grade..."
-                    value={breakdownSearch}
-                    onChange={(e) => setBreakdownSearch(e.target.value)}
-                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none"
-                  />
-                </div>
+              <div className="w-full sm:w-72">
+                <input
+                  type="text"
+                  placeholder="Search class, teacher, or grade..."
+                  value={breakdownSearch}
+                  onChange={(e) => setBreakdownSearch(e.target.value)}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
               </div>
             </div>
 
@@ -644,7 +629,8 @@ Thank you for your prompt payment!
                   <tbody className="divide-y divide-slate-100">
                     {(() => {
                       const displayedClasses = breakdownData?.classes?.filter(c => {
-                        if (showOnlyActiveToday && (c.paidStudentsCount || 0) === 0) return false;
+                        // Strictly only show classes with fee payments collected for today
+                        if ((c.paidStudentsCount || 0) === 0) return false;
                         if (!breakdownSearch.trim()) return true;
                         const q = breakdownSearch.toLowerCase();
                         return (
@@ -660,23 +646,11 @@ Thank you for your prompt payment!
                             <td colSpan={6} className="py-12 text-center">
                               <div className="max-w-md mx-auto space-y-3">
                                 <p className="font-extrabold text-slate-700 text-sm">
-                                  {showOnlyActiveToday
-                                    ? "No active class fee collections recorded for today yet."
-                                    : "No matching classes found."}
+                                  No class fee collections recorded for today yet.
                                 </p>
                                 <p className="text-xs text-slate-400 font-medium">
-                                  {showOnlyActiveToday
-                                    ? "Classes will automatically appear here as soon as student fees are scanned today."
-                                    : "Try adjusting your search query or clear filters."}
+                                  Classes will automatically appear here as soon as student fees are scanned today.
                                 </p>
-                                {showOnlyActiveToday && (
-                                  <button
-                                    onClick={() => setShowOnlyActiveToday(false)}
-                                    className="mt-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-200"
-                                  >
-                                    Show All Classes (Including 0 Payments)
-                                  </button>
-                                )}
                               </div>
                             </td>
                           </tr>
