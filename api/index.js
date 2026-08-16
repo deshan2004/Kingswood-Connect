@@ -2143,87 +2143,15 @@ const defaultLandingSettings = {
 
   // Faculty (Sirs) Section
   facultyBadge: 'MEET OUR PANEL OF EXPERT SIRS',
-  facultyTitle: 'Distinguished Faculty & Subject Specialists',
+  facultyTitle: 'Distinguished Teachers & Subject Specialists',
   facultySub: 'Our institute brings together top Sri Lankan educators dedicated to guiding students from Grade 1 to Grade 13 across all core subjects and academic streams.',
-  teachers: [
-    {
-      teacherId: 'TCH-1001',
-      name: 'Eng. Kasun Perera',
-      subject: 'Mathematics (Grade 6 - 13)',
-      qualification: 'B.Sc. Engineering (Hons) - Peradeniya',
-      desc: 'Master lecturer specializing in Mathematics from Grade 6 to 11 O/L as well as A/L Combined Mathematics, simplifying complex algebra, geometry, and calculus.',
-      image: '/kc-logo.png',
-      videoUrl: '',
-      experience: '12+ Years',
-      ranks: '150+ Top Ranks',
-      badgeColor: 'bg-indigo-600'
-    },
-    {
-      teacherId: 'TCH-1002',
-      name: 'Dr. Nimal Wickramasinghe',
-      subject: 'Science & Physics Specialist',
-      qualification: 'Ph.D., B.Sc. Physics Special (Hons) - Colombo',
-      desc: 'Senior Science & Physics educator covering Junior Secondary Science (Grades 6-9), O/L Science (Grades 10-11), and A/L Physics with visual laboratory concepts.',
-      image: '/kc-logo.png',
-      videoUrl: '',
-      experience: '14+ Years',
-      ranks: '120+ Top Ranks',
-      badgeColor: 'bg-blue-600'
-    },
-    {
-      teacherId: 'TCH-1003',
-      name: 'Mrs. Anusha Jayawardena',
-      subject: 'Primary & Foundation Specialist (Grade 1 - 5)',
-      qualification: 'B.Ed. Primary Education, M.A. Linguistics',
-      desc: 'Expert educator dedicated to Grade 1 to 5 foundation learning and Grade 5 Scholarship preparation, building strong literacy, numerical, and analytical skills.',
-      image: '/kc-logo.png',
-      videoUrl: '',
-      experience: '10+ Years',
-      ranks: '95+ Island Ranks',
-      badgeColor: 'bg-emerald-600'
-    }
-  ],
+  teachers: [],
 
   // Classes & Schedule Section
   classesBadge: 'TUITION CLASSES & SCHEDULE',
   classesTitle: 'Our Classes & Schedule',
   classesSub: 'Explore our active auditorium & online live tuition classes managed directly by institute administration.',
-  classes: [
-    {
-      classId: 'CLS-PRI-101',
-      name: 'Grade 1 - 5 Primary & Scholarship Class',
-      grade: 'Grade 1 - 5',
-      teacherName: 'Mrs. Anusha Jayawardena',
-      subject: 'Primary Core Subjects & Scholarship',
-      schedule: 'Saturday 8:30 AM - 11:30 AM',
-      location: 'Primary Learning Wing & Online Stream',
-      fee: 2500,
-      description: 'Interactive foundation building in Mathematics, Languages, and Scholarship Exam prep tailored for Grade 1-5 primary students.'
-    },
-    {
-      classId: 'CLS-OL-201',
-      name: 'Grade 6 - 11 O/L Core Theory & Revision',
-      grade: 'Grade 6 - 11',
-      teacherName: 'Eng. Kasun Perera & Science Faculty',
-      subject: 'Mathematics, Science, English & ICT',
-      schedule: 'Sunday 8:00 AM - 1:00 PM',
-      location: 'Main Auditorium & Web Stream',
-      fee: 3000,
-      isPopular: true,
-      description: 'Comprehensive syllabus coverage, monthly term test evaluations, and model paper breakdowns for Junior Secondary and G.C.E. O/L students.'
-    },
-    {
-      classId: 'CLS-AL-301',
-      name: 'Grade 12 - 13 A/L Theory & Revision',
-      grade: 'Grade 12 - 13 (A/L)',
-      teacherName: 'Dr. Nimal Wickramasinghe & A/L Panel',
-      subject: 'Science, Commerce, Arts & Tech Streams',
-      schedule: 'Wednesday 2:30 PM - 6:30 PM',
-      location: 'Physical Exam Hall & Online Stream',
-      fee: 3500,
-      description: 'In-depth concept delivery, past paper breakdowns, and speed revision sessions for G.C.E. Advanced Level success.'
-    }
-  ],
+  classes: [],
 
   // Exam Results & Achievers
   resultsBadge: 'PROVEN EXCELLENCE',

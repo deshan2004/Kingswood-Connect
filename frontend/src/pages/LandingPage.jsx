@@ -417,17 +417,17 @@ const LandingPage = () => {
     }
   ];
 
-  const activeClasses = (cmsSettings?.classes && cmsSettings.classes.length > 0)
-    ? cmsSettings.classes
-    : (classesList.length > 0 ? classesList : defaultClasses);
+  const activeClasses = (classesList && classesList.length > 0)
+    ? classesList
+    : ((cmsSettings?.classes && cmsSettings.classes.length > 0) ? cmsSettings.classes : (loadingData ? [] : defaultClasses));
 
-  const activeTeachers = (cmsSettings?.teachers && cmsSettings.teachers.length > 0)
-    ? cmsSettings.teachers
-    : (teachersList.length > 0 ? teachersList : defaultTeachers);
+  const activeTeachers = (teachersList && teachersList.length > 0)
+    ? teachersList
+    : ((cmsSettings?.teachers && cmsSettings.teachers.length > 0) ? cmsSettings.teachers : (loadingData ? [] : defaultTeachers));
 
   const activeAchievers = (cmsSettings?.achievers && cmsSettings.achievers.length > 0)
     ? cmsSettings.achievers
-    : defaultAchievers;
+    : (loadingData ? [] : defaultAchievers);
 
   const activeFeatures = (cmsSettings?.features && cmsSettings.features.length > 0)
     ? cmsSettings.features
