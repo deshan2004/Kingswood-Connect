@@ -1404,49 +1404,78 @@ const LandingPage = () => {
 
             <div className="p-6 max-h-[65vh] overflow-y-auto space-y-4 bg-slate-50">
               {(() => {
-                const matched = activeClasses.filter(c => 
-                  (c.teacherName && c.teacherName.toLowerCase().includes(selectedTeacherClasses.name.toLowerCase())) ||
-                  (c.name && c.name.toLowerCase().includes(selectedTeacherClasses.subject?.toLowerCase() || ''))
-                );
-                const displayClasses = matched.length > 0 ? matched : [
-                  {
-                    name: `2026 A/L ${selectedTeacherClasses.subject || 'Theory'} Class`,
-                    grade: '2026 A/L',
-                    schedule: 'Saturday 8:00 AM - 1:00 PM',
-                    location: 'Kandy Main Auditorium & Online Live Stream',
-                    fee: 'Rs. 3,500',
-                    description: `Building fundamental concepts from scratch with weekly tute discussions, real-world examples, and problem solving conducted by ${selectedTeacherClasses.name}.`
-                  },
-                  {
-                    name: `2025 A/L ${selectedTeacherClasses.subject || 'Revision'} & Paper Class`,
-                    grade: '2025 A/L',
-                    schedule: 'Sunday 8:00 AM - 1:30 PM',
-                    location: 'Kandy Main Auditorium & Web Stream',
-                    fee: 'Rs. 3,500',
-                    description: `Rapid syllabus coverage, past paper breakdowns, and high-yield exam strategies designed for top scores by ${selectedTeacherClasses.name}.`
-                  }
+                const teacherNameLower = (selectedTeacherClasses.name || '').toLowerCase().trim();
+                const teacherSubjectLower = (selectedTeacherClasses.subject || '').toLowerCase().trim();
+                const teacherIdLower = (selectedTeacherClasses.teacherId || selectedTeacherClasses.id || '').toLowerCase().trim();
+
+                // Combine real database classes and CMS settings classes
+                const pool = [
+                  ...(Array.isArray(classesList) ? classesList : []),
+                  ...(cmsSettings?.classes && Array.isArray(cmsSettings.classes) ? cmsSettings.classes : [])
                 ];
+
+                const matched = pool.filter(c => {
+                  const cTeacherName = (c.teacherName || c.teacher || '').toLowerCase().trim();
+                  const cName = (c.name || '').toLowerCase().trim();
+                  const cSubject = (c.subject || '').toLowerCase().trim();
+                  const cTeacherId = (c.teacherId || '').toLowerCase().trim();
+
+                  const nameMatch = teacherNameLower && (cTeacherName.includes(teacherNameLower) || teacherNameLower.includes(cTeacherName));
+                  const idMatch = teacherIdLower && cTeacherId === teacherIdLower;
+                  const subjectMatch = teacherSubjectLower && (cSubject.includes(teacherSubjectLower) || cName.includes(teacherSubjectLower));
+
+                  return nameMatch || idMatch || subjectMatch;
+                });
+
+                // Deduplicate matched classes
+                const displayClasses = Array.from(new Map(matched.map(c => [c.classId || c.id || `${c.name}-${c.schedule}`, c])).values());
+
+                if (displayClasses.length === 0) {
+                  return (
+                    <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 space-y-3">
+                      <div className="w-12 h-12 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center mx-auto text-indigo-600">
+                        <BookOpen size={24} />
+                      </div>
+                      <h4 className="text-base font-extrabold text-slate-900">Active Classes Schedule for {selectedTeacherClasses.name}</h4>
+                      <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed font-medium">
+                        Classes, timetable schedules, and fee structures for {selectedTeacherClasses.name} ({selectedTeacherClasses.subject || 'Specialist'}) are updated directly from active institute classes.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const msg = `Hello! I would like to inquire about ${selectedTeacherClasses.name}'s (${selectedTeacherClasses.subject || 'All'}) class timetable & enrollment at Kingswood Connect.`;
+                          window.open(`https://wa.me/94771234567?text=${encodeURIComponent(msg)}`, '_blank');
+                        }}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-sm"
+                      >
+                        <Send size={14} /> Inquire Timetable via WhatsApp
+                      </button>
+                    </div>
+                  );
+                }
 
                 return displayClasses.map((cls, idx) => (
                   <div key={idx} className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 hover:border-indigo-300 transition-all">
                     <div className="flex items-center justify-between">
                       <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-100">
-                        {cls.grade || 'A/L Batch'}
+                        {cls.grade || 'Active Batch'}
                       </span>
                       <span className="text-xs font-extrabold text-indigo-700">
-                        {typeof cls.fee === 'number' ? `Rs. ${cls.fee.toLocaleString()}` : (cls.fee || 'Rs. 3,500')}
+                        {typeof cls.fee === 'number' ? `Rs. ${cls.fee.toLocaleString()}` : (cls.fee ? (String(cls.fee).startsWith('Rs.') ? cls.fee : `Rs. ${cls.fee}`) : 'Contact for Fee')}
                       </span>
                     </div>
-                    <h4 className="text-base font-extrabold text-slate-900">{cls.name}</h4>
-                    <p className="text-xs text-slate-600 leading-relaxed font-normal">{cls.description}</p>
+                    <h4 className="text-base font-extrabold text-slate-900">{cls.name || `${selectedTeacherClasses.subject || 'Theory'} Class`}</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                      {cls.description || `Syllabus coverage, past paper discussions, and interactive learning sessions conducted by ${cls.teacherName || selectedTeacherClasses.name}.`}
+                    </p>
                     <div className="pt-3 border-t border-slate-100 grid sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium">
                       <div className="flex items-center gap-1.5">
                         <Calendar size={14} className="text-indigo-600 shrink-0" />
-                        <span>{cls.schedule || 'Weekly Class'}</span>
+                        <span>{cls.schedule || 'Weekly Scheduled Session'}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <MapPin size={14} className="text-indigo-600 shrink-0" />
-                        <span>{cls.location || 'Auditorium & Stream'}</span>
+                        <span>{cls.location || 'Kingswood Auditorium & Stream'}</span>
                       </div>
                     </div>
                   </div>
