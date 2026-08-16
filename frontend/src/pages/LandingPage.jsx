@@ -306,9 +306,9 @@ const LandingPage = () => {
   const defaultFeatures = [];
   const defaultTestimonials = [];
 
-  const activeClasses = (cmsSettings?.classes && cmsSettings.classes.length > 0)
-    ? cmsSettings.classes
-    : (classesList && classesList.length > 0 ? classesList : []);
+  const activeClasses = (classesList && classesList.length > 0)
+    ? classesList
+    : (cmsSettings?.classes && cmsSettings.classes.length > 0 ? cmsSettings.classes : []);
 
   const activeTeachers = (cmsSettings?.teachers && cmsSettings.teachers.length > 0)
     ? cmsSettings.teachers
@@ -1254,15 +1254,28 @@ const LandingPage = () => {
                         onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
                       >
-                        <option value="Grade 1 - 5 (Primary & Scholarship)">Grade 1 - 5 (Primary & Scholarship)</option>
-                        <option value="Grade 6 - 9 (Junior Secondary)">Grade 6 - 9 (Junior Secondary)</option>
-                        <option value="Grade 10 - 11 (G.C.E. O/L)">Grade 10 - 11 (G.C.E. O/L)</option>
-                        <option value="Grade 12 - 13 (G.C.E. A/L)">Grade 12 - 13 (G.C.E. A/L)</option>
-                        {activeClasses.map((cls, i) => (
-                          <option key={cls.classId || i} value={cls.name}>
-                            {cls.name} ({cls.teacherName || cls.grade})
-                          </option>
-                        ))}
+                        <optgroup label="── Grade / Stream Categories ──">
+                          <option value="Grade 12 - 13 (G.C.E. A/L)">Grade 12 - 13 (G.C.E. A/L)</option>
+                          <option value="Grade 10 - 11 (G.C.E. O/L)">Grade 10 - 11 (G.C.E. O/L)</option>
+                          <option value="Grade 6 - 9 (Junior Secondary)">Grade 6 - 9 (Junior Secondary)</option>
+                          <option value="Grade 1 - 5 (Primary & Scholarship)">Grade 1 - 5 (Primary & Scholarship)</option>
+                        </optgroup>
+
+                        {activeClasses.length > 0 && (
+                          <optgroup label="── Available Registered Classes ──">
+                            {activeClasses.map((cls, i) => {
+                              const title = cls.name || cls.className || 'Special Class';
+                              const teacher = cls.teacherName || cls.teacher || '';
+                              const gradeInfo = cls.grade || cls.subject || '';
+                              const displayLabel = `${title}${teacher ? ` ─ ${teacher}` : ''}${gradeInfo ? ` [${gradeInfo}]` : ''}`;
+                              return (
+                                <option key={cls.classId || i} value={displayLabel}>
+                                  {displayLabel}
+                                </option>
+                              );
+                            })}
+                          </optgroup>
+                        )}
                       </select>
                     </div>
                     <div>
@@ -1272,17 +1285,25 @@ const LandingPage = () => {
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
                       >
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="Science">Science</option>
-                        <option value="English">English</option>
-                        <option value="ICT & Computer Studies">ICT & Computer Studies</option>
-                        <option value="Sinhala / Language">Sinhala / Language</option>
-                        <option value="Combined Mathematics">Combined Mathematics</option>
-                        <option value="Physics">Physics</option>
-                        <option value="Chemistry">Chemistry</option>
-                        <option value="Biology">Biology</option>
-                        <option value="Commerce & Accounting">Commerce & Accounting</option>
-                        <option value="All Core Subjects">All Core Subjects</option>
+                        {(() => {
+                          const baseSubjects = ['Combined Mathematics', 'Physics', 'Chemistry', 'Biology', 'Mathematics', 'Science', 'ICT & Computer Studies', 'English', 'Sinhala', 'Commerce & Accounting'];
+                          const dynamicSet = new Set(baseSubjects);
+
+                          // Add subjects from active teachers
+                          activeTeachers.forEach(t => {
+                            if (t.subject) dynamicSet.add(t.subject);
+                          });
+
+                          // Add subjects from active classes
+                          activeClasses.forEach(c => {
+                            if (c.subject) dynamicSet.add(c.subject);
+                            if (c.name) dynamicSet.add(c.name);
+                          });
+
+                          return Array.from(dynamicSet).map((subj, i) => (
+                            <option key={i} value={subj}>{subj}</option>
+                          ));
+                        })()}
                       </select>
                     </div>
                   </div>
