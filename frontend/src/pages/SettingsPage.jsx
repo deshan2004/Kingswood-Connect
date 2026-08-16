@@ -819,7 +819,7 @@ const SettingsPage = () => {
 
                   <div className="pt-4 border-t border-slate-200 space-y-4">
                     <div className="flex items-center justify-between">
-                      <h5 className="text-sm font-bold text-slate-800">Faculty Members List ({cmsData.teachers.length})</h5>
+                      <h5 className="text-sm font-bold text-slate-800">Teachers List ({cmsData.teachers.length})</h5>
                       <button
                         type="button"
                         onClick={addTeacher}
