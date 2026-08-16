@@ -2390,29 +2390,68 @@ const handleMediaServe = async (req, res) => {
 app.get('/api/media/:mediaId', handleMediaServe);
 app.get('/media/:mediaId', handleMediaServe);
 
-// Helper function to auto-extract any base64 media strings into disk files to prevent Firestore 1MB document errors
-const processBase64MediaFields = (data) => {
+// Helper function to auto-extract any base64 media strings into Firestore media documents to prevent 1MB document errors
+const processBase64MediaFields = async (data) => {
   if (!data || typeof data !== 'object') return data;
   
   const copy = JSON.parse(JSON.stringify(data));
-  const uploadsDir = path.join(__dirname, 'uploads');
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
 
-  const saveBase64ToFile = (val) => {
+  const saveBase64ToMedia = async (val) => {
     if (typeof val === 'string' && val.startsWith('data:') && val.length > 5000) {
       try {
         const matches = val.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
         if (matches && matches.length === 3) {
-          const mime = matches[1];
-          const ext = mime.split('/')[1] || 'mp4';
+          const mimeType = matches[1];
           const buffer = Buffer.from(matches[2], 'base64');
-          const safeName = `media_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
-          const filePath = path.join(uploadsDir, safeName);
-          fs.writeFileSync(filePath, buffer);
-          console.log(`Auto-converted Base64 media string to file: /uploads/${safeName}`);
-          return `/uploads/${safeName}`;
+          const mediaId = `media_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+          const ext = mimeType.split('/')[1] || 'mp4';
+
+          // Safely attempt local disk write if environment allows
+          try {
+            const uploadsDir = path.join(__dirname, 'uploads');
+            if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+            fs.writeFileSync(path.join(uploadsDir, `${mediaId}.${ext}`), buffer);
+          } catch (e) {
+            // Ignore Vercel read-only filesystem error
+          }
+
+          // Save in Firestore collection 'media'
+          const CHUNK_SIZE = 700 * 1024;
+          if (buffer.length <= CHUNK_SIZE) {
+            await db.collection('media').doc(mediaId).set({
+              mediaId,
+              mimeType,
+              ext,
+              size: buffer.length,
+              data: buffer.toString('base64'),
+              chunked: false,
+              createdAt: new Date().toISOString()
+            });
+          } else {
+            const totalChunks = Math.ceil(buffer.length / CHUNK_SIZE);
+            await db.collection('media').doc(mediaId).set({
+              mediaId,
+              mimeType,
+              ext,
+              size: buffer.length,
+              chunked: true,
+              totalChunks,
+              createdAt: new Date().toISOString()
+            });
+
+            for (let i = 0; i < totalChunks; i++) {
+              const start = i * CHUNK_SIZE;
+              const end = Math.min(buffer.length, start + CHUNK_SIZE);
+              const chunkBuffer = buffer.slice(start, end);
+              await db.collection('media').doc(mediaId).collection('chunks').doc(String(i)).set({
+                index: i,
+                data: chunkBuffer.toString('base64')
+              });
+            }
+          }
+
+          console.log(`Auto-stored Base64 media string to Firestore /api/media/${mediaId}`);
+          return `/api/media/${mediaId}`;
         }
       } catch (err) {
         console.error('Error auto-processing base64 media:', err);
@@ -2421,31 +2460,35 @@ const processBase64MediaFields = (data) => {
     return val;
   };
 
-  if (copy.demoVideoUrl) copy.demoVideoUrl = saveBase64ToFile(copy.demoVideoUrl);
-  if (copy.siteLogo) copy.siteLogo = saveBase64ToFile(copy.siteLogo);
+  if (copy.demoVideoUrl) copy.demoVideoUrl = await saveBase64ToMedia(copy.demoVideoUrl);
+  if (copy.siteLogo) copy.siteLogo = await saveBase64ToMedia(copy.siteLogo);
 
   if (Array.isArray(copy.teachers)) {
-    copy.teachers = copy.teachers.map(t => ({
-      ...t,
-      videoUrl: saveBase64ToFile(t.videoUrl),
-      image: saveBase64ToFile(t.image)
-    }));
+    for (let i = 0; i < copy.teachers.length; i++) {
+      if (copy.teachers[i].videoUrl) {
+        copy.teachers[i].videoUrl = await saveBase64ToMedia(copy.teachers[i].videoUrl);
+      }
+      if (copy.teachers[i].image) {
+        copy.teachers[i].image = await saveBase64ToMedia(copy.teachers[i].image);
+      }
+    }
   }
 
   if (Array.isArray(copy.achievers)) {
-    copy.achievers = copy.achievers.map(a => ({
-      ...a,
-      image: saveBase64ToFile(a.image)
-    }));
+    for (let i = 0; i < copy.achievers.length; i++) {
+      if (copy.achievers[i].image) {
+        copy.achievers[i].image = await saveBase64ToMedia(copy.achievers[i].image);
+      }
+    }
   }
 
   return copy;
 };
 
-app.put('/api/landing-settings', async (req, res) => {
+const handleSaveLandingSettings = async (req, res) => {
   try {
     const rawSettings = req.body;
-    const sanitizedSettings = processBase64MediaFields(rawSettings);
+    const sanitizedSettings = await processBase64MediaFields(rawSettings);
     
     const updatedData = {
       ...sanitizedSettings,
@@ -2457,7 +2500,10 @@ app.put('/api/landing-settings', async (req, res) => {
     console.error('Error updating landing settings:', error);
     res.status(500).json({ error: 'Failed to update landing page settings', details: error?.message || 'Unknown database error' });
   }
-});
+};
+
+app.put('/api/landing-settings', handleSaveLandingSettings);
+app.put('/landing-settings', handleSaveLandingSettings);
 
 // Export the Express API for Vercel Serverless Function
 if (require.main === module) {
