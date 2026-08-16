@@ -2254,7 +2254,7 @@ app.get('/api/landing-settings', async (req, res) => {
 });
 
 // Dedicated Endpoint to handle Media/Video Uploads to Server Uploads Directory
-app.post('/api/upload-media', (req, res) => {
+const handleMediaUpload = (req, res) => {
   try {
     const { fileData, fileName, fileType } = req.body;
     if (!fileData) {
@@ -2284,6 +2284,19 @@ app.post('/api/upload-media', (req, res) => {
 
     fs.writeFileSync(filePath, buffer);
 
+    // Also copy to frontend public directory if running in local dev mode
+    try {
+      const devPublicUploads = path.join(__dirname, '../frontend/public/uploads');
+      if (fs.existsSync(path.join(__dirname, '../frontend/public'))) {
+        if (!fs.existsSync(devPublicUploads)) {
+          fs.mkdirSync(devPublicUploads, { recursive: true });
+        }
+        fs.writeFileSync(path.join(devPublicUploads, safeName), buffer);
+      }
+    } catch (e) {
+      // Ignore if dev dir is missing
+    }
+
     const publicUrl = `/uploads/${safeName}`;
     console.log(`Saved uploaded media file (${(buffer.length / 1024 / 1024).toFixed(2)} MB) to ${publicUrl}`);
 
@@ -2292,7 +2305,10 @@ app.post('/api/upload-media', (req, res) => {
     console.error('Error uploading media file:', error);
     return res.status(500).json({ error: 'Failed to upload media file: ' + error.message });
   }
-});
+};
+
+app.post('/api/upload-media', handleMediaUpload);
+app.post('/upload-media', handleMediaUpload);
 
 // Helper function to auto-extract any base64 media strings into disk files to prevent Firestore 1MB document errors
 const processBase64MediaFields = (data) => {

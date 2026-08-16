@@ -174,7 +174,7 @@ const VideoUploadInput = ({ label, value, onChange }) => {
       setUploadProgress(60);
 
       try {
-        const response = await axios.post('/api/upload-media', {
+        const response = await axios.post(`${API_URL}/upload-media`, {
           fileData: base64Data,
           fileName: file.name,
           fileType: file.type
@@ -184,11 +184,11 @@ const VideoUploadInput = ({ label, value, onChange }) => {
           setUploadProgress(100);
           onChange(response.data.url);
         } else {
-          onChange(base64Data);
+          alert('Failed to save uploaded video file to server. Please try again.');
         }
       } catch (err) {
-        console.warn('Upload endpoint error, using data string fallback:', err);
-        onChange(base64Data);
+        console.error('Upload endpoint error:', err);
+        alert('Failed to upload video file: ' + (err.response?.data?.error || err.message));
       } finally {
         setIsUploading(false);
         setUploadProgress(0);
@@ -424,9 +424,23 @@ const SettingsPage = () => {
     setErrorMsg('');
 
     try {
-      await axios.put(`${API_URL}/landing-settings`, cmsData);
+      const payload = JSON.parse(JSON.stringify(cmsData));
+      if (Array.isArray(payload.teachers)) {
+        payload.teachers = payload.teachers.map(t => {
+          if (typeof t.videoUrl === 'string' && t.videoUrl.startsWith('data:video') && t.videoUrl.length > 200000) {
+            return { ...t, videoUrl: '' };
+          }
+          return t;
+        });
+      }
+
+      const res = await axios.put(`${API_URL}/landing-settings`, payload);
       setSuccessMsg('All Landing Page changes saved successfully! Live website updated.');
       
+      if (res.data && res.data.settings) {
+        setCmsData(res.data.settings);
+      }
+
       // Dispatch real-time update events for open tabs / landing page
       window.dispatchEvent(new Event('cms-updated'));
       localStorage.setItem('kingswood_cms_updated', Date.now().toString());
