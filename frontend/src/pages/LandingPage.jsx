@@ -66,29 +66,20 @@ const getEmbedVideoUrl = (url) => {
 };
 
 const getUniversalGoogleMapEmbed = (url, fallbackAddress) => {
-  const defaultLoc = fallbackAddress && fallbackAddress.trim().length > 3
-    ? `https://maps.google.com/maps?q=${encodeURIComponent(fallbackAddress.trim())}&t=&z=16&ie=UTF8&iwloc=&output=embed`
-    : 'https://maps.google.com/maps?q=Kingswood%20College%2C%20Peradeniya%20Road%2C%20Kandy&t=&z=16&ie=UTF8&iwloc=&output=embed';
+  const cleanAddr = (fallbackAddress && typeof fallbackAddress === 'string') ? fallbackAddress.trim() : '';
+  let str = (url && typeof url === 'string') ? url.trim() : '';
 
-  if (!url || typeof url !== 'string' || !url.trim()) {
-    return defaultLoc;
-  }
-  let str = url.trim();
+  // Check if str is the default Kandy embed link or empty
+  const isDefaultKandyUrl = !str || str.includes('Kingswood%20College') || str.includes('0x3ae3662bb1e2cfeb');
 
-  // 1. If user pasted full <iframe src="..."> tag:
-  if (str.includes('src=')) {
-    const match = str.match(/src=["']([^"']+)["']/);
-    if (match && match[1]) str = match[1];
-  }
-
-  // 2. If it's already an official embed URL (/maps/embed) with valid parameters:
-  if (str.includes('google.com/maps/embed') && str.length > 50 && !str.endsWith('3d7.29')) {
-    return str;
-  }
-
-  // 3. If it's a regular Google Maps Place/Search URL (e.g. /maps/place/Name/@lat,lng,... or maps?q=...):
-  if (str.includes('google.com/maps') || str.includes('maps.app.goo.gl') || str.includes('maps.google.com')) {
-    // Check if place name is inside URL e.g. /place/Ananda+tailoring+center/
+  if (!isDefaultKandyUrl && str) {
+    if (str.includes('src=')) {
+      const match = str.match(/src=["']([^"']+)["']/);
+      if (match && match[1]) str = match[1];
+    }
+    if (str.includes('google.com/maps/embed') && str.length > 50) {
+      return str;
+    }
     if (str.includes('/place/')) {
       const placeSegment = str.split('/place/')[1];
       if (placeSegment) {
@@ -99,23 +90,20 @@ const getUniversalGoogleMapEmbed = (url, fallbackAddress) => {
         }
       }
     }
-
-    // Check if lat/lng coordinates are in URL e.g. @7.1220109,80.2872696
     const coordMatch = str.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
     if (coordMatch) {
       return `https://maps.google.com/maps?q=${coordMatch[1]},${coordMatch[2]}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
     }
-
-    // Fallback for any other Google Maps share link:
-    return `https://maps.google.com/maps?q=${encodeURIComponent(str)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+    if (str.length > 2) {
+      return `https://maps.google.com/maps?q=${encodeURIComponent(str)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+    }
   }
 
-  // 4. If user typed a plain location or address:
-  if (str.length > 2) {
-    return `https://maps.google.com/maps?q=${encodeURIComponent(str)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+  if (cleanAddr) {
+    return `https://maps.google.com/maps?q=${encodeURIComponent(cleanAddr)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
   }
 
-  return defaultLoc;
+  return 'https://maps.google.com/maps?q=Kingswood%20Education%20Center&t=&z=16&ie=UTF8&iwloc=&output=embed';
 };
 
 const FacebookIcon = () => (
