@@ -34,7 +34,7 @@ const Finance = () => {
   const [expandedClassId, setExpandedClassId] = useState(null);
   const [breakdownData, setBreakdownData] = useState(null);
   const [breakdownLoading, setBreakdownLoading] = useState(false);
-  const [showSensitiveFinancials, setShowSensitiveFinancials] = useState(false);
+  const [showOnlyActiveToday, setShowOnlyActiveToday] = useState(true);
 
   const fetchClassBreakdown = async () => {
     setBreakdownLoading(true);
@@ -514,64 +514,34 @@ Thank you for your prompt payment!
             <div>
               <h3 className="text-xl font-black text-slate-800 flex items-center gap-2">
                 <BarChart3 className="text-indigo-600" size={24} />
-                Class Revenue Breakdown
+                Daily Class Money Collection
               </h3>
-              <p className="text-xs font-medium text-slate-500 mt-1">View total funds collected from each class separately (Daily & Monthly)</p>
+              <p className="text-xs font-medium text-slate-500 mt-1">Class-wise fee collection for today. Automatically resets every 24 hours at midnight.</p>
             </div>
             
             <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-              <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-extrabold shadow-inner">
-                <button
-                  type="button"
-                  onClick={() => setBreakdownDate(format(new Date(), 'yyyy-MM-dd'))}
-                  className={`px-3 py-1.5 rounded-xl transition-all ${
-                    breakdownDate === format(new Date(), 'yyyy-MM-dd')
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  ⚡ Today Only (24h Reset)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBreakdownDate('')}
-                  className={`px-3 py-1.5 rounded-xl transition-all ${
-                    !breakdownDate
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  🗓️ Entire Month
-                </button>
+              <div className="flex items-center gap-1.5 bg-indigo-50 px-3 py-2 rounded-xl border border-indigo-200 text-indigo-700 text-xs font-extrabold shadow-sm">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-600"></span>
+                </span>
+                ⚡ 24h Daily Reset Mode Active
               </div>
 
               <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
-                <label className="text-[11px] font-bold text-slate-500 uppercase">Month:</label>
-                <input
-                  type="month"
-                  value={breakdownMonth}
-                  onChange={(e) => {
-                    setBreakdownMonth(e.target.value);
-                    setBreakdownDate(''); // clear date when month changes
-                  }}
-                  className="bg-transparent font-bold text-slate-700 text-xs outline-none"
-                />
-              </div>
-
-              <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
-                <label className="text-[11px] font-bold text-slate-500 uppercase">Custom Date:</label>
+                <label className="text-[11px] font-bold text-slate-500 uppercase">Select Date:</label>
                 <input
                   type="date"
                   value={breakdownDate}
                   onChange={(e) => setBreakdownDate(e.target.value)}
                   className="bg-transparent font-bold text-slate-700 text-xs outline-none"
                 />
-                {breakdownDate && (
+                {breakdownDate !== format(new Date(), 'yyyy-MM-dd') && (
                   <button
-                    onClick={() => setBreakdownDate('')}
-                    className="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-0.5 rounded font-bold transition-colors ml-1"
+                    onClick={() => setBreakdownDate(format(new Date(), 'yyyy-MM-dd'))}
+                    className="text-[10px] bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-0.5 rounded font-bold transition-colors ml-1"
                   >
-                    Clear
+                    Reset to Today
                   </button>
                 )}
               </div>
@@ -583,9 +553,9 @@ Thank you for your prompt payment!
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
               <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
                 <span>
-                  {breakdownDate
-                    ? (breakdownDate === format(new Date(), 'yyyy-MM-dd') ? "Today's Daily Collection" : `Daily Revenue (${breakdownDate})`)
-                    : `Monthly Revenue (${format(new Date(breakdownMonth), 'MMMM yyyy')})`}
+                  {breakdownDate === format(new Date(), 'yyyy-MM-dd')
+                    ? "Today's Daily Collection"
+                    : `Collection (${breakdownDate})`}
                 </span>
                 {breakdownDate === format(new Date(), 'yyyy-MM-dd') && (
                   <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-full">
@@ -596,23 +566,25 @@ Thank you for your prompt payment!
               <h3 className="text-3xl font-black text-slate-800">Rs. {(breakdownData?.totalCollectedAll || 0).toLocaleString()}</h3>
               <p className="text-xs font-semibold text-indigo-600 mt-1">
                 {breakdownDate === format(new Date(), 'yyyy-MM-dd')
-                  ? "⚡ Resets automatically to 0 every midnight (24h)"
-                  : breakdownDate
-                  ? `Exact Single Day Collection`
-                  : `Monthly Cumulative Collection`}
+                  ? "⚡ Resets automatically to Rs. 0 every midnight (24h)"
+                  : `Total collection for ${breakdownDate}`}
               </p>
             </div>
 
             <div className="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm">
-              <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">Weekly Classes Total (Grade 1-11)</p>
-              <h3 className="text-3xl font-black text-emerald-700">Rs. {(breakdownData?.totalWeeklyCollected || 0).toLocaleString()}</h3>
-              <p className="text-xs font-medium text-emerald-600 mt-1">From Rs. 250/session weekly fees</p>
+              <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">Today's Total Payments</p>
+              <h3 className="text-3xl font-black text-emerald-700">
+                {breakdownData?.classes?.reduce((sum, c) => sum + (c.paidStudentsCount || 0), 0) || 0} Payments
+              </h3>
+              <p className="text-xs font-medium text-emerald-600 mt-1">Total student fee scans processed today</p>
             </div>
 
             <div className="bg-white p-6 rounded-3xl border border-indigo-100 shadow-sm">
-              <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Monthly A/L Classes Total</p>
-              <h3 className="text-3xl font-black text-indigo-700">Rs. {(breakdownData?.totalMonthlyCollected || 0).toLocaleString()}</h3>
-              <p className="text-xs font-medium text-indigo-600 mt-1">From Rs. 2,500/mo monthly fees</p>
+              <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Active Classes Today</p>
+              <h3 className="text-3xl font-black text-indigo-700">
+                {breakdownData?.classes?.filter(c => (c.paidStudentsCount || 0) > 0).length || 0} Classes
+              </h3>
+              <p className="text-xs font-medium text-indigo-600 mt-1">Classes collecting student fees today</p>
             </div>
           </div>
 
@@ -620,29 +592,24 @@ Thank you for your prompt payment!
           <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
             <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <h4 className="font-extrabold text-slate-800 text-lg flex flex-wrap items-center gap-2">
-                  Class-Wise Money Collection Table
-                  {!showSensitiveFinancials && (
-                    <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-amber-200">
-                      <Lock size={10} /> Teacher Income Privacy Protected
-                    </span>
-                  )}
+                <h4 className="font-extrabold text-slate-800 text-lg flex items-center gap-2">
+                  Class-Wise Daily Fees Collection
                 </h4>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">Showing active fee-collecting classes for today (Resets every 24h)</p>
               </div>
 
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <button
                   type="button"
-                  onClick={() => setShowSensitiveFinancials(!showSensitiveFinancials)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-extrabold transition-all shadow-sm shrink-0 ${
-                    showSensitiveFinancials 
-                      ? 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200' 
-                      : 'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100'
+                  onClick={() => setShowOnlyActiveToday(!showOnlyActiveToday)}
+                  className={`px-3 py-2 rounded-xl border text-xs font-extrabold transition-all shadow-sm shrink-0 ${
+                    showOnlyActiveToday
+                      ? 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'
+                      : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
                   }`}
-                  title="Toggle visibility of Teacher Cut and Institute Net"
+                  title="Toggle between showing only active classes vs all classes"
                 >
-                  {showSensitiveFinancials ? <EyeOff size={14} /> : <Eye size={14} />}
-                  {showSensitiveFinancials ? 'Hide Income Share' : 'Show Sensitive Income'}
+                  {showOnlyActiveToday ? '⚡ Active Classes Only' : '📋 All Classes'}
                 </button>
 
                 <div className="w-full sm:w-64">
@@ -669,20 +636,15 @@ Thank you for your prompt payment!
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Class & Grade</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Teacher</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Fee Structure</th>
-                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Paid Count</th>
-                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Total Collected</th>
-                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
-                        Teacher Cut {!showSensitiveFinancials && <Lock size={10} className="inline text-amber-500 ml-1" />}
-                      </th>
-                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
-                        Institute Net {!showSensitiveFinancials && <Lock size={10} className="inline text-amber-500 ml-1" />}
-                      </th>
-                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Daily View</th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Today's Payments</th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Today's Fees Collected</th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Daily History</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {breakdownData?.classes
-                      ?.filter(c => {
+                    {(() => {
+                      const displayedClasses = breakdownData?.classes?.filter(c => {
+                        if (showOnlyActiveToday && (c.paidStudentsCount || 0) === 0) return false;
                         if (!breakdownSearch.trim()) return true;
                         const q = breakdownSearch.toLowerCase();
                         return (
@@ -690,8 +652,38 @@ Thank you for your prompt payment!
                           c.grade.toLowerCase().includes(q) ||
                           c.teacherName.toLowerCase().includes(q)
                         );
-                      })
-                      .map(c => {
+                      }) || [];
+
+                      if (displayedClasses.length === 0) {
+                        return (
+                          <tr>
+                            <td colSpan={6} className="py-12 text-center">
+                              <div className="max-w-md mx-auto space-y-3">
+                                <p className="font-extrabold text-slate-700 text-sm">
+                                  {showOnlyActiveToday
+                                    ? "No active class fee collections recorded for today yet."
+                                    : "No matching classes found."}
+                                </p>
+                                <p className="text-xs text-slate-400 font-medium">
+                                  {showOnlyActiveToday
+                                    ? "Classes will automatically appear here as soon as student fees are scanned today."
+                                    : "Try adjusting your search query or clear filters."}
+                                </p>
+                                {showOnlyActiveToday && (
+                                  <button
+                                    onClick={() => setShowOnlyActiveToday(false)}
+                                    className="mt-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-200"
+                                  >
+                                    Show All Classes (Including 0 Payments)
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      }
+
+                      return displayedClasses.map(c => {
                         const isExpanded = expandedClassId === c.classId;
 
                         return (
@@ -712,33 +704,15 @@ Thank you for your prompt payment!
                               <td className="py-4 px-6 text-center font-bold text-slate-700">
                                 {c.paidStudentsCount} payments
                               </td>
-                              <td className="py-4 px-6 text-right font-black text-slate-900">
+                              <td className="py-4 px-6 text-right font-black text-emerald-600 text-base">
                                 Rs. {c.totalCollected.toLocaleString()}
-                              </td>
-                              <td className="py-4 px-6 text-right font-bold text-violet-700">
-                                {showSensitiveFinancials ? (
-                                  `Rs. ${c.teacherCut.toLocaleString()}`
-                                ) : (
-                                  <span className="inline-flex items-center text-slate-400 font-mono text-xs tracking-widest bg-slate-100 px-2 py-0.5 rounded border border-slate-200" title="Teacher Cut Hidden for Privacy">
-                                    ••••••
-                                  </span>
-                                )}
-                              </td>
-                              <td className="py-4 px-6 text-right font-black text-emerald-600">
-                                {showSensitiveFinancials ? (
-                                  `Rs. ${c.instituteCut.toLocaleString()}`
-                                ) : (
-                                  <span className="inline-flex items-center text-slate-400 font-mono text-xs tracking-widest bg-slate-100 px-2 py-0.5 rounded border border-slate-200" title="Institute Net Hidden for Privacy">
-                                    ••••••
-                                  </span>
-                                )}
                               </td>
                               <td className="py-4 px-6 text-center">
                                 <button
                                   onClick={() => setExpandedClassId(isExpanded ? null : c.classId)}
                                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${isExpanded ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'}`}
                                 >
-                                  {isExpanded ? 'Hide Days' : `Daily (${c.dailyBreakdown?.length || 0})`}
+                                  {isExpanded ? 'Hide History' : `History (${c.dailyBreakdown?.length || 0})`}
                                 </button>
                               </td>
                             </tr>
@@ -746,7 +720,7 @@ Thank you for your prompt payment!
                             {/* Expandable Daily Breakdown Sub-Row */}
                             {isExpanded && (
                               <tr className="bg-indigo-50/30">
-                                <td colSpan={8} className="p-4 px-6">
+                                <td colSpan={6} className="p-4 px-6">
                                   <div className="bg-white rounded-2xl p-4 border border-indigo-100 shadow-sm space-y-3">
                                     <h5 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider flex items-center justify-between">
                                       <span>📅 Daily Collection History for {c.className}</span>
@@ -776,7 +750,8 @@ Thank you for your prompt payment!
                             )}
                           </React.Fragment>
                         );
-                      })}
+                      });
+                    })()}
                   </tbody>
                 </table>
               </div>
