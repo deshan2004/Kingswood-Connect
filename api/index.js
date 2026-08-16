@@ -4,6 +4,9 @@ const qrcode = require('qrcode');
 const { format, subMonths, subDays } = require('date-fns');
 require('dotenv').config();
 
+const path = require('path');
+const fs = require('fs');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -11,6 +14,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Firebase Admin Initialization
 const { initializeApp, cert } = require('firebase-admin/app');
@@ -2249,11 +2253,106 @@ app.get('/api/landing-settings', async (req, res) => {
   }
 });
 
+// Dedicated Endpoint to handle Media/Video Uploads to Server Uploads Directory
+app.post('/api/upload-media', (req, res) => {
+  try {
+    const { fileData, fileName, fileType } = req.body;
+    if (!fileData) {
+      return res.status(400).json({ error: 'No file data provided' });
+    }
+
+    const matches = fileData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    let buffer;
+    let ext = 'mp4';
+
+    if (matches && matches.length === 3) {
+      const mime = matches[1];
+      ext = mime.split('/')[1] || 'mp4';
+      buffer = Buffer.from(matches[2], 'base64');
+    } else {
+      const cleanBase64 = fileData.replace(/^data:(video|image)\/\w+;base64,/, '');
+      buffer = Buffer.from(cleanBase64, 'base64');
+    }
+
+    const uploadsDir = path.join(__dirname, 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    const safeName = `media_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+    const filePath = path.join(uploadsDir, safeName);
+
+    fs.writeFileSync(filePath, buffer);
+
+    const publicUrl = `/uploads/${safeName}`;
+    console.log(`Saved uploaded media file (${(buffer.length / 1024 / 1024).toFixed(2)} MB) to ${publicUrl}`);
+
+    return res.json({ success: true, url: publicUrl, size: buffer.length });
+  } catch (error) {
+    console.error('Error uploading media file:', error);
+    return res.status(500).json({ error: 'Failed to upload media file: ' + error.message });
+  }
+});
+
+// Helper function to auto-extract any base64 media strings into disk files to prevent Firestore 1MB document errors
+const processBase64MediaFields = (data) => {
+  if (!data || typeof data !== 'object') return data;
+  
+  const copy = JSON.parse(JSON.stringify(data));
+  const uploadsDir = path.join(__dirname, 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+
+  const saveBase64ToFile = (val) => {
+    if (typeof val === 'string' && val.startsWith('data:') && val.length > 5000) {
+      try {
+        const matches = val.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+        if (matches && matches.length === 3) {
+          const mime = matches[1];
+          const ext = mime.split('/')[1] || 'mp4';
+          const buffer = Buffer.from(matches[2], 'base64');
+          const safeName = `media_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${ext}`;
+          const filePath = path.join(uploadsDir, safeName);
+          fs.writeFileSync(filePath, buffer);
+          console.log(`Auto-converted Base64 media string to file: /uploads/${safeName}`);
+          return `/uploads/${safeName}`;
+        }
+      } catch (err) {
+        console.error('Error auto-processing base64 media:', err);
+      }
+    }
+    return val;
+  };
+
+  if (copy.demoVideoUrl) copy.demoVideoUrl = saveBase64ToFile(copy.demoVideoUrl);
+  if (copy.siteLogo) copy.siteLogo = saveBase64ToFile(copy.siteLogo);
+
+  if (Array.isArray(copy.teachers)) {
+    copy.teachers = copy.teachers.map(t => ({
+      ...t,
+      videoUrl: saveBase64ToFile(t.videoUrl),
+      image: saveBase64ToFile(t.image)
+    }));
+  }
+
+  if (Array.isArray(copy.achievers)) {
+    copy.achievers = copy.achievers.map(a => ({
+      ...a,
+      image: saveBase64ToFile(a.image)
+    }));
+  }
+
+  return copy;
+};
+
 app.put('/api/landing-settings', async (req, res) => {
   try {
-    const newSettings = req.body;
+    const rawSettings = req.body;
+    const sanitizedSettings = processBase64MediaFields(rawSettings);
+    
     const updatedData = {
-      ...newSettings,
+      ...sanitizedSettings,
       updatedAt: new Date().toISOString()
     };
     await db.collection('settings').doc('landingPage').set(updatedData, { merge: true });

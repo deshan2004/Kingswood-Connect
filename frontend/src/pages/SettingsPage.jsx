@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { 
   Shield, Key, Mail, UserCheck, Layout, Save, CheckCircle2, AlertCircle, 
   Phone, MapPin, Sparkles, Trophy, Compass, Globe, Plus, Trash2, BookOpen, 
-  Users, Award, Zap, MessageSquare, ChevronDown, ChevronUp, Upload 
+  Users, Award, Zap, MessageSquare, ChevronDown, ChevronUp, Upload, Loader2
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -143,22 +143,62 @@ const ImageUploadInput = ({ label, value, onChange }) => {
 };
 
 const VideoUploadInput = ({ label, value, onChange }) => {
-  const handleFileChange = (e) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [fileSizeMb, setFileSizeMb] = useState(null);
+
+  const handleFileChange = async (e) => {
     const file = e.target.files && e.target.files[0];
-    if (file) {
-      if (file.size > 25 * 1024 * 1024) {
-        alert('Video file size exceeds 25MB limit. Please select a video file under 25MB, or paste a YouTube / Vimeo link below.');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        onChange(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (file.size > 50 * 1024 * 1024) {
+      alert('Video file size exceeds 50MB limit. Please select a video clip under 50MB or paste a YouTube / Vimeo link.');
+      return;
     }
+
+    const sizeInMb = (file.size / (1024 * 1024)).toFixed(1);
+    setFileSizeMb(sizeInMb);
+    setIsUploading(true);
+    setUploadProgress(15);
+
+    const reader = new FileReader();
+    reader.onprogress = (evt) => {
+      if (evt.lengthComputable) {
+        const percent = Math.round((evt.loaded / evt.total) * 45);
+        setUploadProgress(percent);
+      }
+    };
+
+    reader.onloadend = async () => {
+      const base64Data = reader.result;
+      setUploadProgress(60);
+
+      try {
+        const response = await axios.post('/api/upload-media', {
+          fileData: base64Data,
+          fileName: file.name,
+          fileType: file.type
+        });
+
+        if (response.data && response.data.url) {
+          setUploadProgress(100);
+          onChange(response.data.url);
+        } else {
+          onChange(base64Data);
+        }
+      } catch (err) {
+        console.warn('Upload endpoint error, using data string fallback:', err);
+        onChange(base64Data);
+      } finally {
+        setIsUploading(false);
+        setUploadProgress(0);
+      }
+    };
+
+    reader.readAsDataURL(file);
   };
 
-  const isUploadedVideo = value && (value.startsWith('data:video') || value.endsWith('.mp4') || value.endsWith('.webm') || value.endsWith('.mov'));
+  const isUploadedVideo = value && (value.startsWith('data:video') || value.startsWith('/uploads/') || value.endsWith('.mp4') || value.endsWith('.webm') || value.endsWith('.mov'));
   const embedUrl = getEmbedVideoUrl(value);
 
   return (
@@ -166,7 +206,24 @@ const VideoUploadInput = ({ label, value, onChange }) => {
       <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">{label}</label>
       
       <div className="p-4 rounded-2xl border border-slate-200/80 bg-gradient-to-br from-slate-50/50 via-white to-indigo-50/20 shadow-xs hover:border-indigo-300 transition-all space-y-3">
-        {value ? (
+        {isUploading ? (
+          <div className="p-6 rounded-2xl bg-indigo-950 text-white text-center space-y-3 animate-in fade-in">
+            <div className="flex items-center justify-center gap-2">
+              <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+              <span className="font-extrabold text-sm text-indigo-100">Uploading Video File... ({fileSizeMb} MB)</span>
+            </div>
+            <div className="w-full bg-indigo-900 rounded-full h-3 overflow-hidden border border-indigo-700">
+              <div 
+                className="bg-gradient-to-r from-indigo-500 via-blue-500 to-emerald-400 h-full transition-all duration-300 rounded-full"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-center text-xs text-indigo-300 font-bold px-1">
+              <span>Processing Media Stream</span>
+              <span>{uploadProgress}% Complete</span>
+            </div>
+          </div>
+        ) : value ? (
           <div className="space-y-3">
             <div className="relative aspect-video max-h-48 rounded-2xl border border-slate-300 overflow-hidden bg-slate-950 shadow-md flex items-center justify-center">
               {isUploadedVideo ? (
@@ -183,7 +240,7 @@ const VideoUploadInput = ({ label, value, onChange }) => {
             <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[11px] font-bold">
                 <CheckCircle2 size={13} className="text-emerald-600" />
-                {isUploadedVideo ? 'Direct Video File Active' : 'YouTube / External Link Active'}
+                {isUploadedVideo ? 'Direct Video Active (Server Hosted)' : 'YouTube / External Link Active'}
               </div>
               
               <div className="flex items-center gap-2">
@@ -208,10 +265,10 @@ const VideoUploadInput = ({ label, value, onChange }) => {
                 <Upload size={22} />
               </div>
               <span className="text-xs font-extrabold text-slate-700 group-hover:text-indigo-600 transition-colors">
-                Click to Choose / Upload Video File (up to 25MB)
+                Click to Choose / Upload Video File (up to 50MB)
               </span>
               <span className="text-[11px] font-medium text-slate-400 mt-1">
-                For long videos, paste YouTube or Vimeo link below
+                Live upload progress percentage will display during processing
               </span>
               <input type="file" accept="video/*" className="hidden" onChange={handleFileChange} />
             </label>
