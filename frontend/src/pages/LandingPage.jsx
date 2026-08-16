@@ -263,6 +263,22 @@ const LandingPage = () => {
     window.open(waUrl, '_blank');
   };
 
+  const getTeacherWhatsAppUrl = (teacher, customMsg) => {
+    const rawNum = teacher?.contact || teacher?.phone || teacher?.whatsapp || cmsSettings?.whatsapp || '94771234567';
+    let cleanNum = String(rawNum).replace(/[^0-9]/g, '');
+
+    if (cleanNum.startsWith('0')) {
+      cleanNum = '94' + cleanNum.substring(1);
+    } else if (!cleanNum.startsWith('94') && cleanNum.length === 9) {
+      cleanNum = '94' + cleanNum;
+    }
+
+    const defaultMsg = `Hello ${teacher?.name || 'Sir'}! 👋\n\nI would like to inquire / join your (${teacher?.subject || 'Tuition'}) classes at Kingswood Connect.`;
+    const text = customMsg || defaultMsg;
+
+    return `https://wa.me/${cleanNum}?text=${encodeURIComponent(text)}`;
+  };
+
   const scrollToSection = (id) => {
     setMobileMenuOpen(false);
     const element = document.getElementById(id);
@@ -643,8 +659,7 @@ const LandingPage = () => {
                     </button>
                     <button
                       onClick={() => {
-                        const msg = `Hello! I would like to inquire about ${teacher.name}'s (${teacher.subject}) classes at Kingswood Connect.`;
-                        window.open(`https://wa.me/94771234567?text=${encodeURIComponent(msg)}`, '_blank');
+                        window.open(getTeacherWhatsAppUrl(teacher), '_blank');
                       }}
                       className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]"
                     >
@@ -1443,8 +1458,8 @@ const LandingPage = () => {
                       <button
                         type="button"
                         onClick={() => {
-                          const msg = `Hello! I would like to inquire about ${selectedTeacherClasses.name}'s (${selectedTeacherClasses.subject || 'All'}) class timetable & enrollment at Kingswood Connect.`;
-                          window.open(`https://wa.me/94771234567?text=${encodeURIComponent(msg)}`, '_blank');
+                          const msg = `Hello ${selectedTeacherClasses.name}! 👋\n\nI would like to inquire about your (${selectedTeacherClasses.subject || 'All'}) class timetable & enrollment at Kingswood Connect.`;
+                          window.open(getTeacherWhatsAppUrl(selectedTeacherClasses, msg), '_blank');
                         }}
                         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-sm"
                       >
@@ -1486,8 +1501,7 @@ const LandingPage = () => {
             <div className="p-4 bg-white flex items-center justify-between border-t border-slate-200">
               <button
                 onClick={() => {
-                  const msg = `Hello! I would like to inquire about ${selectedTeacherClasses.name}'s (${selectedTeacherClasses.subject}) classes at Kingswood Connect.`;
-                  window.open(`https://wa.me/94771234567?text=${encodeURIComponent(msg)}`, '_blank');
+                  window.open(getTeacherWhatsAppUrl(selectedTeacherClasses), '_blank');
                 }}
                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-colors"
               >
