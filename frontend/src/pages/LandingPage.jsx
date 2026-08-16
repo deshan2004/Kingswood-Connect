@@ -20,6 +20,8 @@ import {
   Target,
   Compass,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Menu,
   X,
   LogIn,
@@ -151,6 +153,8 @@ const LandingPage = () => {
   const [contactSubmitted, setContactSubmitted] = useState(false);
   const [selectedTeacherVideo, setSelectedTeacherVideo] = useState(null);
   const [selectedTeacherClasses, setSelectedTeacherClasses] = useState(null);
+  const [showAllTeachers, setShowAllTeachers] = useState(false);
+  const [showAllAchievers, setShowAllAchievers] = useState(false);
 
   // Dynamic Admin Panel Data State
   const [classesList, setClassesList] = useState([]);
@@ -474,7 +478,7 @@ const LandingPage = () => {
               Home
             </button>
             <button onClick={() => scrollToSection('about-sir')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
-              Our Faculty
+              Our Teachers
             </button>
             <button onClick={() => scrollToSection('videos')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
               Video Demos
@@ -528,7 +532,7 @@ const LandingPage = () => {
               onClick={() => scrollToSection('about-sir')}
               className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
             >
-              Our Faculty
+              Our Teachers
             </button>
             <button
               onClick={() => scrollToSection('vision-mission')}
@@ -599,7 +603,7 @@ const LandingPage = () => {
                   className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/40 transition-all transform hover:-translate-y-0.5 flex items-center justify-center"
                 >
                   <Users className="w-5 h-5 mr-2 text-indigo-100" />
-                  {cmsSettings?.heroBtn1Text || 'Meet Our Faculty (Sirs)'}
+                  {cmsSettings?.heroBtn1Text || 'Meet Our Teachers (Sirs)'}
                 </button>
 
                 <button
@@ -702,7 +706,7 @@ const LandingPage = () => {
               {cmsSettings?.facultyBadge || 'MEET OUR PANEL OF EXPERT SIRS'}
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
-              {cmsSettings?.facultyTitle || 'Distinguished Faculty & Subject Specialists'}
+              {cmsSettings?.facultyTitle || 'Distinguished Teachers & Subject Specialists'}
             </h2>
             <p className="text-slate-600 text-base sm:text-lg">
               {cmsSettings?.facultySub || "Our institute brings together top Sri Lankan educators dedicated to guiding students from Grade 1 to Grade 13 across all core subjects and academic streams."}
@@ -711,7 +715,7 @@ const LandingPage = () => {
 
           {/* Faculty Cards Grid */}
           <div className="grid md:grid-cols-3 gap-8">
-            {activeTeachers.map((teacher, idx) => {
+            {(showAllTeachers ? activeTeachers : activeTeachers.slice(0, 3)).map((teacher, idx) => {
               const badgeColors = ['bg-indigo-600', 'bg-blue-600', 'bg-emerald-600'];
               const cardBadgeColor = teacher.badgeColor || badgeColors[idx % badgeColors.length];
               const teacherImg = teacher.image || teacher.photo || '/kc-logo.png';
@@ -789,6 +793,23 @@ const LandingPage = () => {
               );
             })}
           </div>
+
+          {/* Expand / Collapse Button for Faculty */}
+          {activeTeachers.length > 3 && (
+            <div className="mt-10 text-center">
+              <button
+                type="button"
+                onClick={() => setShowAllTeachers(!showAllTeachers)}
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm transition-all shadow-lg shadow-indigo-600/20 active:scale-95 cursor-pointer"
+              >
+                {showAllTeachers ? (
+                  <>Show Less Teachers <ChevronUp size={18} /></>
+                ) : (
+                  <>View All {activeTeachers.length} Teachers <ChevronDown size={18} /></>
+                )}
+              </button>
+            </div>
+          )}
 
         </div>
       </section>
@@ -973,7 +994,7 @@ const LandingPage = () => {
 
           {/* Rank Showcase Cards Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {activeAchievers.map((ach, idx) => (
+            {(showAllAchievers ? activeAchievers : activeAchievers.slice(0, 4)).map((ach, idx) => (
               <div key={idx} className="rounded-2xl bg-white border border-slate-200 hover:border-amber-400 p-5 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-xl group">
                 <div className="relative rounded-xl overflow-hidden mb-4 bg-slate-900 h-56 flex items-center justify-center">
                   <img
@@ -995,6 +1016,23 @@ const LandingPage = () => {
               </div>
             ))}
           </div>
+
+          {/* Expand / Collapse Button for Top Achievers */}
+          {activeAchievers.length > 4 && (
+            <div className="mt-8 text-center">
+              <button
+                type="button"
+                onClick={() => setShowAllAchievers(!showAllAchievers)}
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-extrabold text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95 cursor-pointer"
+              >
+                {showAllAchievers ? (
+                  <>Show Less Achievers <ChevronUp size={18} /></>
+                ) : (
+                  <>View All {activeAchievers.length} Top Rankers 🏆 <ChevronDown size={18} /></>
+                )}
+              </button>
+            </div>
+          )}
 
           {/* Call-to-action Banner */}
           <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-indigo-950 via-indigo-900 to-slate-900 border border-indigo-800/50 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
@@ -1410,7 +1448,7 @@ const LandingPage = () => {
 
             <div className="flex flex-wrap justify-center gap-6 text-indigo-200 font-semibold">
               <button onClick={() => scrollToSection('home')} className="hover:text-white transition-colors">Home</button>
-              <button onClick={() => scrollToSection('about-sir')} className="hover:text-white transition-colors">Our Faculty</button>
+              <button onClick={() => scrollToSection('about-sir')} className="hover:text-white transition-colors">Our Teachers</button>
               <button onClick={() => scrollToSection('vision-mission')} className="hover:text-white transition-colors">Vision & Mission</button>
               <button onClick={() => scrollToSection('results')} className="hover:text-white transition-colors">Results</button>
               <Link to="/login" className="text-blue-400 font-bold hover:underline">Portal Log In</Link>
