@@ -264,13 +264,24 @@ const LandingPage = () => {
   };
 
   const getTeacherWhatsAppUrl = (teacher, customMsg) => {
-    const rawNum = teacher?.contact || teacher?.phone || teacher?.whatsapp || cmsSettings?.whatsapp || '94771234567';
+    // Cross-reference with teachersList (registered teacher accounts from /api/teachers)
+    const registeredTeacher = (teachersList || []).find(t => 
+      (t.teacherId && teacher?.teacherId && t.teacherId === teacher.teacherId) ||
+      (t.name && teacher?.name && t.name.toLowerCase().trim() === teacher.name.toLowerCase().trim())
+    );
+
+    const rawNum = registeredTeacher?.contact || registeredTeacher?.phone || teacher?.contact || teacher?.phone || teacher?.whatsapp || cmsSettings?.whatsapp || '94771234567';
     let cleanNum = String(rawNum).replace(/[^0-9]/g, '');
 
     if (cleanNum.startsWith('0')) {
       cleanNum = '94' + cleanNum.substring(1);
     } else if (!cleanNum.startsWith('94') && cleanNum.length === 9) {
       cleanNum = '94' + cleanNum;
+    }
+
+    if (!cleanNum || cleanNum.length < 9) {
+      const normalNum = (cmsSettings?.whatsapp || '+94771234567').replace(/[^0-9]/g, '');
+      cleanNum = normalNum.startsWith('0') ? '94' + normalNum.substring(1) : normalNum;
     }
 
     const defaultMsg = `Hello ${teacher?.name || 'Sir'}! 👋\n\nI would like to inquire / join your (${teacher?.subject || 'Tuition'}) classes at Kingswood Connect.`;
