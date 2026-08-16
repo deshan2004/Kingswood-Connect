@@ -337,26 +337,28 @@ ${autoLoginLink}
     });
   };
 
-  const filteredStudents = students.filter(student => {
-    // Filter by class
-    if (filterClass !== 'all') {
-      if (!student.enrolledClasses || !student.enrolledClasses.includes(filterClass)) {
-        return false;
+  const filteredStudents = students
+    .filter(student => {
+      // Filter by class
+      if (filterClass !== 'all') {
+        if (!student.enrolledClasses || !student.enrolledClasses.includes(filterClass)) {
+          return false;
+        }
       }
-    }
-    
-    // Filter by search query
-    if (searchQuery.trim() !== '') {
-      const query = searchQuery.toLowerCase();
-      const matchesSearch = 
-        (student.name && student.name.toLowerCase().includes(query)) ||
-        (student.studentId && student.studentId.toLowerCase().includes(query)) ||
-        (student.contact && student.contact.includes(query));
-      if (!matchesSearch) return false;
-    }
-    
-    return true;
-  });
+      
+      // Filter by search query
+      if (searchQuery.trim() !== '') {
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = 
+          (student.name && student.name.toLowerCase().includes(query)) ||
+          (student.studentId && student.studentId.toLowerCase().includes(query)) ||
+          (student.contact && student.contact.includes(query));
+        if (!matchesSearch) return false;
+      }
+      
+      return true;
+    })
+    .sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-12 relative">

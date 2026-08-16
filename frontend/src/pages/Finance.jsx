@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { CreditCard, Receipt, Wallet, ArrowRight, ShieldCheck, CheckCircle2, FileText, AlertCircle, MessageSquare, BarChart3 } from 'lucide-react';
+import { CreditCard, Receipt, Wallet, ArrowRight, ShieldCheck, CheckCircle2, FileText, AlertCircle, MessageSquare, BarChart3, Eye, EyeOff, Lock } from 'lucide-react';
 import { format } from 'date-fns';
 import Select from 'react-select';
 
@@ -29,11 +29,12 @@ const Finance = () => {
 
   // Breakdown State
   const [breakdownMonth, setBreakdownMonth] = useState(format(new Date(), 'yyyy-MM'));
-  const [breakdownDate, setBreakdownDate] = useState('');
+  const [breakdownDate, setBreakdownDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [breakdownSearch, setBreakdownSearch] = useState('');
   const [expandedClassId, setExpandedClassId] = useState(null);
   const [breakdownData, setBreakdownData] = useState(null);
   const [breakdownLoading, setBreakdownLoading] = useState(false);
+  const [showSensitiveFinancials, setShowSensitiveFinancials] = useState(false);
 
   const fetchClassBreakdown = async () => {
     setBreakdownLoading(true);
@@ -519,6 +520,31 @@ Thank you for your prompt payment!
             </div>
             
             <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+              <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-extrabold shadow-inner">
+                <button
+                  type="button"
+                  onClick={() => setBreakdownDate(format(new Date(), 'yyyy-MM-dd'))}
+                  className={`px-3 py-1.5 rounded-xl transition-all ${
+                    breakdownDate === format(new Date(), 'yyyy-MM-dd')
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  ⚡ Today Only (24h Reset)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBreakdownDate('')}
+                  className={`px-3 py-1.5 rounded-xl transition-all ${
+                    !breakdownDate
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  🗓️ Entire Month
+                </button>
+              </div>
+
               <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
                 <label className="text-[11px] font-bold text-slate-500 uppercase">Month:</label>
                 <input
@@ -533,7 +559,7 @@ Thank you for your prompt payment!
               </div>
 
               <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
-                <label className="text-[11px] font-bold text-slate-500 uppercase">Specific Date:</label>
+                <label className="text-[11px] font-bold text-slate-500 uppercase">Custom Date:</label>
                 <input
                   type="date"
                   value={breakdownDate}
@@ -555,12 +581,25 @@ Thank you for your prompt payment!
           {/* Summary Stat Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-                {breakdownDate ? `Total Revenue (${breakdownDate})` : `Total Revenue (${format(new Date(breakdownMonth), 'MMMM yyyy')})`}
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+                <span>
+                  {breakdownDate
+                    ? (breakdownDate === format(new Date(), 'yyyy-MM-dd') ? "Today's Daily Collection" : `Daily Revenue (${breakdownDate})`)
+                    : `Monthly Revenue (${format(new Date(breakdownMonth), 'MMMM yyyy')})`}
+                </span>
+                {breakdownDate === format(new Date(), 'yyyy-MM-dd') && (
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-full">
+                    LIVE TODAY
+                  </span>
+                )}
               </p>
               <h3 className="text-3xl font-black text-slate-800">Rs. {(breakdownData?.totalCollectedAll || 0).toLocaleString()}</h3>
-              <p className="text-xs font-semibold text-slate-500 mt-1">
-                {breakdownDate ? `Exact Daily Collection` : `Monthly Cumulative Collection`}
+              <p className="text-xs font-semibold text-indigo-600 mt-1">
+                {breakdownDate === format(new Date(), 'yyyy-MM-dd')
+                  ? "⚡ Resets automatically to 0 every midnight (24h)"
+                  : breakdownDate
+                  ? `Exact Single Day Collection`
+                  : `Monthly Cumulative Collection`}
               </p>
             </div>
 
@@ -580,15 +619,41 @@ Thank you for your prompt payment!
           {/* Breakdown Table */}
           <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
             <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <h4 className="font-extrabold text-slate-800 text-lg">Class-Wise Money Collection Table</h4>
-              <div className="w-full sm:w-72">
-                <input
-                  type="text"
-                  placeholder="Search class, teacher, or grade..."
-                  value={breakdownSearch}
-                  onChange={(e) => setBreakdownSearch(e.target.value)}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none"
-                />
+              <div>
+                <h4 className="font-extrabold text-slate-800 text-lg flex flex-wrap items-center gap-2">
+                  Class-Wise Money Collection Table
+                  {!showSensitiveFinancials && (
+                    <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-amber-200">
+                      <Lock size={10} /> Teacher Income Privacy Protected
+                    </span>
+                  )}
+                </h4>
+              </div>
+
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => setShowSensitiveFinancials(!showSensitiveFinancials)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-extrabold transition-all shadow-sm shrink-0 ${
+                    showSensitiveFinancials 
+                      ? 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200' 
+                      : 'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100'
+                  }`}
+                  title="Toggle visibility of Teacher Cut and Institute Net"
+                >
+                  {showSensitiveFinancials ? <EyeOff size={14} /> : <Eye size={14} />}
+                  {showSensitiveFinancials ? 'Hide Income Share' : 'Show Sensitive Income'}
+                </button>
+
+                <div className="w-full sm:w-64">
+                  <input
+                    type="text"
+                    placeholder="Search class, teacher, or grade..."
+                    value={breakdownSearch}
+                    onChange={(e) => setBreakdownSearch(e.target.value)}
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-500 outline-none"
+                  />
+                </div>
               </div>
             </div>
 
@@ -606,8 +671,12 @@ Thank you for your prompt payment!
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Fee Structure</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Paid Count</th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Total Collected</th>
-                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Teacher Cut</th>
-                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Institute Net</th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
+                        Teacher Cut {!showSensitiveFinancials && <Lock size={10} className="inline text-amber-500 ml-1" />}
+                      </th>
+                      <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">
+                        Institute Net {!showSensitiveFinancials && <Lock size={10} className="inline text-amber-500 ml-1" />}
+                      </th>
                       <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Daily View</th>
                     </tr>
                   </thead>
@@ -647,10 +716,22 @@ Thank you for your prompt payment!
                                 Rs. {c.totalCollected.toLocaleString()}
                               </td>
                               <td className="py-4 px-6 text-right font-bold text-violet-700">
-                                Rs. {c.teacherCut.toLocaleString()}
+                                {showSensitiveFinancials ? (
+                                  `Rs. ${c.teacherCut.toLocaleString()}`
+                                ) : (
+                                  <span className="inline-flex items-center text-slate-400 font-mono text-xs tracking-widest bg-slate-100 px-2 py-0.5 rounded border border-slate-200" title="Teacher Cut Hidden for Privacy">
+                                    ••••••
+                                  </span>
+                                )}
                               </td>
                               <td className="py-4 px-6 text-right font-black text-emerald-600">
-                                Rs. {c.instituteCut.toLocaleString()}
+                                {showSensitiveFinancials ? (
+                                  `Rs. ${c.instituteCut.toLocaleString()}`
+                                ) : (
+                                  <span className="inline-flex items-center text-slate-400 font-mono text-xs tracking-widest bg-slate-100 px-2 py-0.5 rounded border border-slate-200" title="Institute Net Hidden for Privacy">
+                                    ••••••
+                                  </span>
+                                )}
                               </td>
                               <td className="py-4 px-6 text-center">
                                 <button

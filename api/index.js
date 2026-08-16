@@ -278,6 +278,8 @@ app.get('/api/students', async (req, res) => {
       data.defaultFee = typeof data.defaultFee === 'number' ? data.defaultFee : defaults.defaultFee;
       students.push(data);
     });
+    // Sort students Alphabetically (A to Z by Name)
+    students.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
     res.json(students);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch students' });
@@ -1293,6 +1295,13 @@ app.get('/api/classes', async (req, res) => {
         weeklyFee: struct.isWeekly ? struct.displayFee : Math.round(struct.displayFee / 4)
       });
     });
+    // Sort classes: Most recently added class first (newest at top)
+    classes.sort((a, b) => {
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      if (timeA !== timeB) return timeB - timeA;
+      return (b.classId || '').localeCompare(a.classId || '');
+    });
     res.json(classes);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch classes' });
@@ -1795,9 +1804,18 @@ app.get('/api/finance/class-breakdown', async (req, res) => {
         totalCollected,
         teacherCut,
         instituteCut,
-        dailyBreakdown
+        dailyBreakdown,
+        createdAt: cls.createdAt || ''
       });
     }
+
+    // Sort class breakdown: Most recently added class first (newest at top)
+    classBreakdown.sort((a, b) => {
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      if (timeA !== timeB) return timeB - timeA;
+      return (b.classId || '').localeCompare(a.classId || '');
+    });
 
     res.json({
       month,
