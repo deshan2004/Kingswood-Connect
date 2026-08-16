@@ -155,6 +155,7 @@ const LandingPage = () => {
   const [selectedTeacherClasses, setSelectedTeacherClasses] = useState(null);
   const [showAllTeachers, setShowAllTeachers] = useState(false);
   const [showAllAchievers, setShowAllAchievers] = useState(false);
+  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
 
   // Dynamic Admin Panel Data State
   const [classesList, setClassesList] = useState([]);
@@ -704,7 +705,7 @@ const LandingPage = () => {
       )}
 
 
-      {/* Dedicated Section: Sirs' Teaching Methodology & Video Demos */}
+      {/* Dedicated Section: Sirs' Teaching Methodology & Multi-Video Showcase */}
       <section id="videos" className="py-20 bg-slate-900 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -717,79 +718,158 @@ const LandingPage = () => {
               Experience Our Sirs' Class Demonstrations
             </h2>
             <p className="text-indigo-200 text-base sm:text-lg">
-              Watch sample lectures, conceptual explanations, and introduction videos conducted by our expert sirs.
+              Watch sample lectures, conceptual explanations, and introduction videos conducted by our expert sirs. Select any video below to play directly.
             </p>
           </div>
 
-          {/* Single Autoplay Video Player Banner */}
-          <div className="max-w-5xl mx-auto">
-            <div className="relative rounded-3xl overflow-hidden p-2 bg-gradient-to-tr from-indigo-950 via-indigo-600 to-blue-500 shadow-2xl shadow-indigo-950/40">
-              <div className="rounded-2xl overflow-hidden bg-slate-950 relative aspect-video flex items-center justify-center">
-                {(() => {
-                  const rawUrl = cmsSettings?.demoVideoUrl || activeTeachers.find(t => t.videoUrl)?.videoUrl || '';
-                  const hasVideo = rawUrl && !rawUrl.includes('dQw4w9WgXcQ');
+          {/* Multi-Video Showcase Gallery */}
+          <div className="max-w-5xl mx-auto space-y-6">
+            {(() => {
+              // Build comprehensive video list
+              const videoGallery = [
+                ...(cmsSettings?.demoVideoUrl && !cmsSettings.demoVideoUrl.includes('dQw4w9WgXcQ') ? [{
+                  title: 'Kingswood Connect Institute & Learning Environment',
+                  author: 'Main Campus',
+                  category: 'Institute Overview',
+                  videoUrl: cmsSettings.demoVideoUrl
+                }] : []),
 
-                  if (!hasVideo) {
-                    return (
-                      <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-slate-900/90 relative">
-                        <img
-                          src="/kc-logo.png"
-                          alt="Kingswood Connect Preview"
-                          onError={(e) => { e.target.onerror = null; e.target.src = '/kc-logo.png'; }}
-                          className="w-48 sm:w-64 h-auto object-contain drop-shadow-2xl mb-4"
+                ...(Array.isArray(cmsSettings?.demoVideos) ? cmsSettings.demoVideos.filter(v => v && v.videoUrl).map((v, i) => ({
+                  title: v.title || `Class Demonstration #${i + 1}`,
+                  author: v.author || 'Institute Demo',
+                  category: v.category || 'Class Preview',
+                  videoUrl: v.videoUrl
+                })) : []),
+
+                ...activeTeachers.filter(t => t.videoUrl).map(t => ({
+                  title: `${t.name} - ${t.subject} Class Demo`,
+                  author: t.name,
+                  category: t.subject || 'Teacher Demo',
+                  teacherImg: t.image || t.photo,
+                  videoUrl: t.videoUrl
+                }))
+              ];
+
+              // Default fallback if array is empty
+              if (videoGallery.length === 0 && cmsSettings?.demoVideoUrl) {
+                videoGallery.push({
+                  title: 'Kingswood Connect Institute & Learning Environment',
+                  author: 'Main Campus',
+                  category: 'Institute Overview',
+                  videoUrl: cmsSettings.demoVideoUrl
+                });
+              }
+
+              if (videoGallery.length === 0) {
+                return (
+                  <div className="w-full h-56 rounded-3xl bg-slate-950/80 border border-slate-800 flex flex-col items-center justify-center p-6 text-center">
+                    <img src="/kc-logo.png" alt="Kingswood Connect" className="w-36 h-auto object-contain mb-3 opacity-60" />
+                    <p className="text-xs font-bold text-slate-400">Class demonstration videos will appear here once published in Settings.</p>
+                  </div>
+                );
+              }
+
+              const currentVideo = videoGallery[activeVideoIndex % videoGallery.length] || videoGallery[0];
+              const isDirectVideo = currentVideo.videoUrl.startsWith('data:video') ||
+                currentVideo.videoUrl.includes('/api/media/') ||
+                currentVideo.videoUrl.includes('/uploads/') ||
+                currentVideo.videoUrl.endsWith('.mp4') ||
+                currentVideo.videoUrl.endsWith('.webm') ||
+                currentVideo.videoUrl.endsWith('.mov');
+
+              return (
+                <div className="space-y-6">
+                  {/* Featured Main Video Player */}
+                  <div className="relative rounded-3xl overflow-hidden p-2 bg-gradient-to-tr from-indigo-950 via-indigo-600 to-blue-500 shadow-2xl shadow-indigo-950/40">
+                    <div className="rounded-2xl overflow-hidden bg-slate-950 relative aspect-video flex items-center justify-center">
+                      {isDirectVideo ? (
+                        <video
+                          key={currentVideo.videoUrl}
+                          src={currentVideo.videoUrl}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          controls
+                          className="w-full h-full object-cover"
                         />
-                        <div className="flex items-center gap-2 bg-indigo-600/90 border border-indigo-400/40 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-full shadow-lg">
-                          <Video size={18} /> Kingswood Connect Learning Environment
-                        </div>
+                      ) : (
+                        <iframe
+                          key={currentVideo.videoUrl}
+                          src={getEmbedVideoUrl(currentVideo.videoUrl)}
+                          title={currentVideo.title}
+                          className="w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Active Video Info Bar */}
+                  <div className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left shadow-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0 text-indigo-400">
+                        <Play size={20} className="fill-indigo-400 text-indigo-400" />
                       </div>
-                    );
-                  }
+                      <div>
+                        <h4 className="font-extrabold text-sm sm:text-base text-white">{currentVideo.title}</h4>
+                        <p className="text-xs text-indigo-200 font-bold flex items-center gap-2 mt-0.5">
+                          <span>{currentVideo.author}</span> • <span className="bg-indigo-900/60 px-2 py-0.5 rounded-md text-[10px] uppercase border border-indigo-700/50">{currentVideo.category}</span>
+                        </p>
+                      </div>
+                    </div>
+                    <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 shrink-0">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                      PLAYING LIVE DEMO
+                    </span>
+                  </div>
 
-                  const isDirectVideo = rawUrl.startsWith('data:video') || rawUrl.endsWith('.mp4') || rawUrl.endsWith('.webm') || rawUrl.endsWith('.mov');
-
-                  if (isDirectVideo) {
-                    return (
-                      <video
-                        src={rawUrl}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        controls
-                        className="w-full h-full object-cover"
-                      />
-                    );
-                  }
-
-                  return (
-                    <iframe
-                      src={getEmbedVideoUrl(rawUrl)}
-                      title="Kingswood Connect Class Demonstration"
-                      className="w-full h-full border-0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  );
-                })()}
-              </div>
-            </div>
-
-            {/* Video Footer Info Bar */}
-            <div className="mt-4 p-4 rounded-2xl bg-slate-800/80 border border-slate-700/60 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0">
-                  <Play size={20} className="fill-indigo-400 text-indigo-400" />
+                  {/* Interactive Multi-Video Selector Thumbnails */}
+                  {videoGallery.length > 1 && (
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-extrabold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
+                          <Video size={14} className="text-indigo-400" /> Select Demonstration Video ({videoGallery.length})
+                        </h4>
+                        <span className="text-[11px] font-semibold text-slate-400">Click any card to play directly</span>
+                      </div>
+                      
+                      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {videoGallery.map((vid, idx) => {
+                          const isSelected = idx === (activeVideoIndex % videoGallery.length);
+                          return (
+                            <div
+                              key={idx}
+                              onClick={() => setActiveVideoIndex(idx)}
+                              className={`p-3.5 rounded-2xl cursor-pointer transition-all border flex items-center gap-3 group ${
+                                isSelected
+                                  ? 'bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 border-indigo-400 shadow-lg shadow-indigo-500/30 ring-2 ring-indigo-500/30'
+                                  : 'bg-slate-800/60 border-slate-700/80 hover:bg-slate-800 hover:border-indigo-400/60'
+                              }`}
+                            >
+                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
+                                isSelected ? 'bg-indigo-600 text-white border-indigo-400 shadow-md' : 'bg-slate-900 text-indigo-400 border-slate-700 group-hover:bg-indigo-600 group-hover:text-white'
+                              }`}>
+                                <Play size={16} className={isSelected ? 'fill-white' : ''} />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <h5 className={`text-xs truncate transition-colors ${isSelected ? 'text-white font-extrabold' : 'text-slate-200 font-bold group-hover:text-white'}`}>
+                                  {vid.title}
+                                </h5>
+                                <p className="text-[11px] text-indigo-300 font-semibold truncate mt-0.5">
+                                  {vid.author}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <h4 className="text-sm font-bold text-white">Kingswood Connect Institute Class Demonstration</h4>
-                  <p className="text-xs text-indigo-200">Continuous Autoplay Preview • Unmute player controls for sound</p>
-                </div>
-              </div>
-              <span className="px-3.5 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 self-center sm:self-auto">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                AUTOPLAY DEMO
-              </span>
-            </div>
+              );
+            })()}
           </div>
         </div>
       </section>

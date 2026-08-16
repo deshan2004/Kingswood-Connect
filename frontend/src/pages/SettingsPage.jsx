@@ -456,6 +456,21 @@ const SettingsPage = () => {
   };
 
   // Helper List Item Handlers
+  const addDemoVideo = () => {
+    setCmsData({
+      ...cmsData,
+      demoVideos: [
+        ...(cmsData.demoVideos || []),
+        { title: 'Class Demonstration Video', author: 'Institute Demo', category: 'Class Preview', videoUrl: '' }
+      ]
+    });
+  };
+
+  const removeDemoVideo = (index) => {
+    const updated = (cmsData.demoVideos || []).filter((_, i) => i !== index);
+    setCmsData({ ...cmsData, demoVideos: updated });
+  };
+
   const addTeacher = () => {
     setCmsData({
       ...cmsData,
@@ -1446,16 +1461,98 @@ const SettingsPage = () => {
                       />
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">🎥 Institute Demo Video URL (YouTube / Vimeo)</label>
-                        <input
-                          type="text"
-                          value={cmsData.demoVideoUrl || ''}
-                          onChange={(e) => setCmsData({ ...cmsData, demoVideoUrl: e.target.value })}
-                          placeholder="e.g. https://www.youtube.com/watch?v=..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium"
-                        />
+                    <div className="space-y-4 pt-2">
+                      <VideoUploadInput
+                        label="🎥 Main Institute Showcase Demo Video (Upload MP4 or Paste YouTube Link)"
+                        value={cmsData.demoVideoUrl || ''}
+                        onChange={(val) => setCmsData({ ...cmsData, demoVideoUrl: val })}
+                      />
+
+                      {/* Additional Video Gallery Items */}
+                      <div className="pt-4 border-t border-indigo-100 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h5 className="text-sm font-bold text-slate-800">Additional Class Demo Videos ({cmsData.demoVideos?.length || 0})</h5>
+                            <p className="text-xs text-slate-500">Add multiple sample lecture clips, experiment videos, or teacher showcases for students to watch directly on the landing page.</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={addDemoVideo}
+                            className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+                          >
+                            <Plus size={14} /> Add Demo Video
+                          </button>
+                        </div>
+
+                        <div className="space-y-4">
+                          {(cmsData.demoVideos || []).map((v, idx) => (
+                            <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 relative group">
+                              <button
+                                type="button"
+                                onClick={() => removeDemoVideo(idx)}
+                                className="absolute top-3 right-3 p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                title="Remove Video"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+
+                              <div className="grid sm:grid-cols-3 gap-3">
+                                <div>
+                                  <label className="block text-[11px] font-bold text-slate-600">Video Title</label>
+                                  <input
+                                    type="text"
+                                    value={v.title}
+                                    onChange={(e) => {
+                                      const copy = [...(cmsData.demoVideos || [])];
+                                      copy[idx].title = e.target.value;
+                                      setCmsData({ ...cmsData, demoVideos: copy });
+                                    }}
+                                    placeholder="e.g. Physics Experiment Demo"
+                                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-white border border-slate-300 font-bold"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[11px] font-bold text-slate-600">Presenter / Sir Name</label>
+                                  <input
+                                    type="text"
+                                    value={v.author}
+                                    onChange={(e) => {
+                                      const copy = [...(cmsData.demoVideos || [])];
+                                      copy[idx].author = e.target.value;
+                                      setCmsData({ ...cmsData, demoVideos: copy });
+                                    }}
+                                    placeholder="e.g. Dr. Nimal Wickramasinghe"
+                                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-white border border-slate-300"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[11px] font-bold text-slate-600">Category Tag</label>
+                                  <input
+                                    type="text"
+                                    value={v.category}
+                                    onChange={(e) => {
+                                      const copy = [...(cmsData.demoVideos || [])];
+                                      copy[idx].category = e.target.value;
+                                      setCmsData({ ...cmsData, demoVideos: copy });
+                                    }}
+                                    placeholder="e.g. Physics Demo / O/L Science"
+                                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-white border border-slate-300"
+                                  />
+                                </div>
+                              </div>
+
+                              <VideoUploadInput
+                                label="Video File / YouTube Link"
+                                value={v.videoUrl || ''}
+                                onChange={(val) => {
+                                  const copy = [...(cmsData.demoVideos || [])];
+                                  copy[idx].videoUrl = val;
+                                  setCmsData({ ...cmsData, demoVideos: copy });
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
                       <div>

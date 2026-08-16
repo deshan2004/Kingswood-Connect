@@ -2198,6 +2198,7 @@ const defaultLandingSettings = {
   announcementText: '🚀 New G.C.E. O/L & A/L 2026/2027 Batches Registration Now Open! Enroll Online Today.',
   siteLogo: '',
   demoVideoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  demoVideos: [],
   prospectusUrl: '',
 
   // Social Media Links
@@ -2462,6 +2463,14 @@ const processBase64MediaFields = async (data) => {
 
   if (copy.demoVideoUrl) copy.demoVideoUrl = await saveBase64ToMedia(copy.demoVideoUrl);
   if (copy.siteLogo) copy.siteLogo = await saveBase64ToMedia(copy.siteLogo);
+
+  if (Array.isArray(copy.demoVideos)) {
+    for (let i = 0; i < copy.demoVideos.length; i++) {
+      if (copy.demoVideos[i].videoUrl) {
+        copy.demoVideos[i].videoUrl = await saveBase64ToMedia(copy.demoVideos[i].videoUrl);
+      }
+    }
+  }
 
   if (Array.isArray(copy.teachers)) {
     for (let i = 0; i < copy.teachers.length; i++) {
