@@ -198,7 +198,7 @@ const VideoUploadInput = ({ label, value, onChange }) => {
     reader.readAsDataURL(file);
   };
 
-  const isUploadedVideo = value && (value.startsWith('data:video') || value.startsWith('/uploads/') || value.endsWith('.mp4') || value.endsWith('.webm') || value.endsWith('.mov'));
+  const isUploadedVideo = value && (value.startsWith('data:video') || value.includes('/api/media/') || value.includes('/uploads/') || value.endsWith('.mp4') || value.endsWith('.webm') || value.endsWith('.mov'));
   const embedUrl = getEmbedVideoUrl(value);
 
   return (
@@ -1462,8 +1462,24 @@ const SettingsPage = () => {
                     </div>
 
                     <div className="space-y-4 pt-2">
+                      <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                        <div>
+                          <label htmlFor="enableVideoAutoplay" className="text-xs font-bold text-slate-800 cursor-pointer block">
+                            ▶️ Enable Automatic Video Autoplay on Landing Page
+                          </label>
+                          <p className="text-[11px] text-slate-500">When turned OFF, videos remain paused until students click the play button.</p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          id="enableVideoAutoplay"
+                          checked={cmsData.enableVideoAutoplay || false}
+                          onChange={(e) => setCmsData({ ...cmsData, enableVideoAutoplay: e.target.checked })}
+                          className="w-4 h-4 text-indigo-600 rounded cursor-pointer"
+                        />
+                      </div>
+
                       <VideoUploadInput
-                        label="🎥 Main Institute Showcase Demo Video (Upload MP4 or Paste YouTube Link)"
+                        label="🎥 Main Institute Showcase Video (Upload MP4 or Paste YouTube Link)"
                         value={cmsData.demoVideoUrl || ''}
                         onChange={(val) => setCmsData({ ...cmsData, demoVideoUrl: val })}
                       />

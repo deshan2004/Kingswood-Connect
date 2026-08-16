@@ -38,8 +38,8 @@ import {
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-const getEmbedVideoUrl = (url) => {
-  if (!url) return 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ';
+const getEmbedVideoUrl = (url, autoplay = false) => {
+  if (!url) return `https://www.youtube.com/embed/dQw4w9WgXcQ${autoplay ? '?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ' : ''}`;
   if (url.startsWith('data:video') || url.includes('/api/media/') || url.includes('/uploads/') || url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov')) return url;
   
   let videoId = '';
@@ -54,15 +54,15 @@ const getEmbedVideoUrl = (url) => {
   }
 
   if (videoId) {
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=1&rel=0`;
+    return `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&mute=${autoplay ? 1 : 0}&loop=1&playlist=${videoId}&controls=1&rel=0`;
   }
   
   if (url.includes('vimeo.com/')) {
     const vId = url.split('vimeo.com/')[1]?.split('?')[0];
-    return `https://player.vimeo.com/video/${vId}?autoplay=1&muted=1&loop=1`;
+    return `https://player.vimeo.com/video/${vId}?autoplay=${autoplay ? 1 : 0}&muted=${autoplay ? 1 : 0}&loop=1`;
   }
 
-  return url.includes('?') ? `${url}&autoplay=1&mute=1` : `${url}?autoplay=1&mute=1`;
+  return url;
 };
 
 const getUniversalGoogleMapEmbed = (url, fallbackAddress) => {
@@ -765,6 +765,8 @@ const LandingPage = () => {
                 currentVideo.videoUrl.endsWith('.webm') ||
                 currentVideo.videoUrl.endsWith('.mov');
 
+              const shouldAutoplay = cmsSettings?.enableVideoAutoplay === true;
+
               return (
                 <div className="space-y-6">
                   {/* Featured Main Video Player */}
@@ -774,9 +776,9 @@ const LandingPage = () => {
                         <video
                           key={currentVideo.videoUrl}
                           src={currentVideo.videoUrl}
-                          autoPlay
+                          autoPlay={shouldAutoplay}
                           loop
-                          muted
+                          muted={shouldAutoplay}
                           playsInline
                           controls
                           className="w-full h-full object-cover"
@@ -784,7 +786,7 @@ const LandingPage = () => {
                       ) : (
                         <iframe
                           key={currentVideo.videoUrl}
-                          src={getEmbedVideoUrl(currentVideo.videoUrl)}
+                          src={getEmbedVideoUrl(currentVideo.videoUrl, shouldAutoplay)}
                           title={currentVideo.title}
                           className="w-full h-full border-0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

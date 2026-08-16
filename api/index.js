@@ -2199,6 +2199,7 @@ const defaultLandingSettings = {
   siteLogo: '',
   demoVideoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
   demoVideos: [],
+  enableVideoAutoplay: false,
   prospectusUrl: '',
 
   // Social Media Links
