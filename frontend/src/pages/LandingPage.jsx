@@ -712,10 +712,10 @@ const LandingPage = () => {
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-900/80 border border-indigo-700/60 text-indigo-300 text-xs font-bold uppercase tracking-wider shadow-xs">
               <Video className="w-4 h-4 mr-1 text-indigo-400" />
-              TEACHING METHODOLOGY & DEMOS
+              TEACHING METHODOLOGY & CLASS VIDEOS
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-white">
-              Experience Our Sirs' Class Demonstrations
+              Experience Our Sirs' Class & Lecture Videos
             </h2>
             <p className="text-indigo-200 text-base sm:text-lg">
               Watch sample lectures, conceptual explanations, and introduction videos conducted by our expert sirs. Select any video below to play directly.
@@ -735,16 +735,16 @@ const LandingPage = () => {
                 }] : []),
 
                 ...(Array.isArray(cmsSettings?.demoVideos) ? cmsSettings.demoVideos.filter(v => v && v.videoUrl).map((v, i) => ({
-                  title: v.title || `Class Demonstration #${i + 1}`,
-                  author: v.author || 'Institute Demo',
+                  title: v.title || `Class Video #${i + 1}`,
+                  author: v.author || 'Institute Preview',
                   category: v.category || 'Class Preview',
                   videoUrl: v.videoUrl
                 })) : []),
 
                 ...activeTeachers.filter(t => t.videoUrl).map(t => ({
-                  title: `${t.name} - ${t.subject} Class Demo`,
+                  title: `${t.name} - ${t.subject}`,
                   author: t.name,
-                  category: t.subject || 'Teacher Demo',
+                  category: t.subject || 'Subject Lecture',
                   teacherImg: t.image || t.photo,
                   videoUrl: t.videoUrl
                 }))
@@ -764,7 +764,7 @@ const LandingPage = () => {
                 return (
                   <div className="w-full h-56 rounded-3xl bg-slate-950/80 border border-slate-800 flex flex-col items-center justify-center p-6 text-center">
                     <img src="/kc-logo.png" alt="Kingswood Connect" className="w-36 h-auto object-contain mb-3 opacity-60" />
-                    <p className="text-xs font-bold text-slate-400">Class demonstration videos will appear here once published in Settings.</p>
+                    <p className="text-xs font-bold text-slate-400">Class videos and lectures will appear here once published in Settings.</p>
                   </div>
                 );
               }
@@ -821,7 +821,7 @@ const LandingPage = () => {
                     </div>
                     <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 shrink-0">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                      PLAYING LIVE DEMO
+                      NOW PLAYING
                     </span>
                   </div>
 
@@ -830,7 +830,7 @@ const LandingPage = () => {
                     <div className="space-y-3 pt-2">
                       <div className="flex items-center justify-between">
                         <h4 className="text-xs font-extrabold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
-                          <Video size={14} className="text-indigo-400" /> Select Demonstration Video ({videoGallery.length})
+                          <Video size={14} className="text-indigo-400" /> Select Class Video ({videoGallery.length})
                         </h4>
                         <span className="text-[11px] font-semibold text-slate-400">Click any card to play directly</span>
                       </div>
