@@ -146,8 +146,8 @@ const VideoUploadInput = ({ label, value, onChange }) => {
   const handleFileChange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      if (file.size > 800 * 1024) {
-        alert('Video file size exceeds 800KB. Directly uploading large video files exceeds database document limits. Please paste a YouTube / Vimeo link instead, or select a short clip under 800KB.');
+      if (file.size > 25 * 1024 * 1024) {
+        alert('Video file size exceeds 25MB limit. Please select a video file under 25MB, or paste a YouTube / Vimeo link below.');
         return;
       }
       const reader = new FileReader();
@@ -208,7 +208,7 @@ const VideoUploadInput = ({ label, value, onChange }) => {
                 <Upload size={22} />
               </div>
               <span className="text-xs font-extrabold text-slate-700 group-hover:text-indigo-600 transition-colors">
-                Click to Choose Short Video File (under 800KB)
+                Click to Choose / Upload Video File (up to 25MB)
               </span>
               <span className="text-[11px] font-medium text-slate-400 mt-1">
                 For long videos, paste YouTube or Vimeo link below
