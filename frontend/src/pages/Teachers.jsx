@@ -9,7 +9,7 @@ const Teachers = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState(null);
-  const [newTeacher, setNewTeacher] = useState({ name: '', email: '', password: '', contact: '', subject: '', commissionRate: 50 });
+  const [newTeacher, setNewTeacher] = useState({ name: '', email: '', password: '', confirmPassword: '', contact: '', subject: '', commissionRate: 50 });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -41,6 +41,11 @@ const Teachers = () => {
 
   const handleAddTeacher = async (e) => {
     e.preventDefault();
+    if ((!editingTeacher || newTeacher.password) && newTeacher.password !== newTeacher.confirmPassword) {
+      alert('Passwords do not match! Please make sure Password and Confirm Password are identical.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (editingTeacher) {
@@ -65,7 +70,7 @@ const Teachers = () => {
       }
       setShowModal(false);
       setEditingTeacher(null);
-      setNewTeacher({ name: '', email: '', password: '', contact: '', subject: '', commissionRate: 50 });
+      setNewTeacher({ name: '', email: '', password: '', confirmPassword: '', contact: '', subject: '', commissionRate: 50 });
       fetchTeachers();
     } catch (error) {
       alert(`Failed to ${editingTeacher ? 'update' : 'add'} teacher: ` + (error.response?.data?.error || error.message));
@@ -80,6 +85,7 @@ const Teachers = () => {
       name: teacher.name,
       email: teacher.email || '',
       password: '',
+      confirmPassword: '',
       contact: teacher.contact,
       subject: teacher.subject,
       commissionRate: teacher.commissionRate > 1 ? teacher.commissionRate : Math.round((teacher.commissionRate || 0.5) * 100)
@@ -97,7 +103,7 @@ const Teachers = () => {
         <button 
           onClick={() => {
             setEditingTeacher(null);
-            setNewTeacher({ name: '', email: '', password: '', contact: '', subject: '', commissionRate: 50 });
+            setNewTeacher({ name: '', email: '', password: '', confirmPassword: '', contact: '', subject: '', commissionRate: 50 });
             setShowModal(true);
           }}
           className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center justify-center sm:justify-start transition-all shadow-lg shadow-indigo-200 active:scale-95 w-full sm:w-auto"
@@ -235,6 +241,24 @@ const Teachers = () => {
                   className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
                   placeholder={editingTeacher ? "Leave blank to keep unchanged" : "Minimum 6 characters"}
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Confirm Password</label>
+                <input 
+                  type="password" 
+                  required={!editingTeacher && !!newTeacher.password} // Required when adding or when entering new password
+                  value={newTeacher.confirmPassword || ''}
+                  onChange={(e) => setNewTeacher({...newTeacher, confirmPassword: e.target.value})}
+                  className={`w-full px-4 py-2 bg-slate-50 border rounded-xl focus:ring-2 outline-none ${
+                    newTeacher.confirmPassword && newTeacher.password !== newTeacher.confirmPassword
+                      ? 'border-rose-400 focus:ring-rose-500'
+                      : 'border-slate-200 focus:ring-violet-500'
+                  }`}
+                  placeholder={editingTeacher ? "Re-type new password to confirm" : "Re-type password"}
+                />
+                {newTeacher.confirmPassword && newTeacher.password !== newTeacher.confirmPassword && (
+                  <p className="text-xs font-bold text-rose-500 mt-1">Passwords do not match</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Contact No</label>
