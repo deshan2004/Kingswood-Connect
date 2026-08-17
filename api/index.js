@@ -455,6 +455,17 @@ app.delete('/api/students/:id', async (req, res) => {
     const studentData = doc.data();
     const trashId = `TRASH-STUDENT-${Date.now()}`;
 
+    // Disable linked user Auth account & update users document
+    const usersSnap = await db.collection('users').where('linkedId', '==', id).get();
+    for (const uDoc of usersSnap.docs) {
+      try {
+        await getAuth().updateUser(uDoc.id, { disabled: true });
+      } catch (e) {
+        console.error('Failed to disable Firebase Auth user:', e.message);
+      }
+      await db.collection('users').doc(uDoc.id).update({ disabled: true, status: 'disabled' });
+    }
+
     await db.collection('trash').doc(trashId).set({
       trashId,
       type: 'Student',
@@ -2068,10 +2079,25 @@ app.post('/api/trash/restore/:trashId', async (req, res) => {
 
     if (type === 'Student') {
       await db.collection('students').doc(originalId).set(itemData);
+      // Re-enable linked user Auth account & update users document
+      const usersSnap = await db.collection('users').where('linkedId', '==', originalId).get();
+      for (const uDoc of usersSnap.docs) {
+        try {
+          await getAuth().updateUser(uDoc.id, { disabled: false });
+        } catch (e) {}
+        await db.collection('users').doc(uDoc.id).update({ disabled: false, status: 'active' });
+      }
     } else if (type === 'Material') {
       await db.collection('materials').doc(originalId).set(itemData);
     } else if (type === 'Teacher') {
       await db.collection('teachers').doc(originalId).set(itemData);
+      const usersSnap = await db.collection('users').where('linkedId', '==', originalId).get();
+      for (const uDoc of usersSnap.docs) {
+        try {
+          await getAuth().updateUser(uDoc.id, { disabled: false });
+        } catch (e) {}
+        await db.collection('users').doc(uDoc.id).update({ disabled: false, status: 'active' });
+      }
     } else if (type === 'Class') {
       await db.collection('classes').doc(originalId).set(itemData);
     } else {
@@ -2091,6 +2117,20 @@ app.post('/api/trash/restore/:trashId', async (req, res) => {
 app.delete('/api/trash/:trashId', async (req, res) => {
   try {
     const { trashId } = req.params;
+    const trashDoc = await db.collection('trash').doc(trashId).get();
+    if (trashDoc.exists) {
+      const trashData = trashDoc.data();
+      if (trashData.type === 'Student' || trashData.type === 'Teacher') {
+        const originalId = trashData.originalId;
+        const usersSnap = await db.collection('users').where('linkedId', '==', originalId).get();
+        for (const uDoc of usersSnap.docs) {
+          try {
+            await getAuth().deleteUser(uDoc.id);
+          } catch (e) {}
+          await db.collection('users').doc(uDoc.id).delete();
+        }
+      }
+    }
     await db.collection('trash').doc(trashId).delete();
     res.json({ message: 'Item deleted permanently' });
   } catch (error) {
@@ -2103,11 +2143,20 @@ app.delete('/api/trash/:trashId', async (req, res) => {
 app.delete('/api/trash', async (req, res) => {
   try {
     const snapshot = await db.collection('trash').get();
-    const batch = db.batch();
-    snapshot.docs.forEach(doc => {
-      batch.delete(doc.ref);
-    });
-    await batch.commit();
+    for (const doc of snapshot.docs) {
+      const trashData = doc.data();
+      if (trashData.type === 'Student' || trashData.type === 'Teacher') {
+        const originalId = trashData.originalId;
+        const usersSnap = await db.collection('users').where('linkedId', '==', originalId).get();
+        for (const uDoc of usersSnap.docs) {
+          try {
+            await getAuth().deleteUser(uDoc.id);
+          } catch (e) {}
+          await db.collection('users').doc(uDoc.id).delete();
+        }
+      }
+      await doc.ref.delete();
+    }
     res.json({ message: 'Trash Bin emptied successfully' });
   } catch (error) {
     console.error('Error emptying trash:', error);

@@ -47,26 +47,46 @@ export const AuthProvider = ({ children }) => {
         // Use onSnapshot to instantly react to changes in Firestore (like changing role to 'admin')
         unsubscribeSnapshot = onSnapshot(doc(db, 'users', firebaseUser.uid), 
           async (docSnap) => {
+            const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
+            const isFallbackAdmin = email.includes('admin') || email === 'deshandhakshitha16@gmail.com';
+
             if (docSnap.exists()) {
-               let userData = docSnap.data();
-               
-               // Fetch additional student details if role is student
-               if (userData.role === 'student' && userData.studentId) {
-                 try {
-                   const studentDoc = await getDoc(doc(db, 'students', userData.studentId));
-                   if (studentDoc.exists()) {
-                     userData = { ...userData, ...studentDoc.data() };
-                   }
-                 } catch (err) {
-                   console.error("Failed to fetch student details", err);
-                 }
-               }
-               
-               updateUserState({ ...firebaseUser, ...userData });
+                let userData = docSnap.data();
+                
+                // Check if user account has been disabled or marked deleted
+                if (userData.disabled === true || userData.status === 'disabled') {
+                  console.warn("User account is disabled. Signing out.");
+                  updateUserState(null);
+                  setLoading(false);
+                  signOut(auth).catch(() => {});
+                  return;
+                }
+
+                const role = userData.role || (isFallbackAdmin ? 'admin' : 'student');
+                
+                // Fetch additional student details if role is student
+                if (role === 'student' && userData.studentId) {
+                  try {
+                    const studentDoc = await getDoc(doc(db, 'students', userData.studentId));
+                    if (studentDoc.exists()) {
+                      userData = { ...userData, ...studentDoc.data() };
+                    } else if (docSnap.exists() && userData.role === 'student') {
+                      // Student record was deleted from students collection! Sign out user
+                      console.warn("Student record deleted from database. Signing out.");
+                      updateUserState(null);
+                      setLoading(false);
+                      signOut(auth).catch(() => {});
+                      return;
+                    }
+                  } catch (err) {
+                    console.error("Failed to fetch student details", err);
+                  }
+                }
+                
+                updateUserState({ ...firebaseUser, ...userData, role });
             } else {
-               // Fallback if user document does not exist yet
-               const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
-               const fallbackRole = (email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
+               // Fallback if user document does not exist yet in Firestore
+               const fallbackRole = isFallbackAdmin ? 'admin' : 'student';
                updateUserState({ ...firebaseUser, role: fallbackRole });
             }
             setLoading(false);
@@ -74,7 +94,7 @@ export const AuthProvider = ({ children }) => {
           (error) => {
              console.error("Error listening to user document:", error);
              const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
-             const fallbackRole = (email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
+             const fallbackRole = (email.includes('admin') || email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
              updateUserState({ ...firebaseUser, role: fallbackRole });
              setLoading(false);
           }
