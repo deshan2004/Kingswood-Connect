@@ -392,15 +392,15 @@ const SettingsPage = () => {
   const [updatingAdmin, setUpdatingAdmin] = useState(false);
 
   const handleDeleteAdmin = (adm) => {
-    if (user?.uid === adm.uid) {
-      setAdminMsg({ type: 'error', text: 'You cannot delete your own logged-in admin account.' });
-      return;
-    }
+    const isSelf = user?.uid === adm.uid;
+    const msg = isSelf
+      ? `⚠️ Warning: You are about to delete your own logged-in admin account ("${adm.name || adm.email}")! If you proceed, you will lose admin access.`
+      : `Are you sure you want to delete admin account "${adm.name || adm.email}"? This will permanently revoke their admin privileges.`;
 
     setConfirmModal({
       isOpen: true,
-      title: 'Remove Admin Access?',
-      message: `Are you sure you want to delete admin account "${adm.name || adm.email}"? This will permanently revoke their admin privileges.`,
+      title: isSelf ? 'Delete Your Own Admin Account?' : 'Remove Admin Access?',
+      message: msg,
       confirmText: 'Delete Admin Account',
       variant: 'danger',
       loading: false,
@@ -1983,24 +1983,22 @@ const SettingsPage = () => {
                         {/* Edit Button */}
                         <button
                           type="button"
-                          onClick={() => setEditingAdmin({ ...adm, newPassword: '' })}
+                          onClick={() => setEditingAdmin({ ...adm })}
                           className="p-2 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all cursor-pointer"
                           title="Edit Admin Account"
                         >
                           <Edit size={14} />
                         </button>
 
-                        {/* Delete Button (disabled for own account) */}
-                        {user?.uid !== adm.uid && (
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteAdmin(adm)}
-                            className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-all cursor-pointer"
-                            title="Delete Admin Account"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        )}
+                        {/* Delete Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteAdmin(adm)}
+                          className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-all cursor-pointer"
+                          title="Delete Admin Account"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
                     </div>
                   ))}

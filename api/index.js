@@ -181,11 +181,6 @@ app.delete('/api/admin/admins/:uid', requireAdminAuth, async (req, res) => {
   try {
     const { uid } = req.params;
 
-    // Prevent deleting your own logged-in admin account
-    if (req.user && req.user.uid === uid) {
-      return res.status(400).json({ error: 'You cannot delete your own active admin account.' });
-    }
-
     // Delete user from Firebase Auth
     await getAuth().deleteUser(uid);
 
