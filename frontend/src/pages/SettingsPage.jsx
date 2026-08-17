@@ -429,8 +429,7 @@ const SettingsPage = () => {
     try {
       const token = auth.currentUser ? await auth.currentUser.getIdToken() : '';
       await axios.put(`${API_URL}/admin/admins/${editingAdmin.uid}`, {
-        name: editingAdmin.name,
-        password: editingAdmin.newPassword || undefined
+        name: editingAdmin.name
       }, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
@@ -2043,17 +2042,6 @@ const SettingsPage = () => {
                   required
                   value={editingAdmin.name}
                   onChange={(e) => setEditingAdmin({ ...editingAdmin, name: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-hidden transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">New Password (Optional)</label>
-                <input
-                  type="password"
-                  placeholder="Leave blank to keep existing password"
-                  value={editingAdmin.newPassword || ''}
-                  onChange={(e) => setEditingAdmin({ ...editingAdmin, newPassword: e.target.value })}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-hidden transition-all"
                 />
               </div>

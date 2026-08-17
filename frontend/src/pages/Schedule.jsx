@@ -33,6 +33,17 @@ const Schedule = () => {
   const [editClassData, setEditClassData] = useState({ name: '', grade: 'Grade 6', teacherId: '', day: 'Monday', startTime: '08:00', endTime: '10:00', fee: 250 });
   const [updating, setUpdating] = useState(false);
 
+  // Confirm Modal state
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    confirmText: 'Delete',
+    variant: 'danger',
+    loading: false,
+    onConfirm: null
+  });
+
   const handleGradeChange = (selectedGrade) => {
     const numbers = selectedGrade.match(/\b(1[0-3]|[1-9])\b/g);
     const gradeNum = numbers ? parseInt(numbers[0], 10) : 6;
