@@ -108,6 +108,17 @@ Thank you for your payment!
   // Filters
   const [filterClass, setFilterClass] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const filteredSuggestions = React.useMemo(() => {
+    if (!searchQuery || searchQuery.trim() === '') return [];
+    const query = searchQuery.toLowerCase().trim();
+    return students.filter(s => 
+      (s.studentId && s.studentId.toLowerCase().includes(query)) ||
+      (s.name && s.name.toLowerCase().includes(query)) ||
+      (s.contact && s.contact.toLowerCase().includes(query))
+    ).slice(0, 8);
+  }, [students, searchQuery]);
 
   const showToast = (type, message) => {
     setToast({ type, message });
@@ -456,16 +467,63 @@ ${autoLoginLink}
         <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50">
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <div className="relative w-full sm:w-64">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 z-10 pointer-events-none">
                 <Search size={18} />
               </span>
               <input 
                 type="text" 
                 placeholder="Search students..." 
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => {
+                  setTimeout(() => setShowSuggestions(false), 250);
+                }}
                 className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors font-medium text-slate-800"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck="false"
               />
+
+              {/* Mobile-Friendly Live Autocomplete Dropdown */}
+              {showSuggestions && filteredSuggestions.length > 0 && (
+                <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden max-h-64 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+                  <div className="p-2 space-y-1">
+                    {filteredSuggestions.map((s) => (
+                      <button
+                        key={s.studentId}
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          setSearchQuery(s.name || s.studentId);
+                          setShowSuggestions(false);
+                        }}
+                        className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-blue-50/70 active:bg-blue-100 text-left transition-colors cursor-pointer group"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-xs flex items-center justify-center shadow-xs">
+                            {s.name ? s.name.charAt(0).toUpperCase() : 'S'}
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
+                              {s.name}
+                            </div>
+                            <div className="text-[11px] text-slate-500 font-medium">
+                              {s.contact || 'No Contact'} • {s.grade || 'Student'}
+                            </div>
+                          </div>
+                        </div>
+                        <span className="px-2 py-0.5 bg-slate-100 group-hover:bg-blue-100 group-hover:text-blue-700 text-slate-600 font-bold text-[10px] rounded-lg transition-colors">
+                          {s.studentId}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="relative w-full sm:w-48">
