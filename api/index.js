@@ -10,8 +10,21 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// Configure secure CORS whitelist
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000', 'https://kingswood-connect.vercel.app'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS policy'));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -60,8 +73,45 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
-// --- Helper Functions ---
+// --- Helper Functions & Security Middlewares ---
 const generateId = (prefix) => `${prefix}-${Math.floor(10000 + Math.random() * 90000)}`;
+
+// Helper: Verify Bearer ID Token sent by client
+const verifyUserToken = async (req) => {
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (!authHeader || typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+  const token = authHeader.split('Bearer ')[1];
+  try {
+    const decodedToken = await getAuth().verifyIdToken(token);
+    return decodedToken;
+  } catch (err) {
+    return null;
+  }
+};
+
+// Middleware: Require Admin Authentication
+const requireAdminAuth = async (req, res, next) => {
+  try {
+    const user = await verifyUserToken(req);
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized: Missing or invalid authentication token' });
+    }
+    
+    // Check role in Firestore users collection
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    const userRole = userDoc.exists ? userDoc.data().role : null;
+    if (userRole !== 'admin' && user.role !== 'admin') {
+      return res.status(403).json({ error: 'Forbidden: Admin privilege required' });
+    }
+    
+    req.user = user;
+    next();
+  } catch (err) {
+    return res.status(500).json({ error: 'Authentication check failed' });
+  }
+};
 
 // --- API Routes ---
 
@@ -1392,8 +1442,26 @@ app.put('/api/classes/:id', async (req, res) => {
 // 7. Firebase Auth Registration (Signup)
 app.post('/api/auth/signup', async (req, res) => {
   try {
-    const { email, password, name, role } = req.body;
+    let { email, password, name, role } = req.body;
     let studentId = null;
+    
+    // SECURITY HARDENING: Prevent unauthenticated users from creating 'admin' or 'teacher' accounts.
+    if (role === 'admin' || role === 'teacher') {
+      const requester = await verifyUserToken(req);
+      let isRequesterAdmin = false;
+      if (requester) {
+        const userDoc = await db.collection('users').doc(requester.uid).get();
+        if (userDoc.exists && userDoc.data()?.role === 'admin') {
+          isRequesterAdmin = true;
+        }
+      }
+      if (!isRequesterAdmin) {
+        // Sanitize role to 'student' if requester is not a verified admin
+        role = 'student';
+      }
+    } else {
+      role = 'student';
+    }
     
     // Create user in Firebase Auth
     const userRecord = await getAuth().createUser({

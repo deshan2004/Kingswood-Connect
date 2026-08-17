@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
             } else {
                // Fallback if user document does not exist yet
                const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
-               const fallbackRole = (email.includes('admin') || email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
+               const fallbackRole = (email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
                updateUserState({ ...firebaseUser, role: fallbackRole });
             }
             setLoading(false);
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
           (error) => {
              console.error("Error listening to user document:", error);
              const email = firebaseUser.email ? firebaseUser.email.toLowerCase() : '';
-             const fallbackRole = (email.includes('admin') || email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
+             const fallbackRole = (email === 'deshandhakshitha16@gmail.com') ? 'admin' : 'student';
              updateUserState({ ...firebaseUser, role: fallbackRole });
              setLoading(false);
           }

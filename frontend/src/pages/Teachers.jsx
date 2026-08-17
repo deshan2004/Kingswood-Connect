@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Calculator, UserCog, Briefcase, GraduationCap, Edit, Trash2 } from 'lucide-react';
+import { auth } from '../config/firebase';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -57,6 +58,9 @@ const Teachers = () => {
 
     setSubmitting(true);
     try {
+      const token = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
       if (editingTeacher) {
         await axios.put(`${API_URL}/teachers/${editingTeacher.teacherId}`, {
           name: newTeacher.name,
@@ -65,7 +69,7 @@ const Teachers = () => {
           contact: newTeacher.contact,
           subject: newTeacher.subject,
           commissionRate: newTeacher.commissionRate / 100
-        });
+        }, { headers });
       } else {
         await axios.post(`${API_URL}/auth/signup`, {
           name: newTeacher.name,
@@ -75,7 +79,7 @@ const Teachers = () => {
           contact: newTeacher.contact,
           subject: newTeacher.subject,
           commissionRate: newTeacher.commissionRate / 100
-        });
+        }, { headers });
       }
       setShowModal(false);
       setEditingTeacher(null);
