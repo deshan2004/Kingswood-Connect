@@ -17,6 +17,17 @@ const Finance = () => {
   const [classesList, setClassesList] = useState([]);
   const [studentStatus, setStudentStatus] = useState([]);
   const [statusLoading, setStatusLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const filteredSuggestions = React.useMemo(() => {
+    if (!studentId || studentId.trim() === '') return [];
+    const query = studentId.toLowerCase().trim();
+    return students.filter(s => 
+      (s.studentId && s.studentId.toLowerCase().includes(query)) ||
+      (s.name && s.name.toLowerCase().includes(query)) ||
+      (s.contact && s.contact.toLowerCase().includes(query))
+    ).slice(0, 8);
+  }, [students, studentId]);
 
   // Tabs & Reports State
   const [activeTab, setActiveTab] = useState('record'); // 'record', 'breakdown', or 'reports'
@@ -245,17 +256,58 @@ Thank you for your cooperation!
                 <input 
                   type="text" 
                   required
-                  list="students-list"
                   value={studentId}
-                  onChange={(e) => setStudentId(e.target.value)}
+                  onChange={(e) => {
+                    setStudentId(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => {
+                    setTimeout(() => setShowSuggestions(false), 250);
+                  }}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all font-medium text-slate-800"
                   placeholder="e.g. KWS-12345, Kamal, or 077..."
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck="false"
                 />
-                <datalist id="students-list">
-                  {students.map(s => (
-                    <option key={s.studentId} value={s.studentId}>{s.name} ({s.contact})</option>
-                  ))}
-                </datalist>
+
+                {/* Mobile-Friendly Live Autocomplete Dropdown */}
+                {showSuggestions && filteredSuggestions.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden max-h-64 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+                    <div className="p-2 space-y-1">
+                      {filteredSuggestions.map((s) => (
+                        <button
+                          key={s.studentId}
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            setStudentId(s.studentId);
+                            setShowSuggestions(false);
+                          }}
+                          className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-indigo-50/70 active:bg-indigo-100 text-left transition-colors cursor-pointer group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-blue-500 text-white font-extrabold text-xs flex items-center justify-center shadow-xs">
+                              {s.name ? s.name.charAt(0).toUpperCase() : 'S'}
+                            </div>
+                            <div>
+                              <div className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                                {s.name}
+                              </div>
+                              <div className="text-xs text-slate-500 font-medium">
+                                {s.contact || 'No Contact'} • {s.grade || 'Student'}
+                              </div>
+                            </div>
+                          </div>
+                          <span className="px-2.5 py-1 bg-slate-100 group-hover:bg-indigo-100 group-hover:text-indigo-700 text-slate-600 font-bold text-xs rounded-lg transition-colors">
+                            {s.studentId}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
               {/* Payment Status Summary */}
