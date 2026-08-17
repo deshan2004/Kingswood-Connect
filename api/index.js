@@ -148,6 +148,57 @@ app.get('/api/admin/admins', requireAdminAuth, async (req, res) => {
   }
 });
 
+// Update admin user account
+app.put('/api/admin/admins/:uid', requireAdminAuth, async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const { name, password } = req.body;
+
+    const updateAuthData = {};
+    if (name) updateAuthData.displayName = name;
+    if (password && password.length >= 6) updateAuthData.password = password;
+
+    if (Object.keys(updateAuthData).length > 0) {
+      await getAuth().updateUser(uid, updateAuthData);
+    }
+
+    const firestoreUpdate = {};
+    if (name) firestoreUpdate.name = name;
+
+    if (Object.keys(firestoreUpdate).length > 0) {
+      await db.collection('users').doc(uid).update(firestoreUpdate);
+    }
+
+    res.json({ message: 'Admin account updated successfully' });
+  } catch (error) {
+    console.error('Update admin error:', error);
+    res.status(500).json({ error: error.message || 'Failed to update admin account' });
+  }
+});
+
+// Delete admin user account
+app.delete('/api/admin/admins/:uid', requireAdminAuth, async (req, res) => {
+  try {
+    const { uid } = req.params;
+
+    // Prevent deleting your own logged-in admin account
+    if (req.user && req.user.uid === uid) {
+      return res.status(400).json({ error: 'You cannot delete your own active admin account.' });
+    }
+
+    // Delete user from Firebase Auth
+    await getAuth().deleteUser(uid);
+
+    // Delete document from Firestore users collection
+    await db.collection('users').doc(uid).delete();
+
+    res.json({ message: 'Admin account removed successfully' });
+  } catch (error) {
+    console.error('Delete admin error:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete admin account' });
+  }
+});
+
 function getGradeFeeStructure(item) {
   let gradeStr = '';
   let nameStr = '';

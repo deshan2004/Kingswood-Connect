@@ -3,13 +3,14 @@ import { useSearchParams } from 'react-router-dom';
 import { 
   Shield, Key, Mail, UserCheck, Layout, Save, CheckCircle2, AlertCircle, 
   Phone, MapPin, Sparkles, Trophy, Compass, Globe, Plus, Trash2, BookOpen, 
-  Users, Award, Zap, MessageSquare, ChevronDown, ChevronUp, Upload, Loader2
+  Users, Award, Zap, MessageSquare, ChevronDown, ChevronUp, Upload, Loader2, Edit, X
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { auth } from '../config/firebase';
 import ChangePassword from '../components/ChangePassword';
 import TrashBin from './TrashBin';
+import ConfirmModal from '../components/ConfirmModal';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -372,6 +373,74 @@ const SettingsPage = () => {
       setAdminMsg({ type: 'error', text: err.response?.data?.error || err.message || 'Failed to create admin account.' });
     } finally {
       setCreatingAdmin(false);
+    }
+  };
+
+  // Confirm Modal state
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    confirmText: 'Delete',
+    variant: 'danger',
+    loading: false,
+    onConfirm: null
+  });
+
+  // Edit Admin State
+  const [editingAdmin, setEditingAdmin] = useState(null);
+  const [updatingAdmin, setUpdatingAdmin] = useState(false);
+
+  const handleDeleteAdmin = (adm) => {
+    if (user?.uid === adm.uid) {
+      setAdminMsg({ type: 'error', text: 'You cannot delete your own logged-in admin account.' });
+      return;
+    }
+
+    setConfirmModal({
+      isOpen: true,
+      title: 'Remove Admin Access?',
+      message: `Are you sure you want to delete admin account "${adm.name || adm.email}"? This will permanently revoke their admin privileges.`,
+      confirmText: 'Delete Admin Account',
+      variant: 'danger',
+      loading: false,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, loading: true }));
+        try {
+          const token = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+          await axios.delete(`${API_URL}/admin/admins/${adm.uid}`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+          });
+          setAdminMsg({ type: 'success', text: `Admin account "${adm.name || adm.email}" removed successfully.` });
+          fetchAdminAccounts();
+        } catch (err) {
+          setAdminMsg({ type: 'error', text: err.response?.data?.error || err.message || 'Failed to delete admin account.' });
+        } finally {
+          setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null, loading: false });
+        }
+      }
+    });
+  };
+
+  const handleUpdateAdminSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingAdmin) return;
+    setUpdatingAdmin(true);
+    try {
+      const token = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+      await axios.put(`${API_URL}/admin/admins/${editingAdmin.uid}`, {
+        name: editingAdmin.name,
+        password: editingAdmin.newPassword || undefined
+      }, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      setAdminMsg({ type: 'success', text: `Admin account "${editingAdmin.name}" updated successfully.` });
+      setEditingAdmin(null);
+      fetchAdminAccounts();
+    } catch (err) {
+      setAdminMsg({ type: 'error', text: err.response?.data?.error || err.message || 'Failed to update admin account.' });
+    } finally {
+      setUpdatingAdmin(false);
     }
   };
 
@@ -1907,9 +1976,33 @@ const SettingsPage = () => {
                         </div>
                       </div>
 
-                      <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200 shrink-0 flex items-center gap-1">
-                        <Shield size={10} /> Admin
-                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1">
+                          <Shield size={10} /> Admin
+                        </span>
+
+                        {/* Edit Button */}
+                        <button
+                          type="button"
+                          onClick={() => setEditingAdmin({ ...adm, newPassword: '' })}
+                          className="p-2 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all cursor-pointer"
+                          title="Edit Admin Account"
+                        >
+                          <Edit size={14} />
+                        </button>
+
+                        {/* Delete Button (disabled for own account) */}
+                        {user?.uid !== adm.uid && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteAdmin(adm)}
+                            className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-all cursor-pointer"
+                            title="Delete Admin Account"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1920,6 +2013,83 @@ const SettingsPage = () => {
 
         </div>
       )}
+
+      {/* Modal: Edit Admin */}
+      {editingAdmin && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200/80 animate-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setEditingAdmin(null)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-all cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl border border-indigo-100">
+                <Edit size={20} />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-slate-900">Edit Admin Account</h3>
+                <p className="text-xs font-semibold text-slate-500">{editingAdmin.email}</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleUpdateAdminSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editingAdmin.name}
+                  onChange={(e) => setEditingAdmin({ ...editingAdmin, name: e.target.value })}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-hidden transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">New Password (Optional)</label>
+                <input
+                  type="password"
+                  placeholder="Leave blank to keep existing password"
+                  value={editingAdmin.newPassword || ''}
+                  onChange={(e) => setEditingAdmin({ ...editingAdmin, newPassword: e.target.value })}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-hidden transition-all"
+                />
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingAdmin(null)}
+                  className="flex-1 py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updatingAdmin}
+                  className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-extrabold text-xs shadow-md shadow-indigo-200 hover:shadow-indigo-300 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {updatingAdmin ? <Loader2 size={16} className="animate-spin" /> : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Global Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        variant={confirmModal.variant}
+        loading={confirmModal.loading}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+      />
 
       {/* TAB: Trash & Recycle Bin */}
       {isAdmin && activeTab === 'trash' && (

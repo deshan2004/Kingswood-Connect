@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Calculator, UserCog, Briefcase, GraduationCap, Edit, Trash2 } from 'lucide-react';
 import { auth } from '../config/firebase';
+import ConfirmModal from '../components/ConfirmModal';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -12,6 +13,15 @@ const Teachers = () => {
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [newTeacher, setNewTeacher] = useState({ name: '', email: '', password: '', confirmPassword: '', contact: '', subject: '', commissionRate: 50 });
   const [submitting, setSubmitting] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    confirmText: 'Delete',
+    variant: 'danger',
+    loading: false,
+    onConfirm: null
+  });
 
   useEffect(() => {
     fetchTeachers();
@@ -28,16 +38,26 @@ const Teachers = () => {
     }
   };
 
-  const handleDeleteTeacher = async (teacherId, teacherName) => {
-    if (!window.confirm(`Are you sure you want to delete teacher "${teacherName}"? This action cannot be undone.`)) {
-      return;
-    }
-    try {
-      await axios.delete(`${API_URL}/teachers/${teacherId}`);
-      fetchTeachers();
-    } catch (error) {
-      alert('Failed to delete teacher: ' + (error.response?.data?.error || error.message));
-    }
+  const handleDeleteTeacher = (teacherId, teacherName) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Teacher?',
+      message: `Are you sure you want to delete teacher "${teacherName}"? This action cannot be undone.`,
+      confirmText: 'Delete Teacher',
+      variant: 'danger',
+      loading: false,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, loading: true }));
+        try {
+          await axios.delete(`${API_URL}/teachers/${teacherId}`);
+          fetchTeachers();
+        } catch (error) {
+          alert('Failed to delete teacher: ' + (error.response?.data?.error || error.message));
+        } finally {
+          setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null, loading: false });
+        }
+      }
+    });
   };
 
   const handleAddTeacher = async (e) => {
@@ -206,6 +226,8 @@ const Teachers = () => {
             </table>
           </div>
         )}
+      </div>
+
       {/* Add Teacher Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
@@ -320,7 +342,18 @@ const Teachers = () => {
           </div>
         </div>
       )}
-    </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        variant={confirmModal.variant}
+        loading={confirmModal.loading}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 };

@@ -48,16 +48,26 @@ const Schedule = () => {
     }));
   };
 
-  const handleDeleteClass = async (classId, className) => {
-    if (!window.confirm(`Are you sure you want to delete class "${className}"? This action cannot be undone.`)) {
-      return;
-    }
-    try {
-      await axios.delete(`${API_URL}/classes/${classId}`);
-      fetchData();
-    } catch (error) {
-      alert('Failed to delete class: ' + (error.response?.data?.error || error.message));
-    }
+  const handleDeleteClass = (classId, className) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Class?',
+      message: `Are you sure you want to delete class "${className}"? This action cannot be undone.`,
+      confirmText: 'Delete Class',
+      variant: 'danger',
+      loading: false,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, loading: true }));
+        try {
+          await axios.delete(`${API_URL}/classes/${classId}`);
+          fetchData();
+        } catch (error) {
+          console.error('Failed to delete class:', error);
+        } finally {
+          setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null, loading: false });
+        }
+      }
+    });
   };
 
   // Helper to format 24h time string to 12h AM/PM
@@ -669,6 +679,18 @@ const Schedule = () => {
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        variant={confirmModal.variant}
+        loading={confirmModal.loading}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 };
