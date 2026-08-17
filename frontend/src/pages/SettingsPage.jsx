@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { auth } from '../config/firebase';
 import ChangePassword from '../components/ChangePassword';
 import TrashBin from './TrashBin';
 
@@ -307,6 +308,73 @@ const SettingsPage = () => {
     }
   }, [paramTab]);
 
+  // Admin Management State
+  const [adminList, setAdminList] = useState([]);
+  const [loadingAdmins, setLoadingAdmins] = useState(false);
+  const [newAdmin, setNewAdmin] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [creatingAdmin, setCreatingAdmin] = useState(false);
+  const [adminMsg, setAdminMsg] = useState({ type: '', text: '' });
+
+  const fetchAdminAccounts = async () => {
+    setLoadingAdmins(true);
+    try {
+      const token = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+      const res = await axios.get(`${API_URL}/admin/admins`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      setAdminList(res.data || []);
+    } catch (err) {
+      console.error('Failed to fetch admins:', err);
+    } finally {
+      setLoadingAdmins(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAdmin && activeTab === 'admins') {
+      fetchAdminAccounts();
+    }
+  }, [isAdmin, activeTab]);
+
+  const handleCreateAdmin = async (e) => {
+    e.preventDefault();
+    setAdminMsg({ type: '', text: '' });
+
+    if (!newAdmin.name.trim() || !newAdmin.email.trim() || !newAdmin.password) {
+      setAdminMsg({ type: 'error', text: 'Please fill in all required fields.' });
+      return;
+    }
+    if (newAdmin.password.length < 6) {
+      setAdminMsg({ type: 'error', text: 'Password must be at least 6 characters long.' });
+      return;
+    }
+    if (newAdmin.password !== newAdmin.confirmPassword) {
+      setAdminMsg({ type: 'error', text: 'Passwords do not match.' });
+      return;
+    }
+
+    setCreatingAdmin(true);
+    try {
+      const token = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+      await axios.post(`${API_URL}/auth/signup`, {
+        name: newAdmin.name.trim(),
+        email: newAdmin.email.trim(),
+        password: newAdmin.password,
+        role: 'admin'
+      }, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+
+      setAdminMsg({ type: 'success', text: `Admin account for "${newAdmin.name}" created successfully!` });
+      setNewAdmin({ name: '', email: '', password: '', confirmPassword: '' });
+      fetchAdminAccounts();
+    } catch (err) {
+      setAdminMsg({ type: 'error', text: err.response?.data?.error || err.message || 'Failed to create admin account.' });
+    } finally {
+      setCreatingAdmin(false);
+    }
+  };
+
   // Landing Page CMS Comprehensive State
   const [cmsData, setCmsData] = useState({
     heroTagline: '',
@@ -583,6 +651,7 @@ const SettingsPage = () => {
         <div className="p-1.5 bg-slate-200/80 backdrop-blur-md rounded-2xl border border-slate-300/70 shadow-inner flex flex-wrap gap-2">
           {[
             { id: 'cms', label: '100% Landing Page CMS Editor', icon: Layout },
+            { id: 'admins', label: 'Manage Admin Accounts', icon: Shield },
             { id: 'trash', label: 'Trash & Recycle Bin', icon: Trash2 },
             { id: 'security', label: 'Password & Security', icon: Key }
           ].map((tab) => {
@@ -1676,6 +1745,178 @@ const SettingsPage = () => {
 
             </form>
           )}
+
+        </div>
+      )}
+
+      {/* TAB: Manage Admin Accounts */}
+      {isAdmin && activeTab === 'admins' && (
+        <div className="space-y-8 animate-in fade-in duration-200">
+          
+          {/* Header Banner */}
+          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 sm:p-8 rounded-3xl text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-indigo-500/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div className="relative z-10">
+              <h3 className="text-xl sm:text-2xl font-black flex items-center gap-2.5 tracking-tight">
+                <Shield className="text-indigo-400" size={26} /> Manage System Administrator Accounts
+              </h3>
+              <p className="text-xs sm:text-sm text-indigo-200/80 font-medium mt-1">
+                Create and view authorized system administrator accounts with full management privileges.
+              </p>
+            </div>
+            <div className="px-4 py-2 bg-indigo-500/20 border border-indigo-400/30 rounded-2xl text-xs font-black uppercase tracking-wider text-indigo-300 backdrop-blur-md shrink-0">
+              {adminList.length} Active Admins
+            </div>
+          </div>
+
+          {/* Alert Message */}
+          {adminMsg.text && (
+            <div className={`p-4 rounded-2xl border flex items-center gap-3 shadow-sm ${
+              adminMsg.type === 'success' 
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+                : 'bg-rose-50 border-rose-200 text-rose-800'
+            }`}>
+              {adminMsg.type === 'success' ? <CheckCircle2 size={20} className="text-emerald-600 shrink-0" /> : <AlertCircle size={20} className="text-rose-600 shrink-0" />}
+              <span className="text-xs sm:text-sm font-bold">{adminMsg.text}</span>
+            </div>
+          )}
+
+          {/* Grid Layout: Create Admin Form + Admins List */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {/* Form Column */}
+            <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+              <div>
+                <h4 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                  <UserCheck className="text-indigo-600" size={18} /> Create New Admin
+                </h4>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">Enter details to grant system admin permissions.</p>
+              </div>
+
+              <form onSubmit={handleCreateAdmin} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Admin Name"
+                    value={newAdmin.name}
+                    onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-hidden transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="admin@kingswood.edu"
+                    value={newAdmin.email}
+                    onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-hidden transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Password</label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="At least 6 characters"
+                    value={newAdmin.password}
+                    onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-hidden transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">Confirm Password</label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="Re-enter password"
+                    value={newAdmin.confirmPassword}
+                    onChange={(e) => setNewAdmin({ ...newAdmin, confirmPassword: e.target.value })}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-hidden transition-all"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={creatingAdmin}
+                  className="w-full mt-2 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 text-white font-extrabold text-xs shadow-md shadow-indigo-200 hover:shadow-indigo-300 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {creatingAdmin ? (
+                    <>
+                      <Loader2 className="animate-spin" size={16} /> Creating Account...
+                    </>
+                  ) : (
+                    <>
+                      <Shield size={16} /> Create Admin Account
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+
+            {/* Admin List Column */}
+            <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                    <Users className="text-indigo-600" size={18} /> Active System Administrators
+                  </h4>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">List of users registered with admin privileges.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={fetchAdminAccounts}
+                  className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
+                >
+                  Refresh List
+                </button>
+              </div>
+
+              {loadingAdmins ? (
+                <div className="py-12 text-center text-slate-400 flex flex-col items-center gap-3">
+                  <Loader2 className="animate-spin text-indigo-600" size={24} />
+                  <span className="text-xs font-bold">Loading admin accounts...</span>
+                </div>
+              ) : adminList.length === 0 ? (
+                <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                  <Shield size={32} className="mx-auto text-slate-300 mb-2" />
+                  <p className="text-xs font-bold text-slate-600">No admin accounts found</p>
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
+                  {adminList.map((adm, idx) => (
+                    <div
+                      key={adm.uid || idx}
+                      className="p-4 rounded-2xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:border-indigo-200/80 transition-all flex items-center justify-between gap-4 shadow-2xs"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                          {adm.name ? adm.name.charAt(0).toUpperCase() : 'A'}
+                        </div>
+                        <div className="min-w-0">
+                          <h5 className="text-xs font-extrabold text-slate-800 truncate">{adm.name || 'Admin User'}</h5>
+                          <p className="text-[11px] font-semibold text-slate-500 truncate flex items-center gap-1">
+                            <Mail size={11} className="text-indigo-400 shrink-0" /> {adm.email}
+                          </p>
+                        </div>
+                      </div>
+
+                      <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200 shrink-0 flex items-center gap-1">
+                        <Shield size={10} /> Admin
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+          </div>
 
         </div>
       )}

@@ -132,6 +132,22 @@ app.get('/api/debug', (req, res) => {
   });
 });
 
+// Fetch list of admin accounts
+app.get('/api/admin/admins', requireAdminAuth, async (req, res) => {
+  try {
+    const snapshot = await db.collection('users').where('role', '==', 'admin').get();
+    const admins = [];
+    snapshot.forEach(doc => {
+      admins.push(doc.data());
+    });
+    admins.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    res.json(admins);
+  } catch (error) {
+    console.error('Fetch admins error:', error);
+    res.status(500).json({ error: 'Failed to fetch admin accounts' });
+  }
+});
+
 function getGradeFeeStructure(item) {
   let gradeStr = '';
   let nameStr = '';
