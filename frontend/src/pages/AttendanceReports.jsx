@@ -16,8 +16,21 @@ const AttendanceReports = () => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   
+  const [cmsSettings, setCmsSettings] = useState(null);
+
   useEffect(() => {
     fetchClasses();
+    axios.get(`${API_URL}/landing-settings`).then(res => {
+      if (res.data) setCmsSettings(res.data);
+    }).catch(() => {});
+
+    const handleCmsUpdated = () => {
+      axios.get(`${API_URL}/landing-settings`).then(res => {
+        if (res.data) setCmsSettings(res.data);
+      }).catch(() => {});
+    };
+    window.addEventListener('cms-updated', handleCmsUpdated);
+    return () => window.removeEventListener('cms-updated', handleCmsUpdated);
   }, []);
 
   useEffect(() => {
@@ -70,25 +83,31 @@ const AttendanceReports = () => {
 
   const handleWhatsAppWarning = (student) => {
     const className = classesList.find(c => c.classId === selectedClass)?.name || 'the class';
-    const message = `⚠️ *ATTENDANCE WARNING NOTICE*
+    
+    const defaultTemplate = `📢 *ATTENDANCE WARNING NOTICE*
 ───────────────────────────
 🏛 *Kingswood Connect*
 
-Dear Parent / Guardian,
-
-This is an attendance alert regarding student *${student.studentName}*.
-
 📊 *ATTENDANCE REPORT*
-> 👤 *Student:* *${student.studentName}*
-> 📚 *Class:* *${className}*
-> 📅 *Month:* *${selectedMonth}*
-> 📉 *Attendance Rate:* *${student.percentage}%*
+> 👤 *Student:* *{student_name}*
+> 📚 *Class:* *{class_name}*
+> 📅 *Month:* *{month}*
+> 📉 *Attendance Rate:* *{attendance_rate}%*
 
 ⚠️ *Notice:* Attendance for this period is below the required attendance threshold. Please ensure regular attendance for upcoming sessions.
 
 If you have any questions, feel free to contact the institute administration.
 ───────────────────────────
 🏛 *Kingswood Connect Student Support*`;
+
+    const template = cmsSettings?.attendanceWarningTemplate || defaultTemplate;
+
+    const message = template
+      .replaceAll('{student_name}', student.studentName || '')
+      .replaceAll('{class_name}', className)
+      .replaceAll('{month}', selectedMonth)
+      .replaceAll('{attendance_rate}', student.percentage || '0');
+
     const encodedMessage = encodeURIComponent(message);
     let contact = student.contact;
     if (contact.startsWith('0')) {

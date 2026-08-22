@@ -38,6 +38,22 @@ const Finance = () => {
   const [reportFilter, setReportFilter] = useState('unpaid'); // 'unpaid' or 'paid'
   const [reportLoading, setReportLoading] = useState(false);
 
+  const [cmsSettings, setCmsSettings] = useState(null);
+
+  React.useEffect(() => {
+    axios.get(`${API_URL}/landing-settings`).then(res => {
+      if (res.data) setCmsSettings(res.data);
+    }).catch(() => {});
+
+    const handleCmsUpdated = () => {
+      axios.get(`${API_URL}/landing-settings`).then(res => {
+        if (res.data) setCmsSettings(res.data);
+      }).catch(() => {});
+    };
+    window.addEventListener('cms-updated', handleCmsUpdated);
+    return () => window.removeEventListener('cms-updated', handleCmsUpdated);
+  }, []);
+
   // Breakdown State
   const [breakdownMonth, setBreakdownMonth] = useState(format(new Date(), 'yyyy-MM'));
   const [breakdownDate, setBreakdownDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -184,18 +200,16 @@ const Finance = () => {
     if (unpaidStudents.length === 0) return;
     
     if (window.confirm(`Are you sure you want to send reminders to ${unpaidStudents.length} students?\n\nPlease make sure to ALLOW POPUPS in your browser for this to work.`)) {
-      unpaidStudents.forEach((student, index) => {
-        setTimeout(() => {
-          const message = `📢 *FEE PAYMENT REMINDER*
+      const defaultTemplate = `📢 *FEE PAYMENT REMINDER*
 ───────────────────────────
 🏛 *Kingswood Connect*
 
-Hello *${student.name}*,
+Hello *{student_name}*,
 
 This is a gentle reminder regarding your pending class fee.
 
 📌 *REMINDER DETAILS*
-> 📚 *Fee Month:* *${format(new Date(reportMonth), 'MMMM yyyy')}*
+> 📚 *Fee Month:* *{fee_month}*
 > ⚠️ *Status:* Pending Payment
 
 Please complete your payment during your next class session. If you have already completed the payment, kindly ignore this message.
@@ -203,6 +217,14 @@ Please complete your payment during your next class session. If you have already
 Thank you for your cooperation!
 ───────────────────────────
 🏛 *Kingswood Connect Finance Team*`;
+
+      const template = cmsSettings?.paymentReminderTemplate || defaultTemplate;
+
+      unpaidStudents.forEach((student, index) => {
+        setTimeout(() => {
+          const message = template
+            .replaceAll('{student_name}', student.name || '')
+            .replaceAll('{fee_month}', format(new Date(reportMonth), 'MMMM yyyy'));
           const whatsappUrl = `https://api.whatsapp.com/send?phone=${student.contact.replace(/^0/, '94')}&text=${encodeURIComponent(message)}`;
           window.open(whatsappUrl, '_blank');
         }, index * 1000);

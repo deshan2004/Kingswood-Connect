@@ -72,6 +72,18 @@ const Students = () => {
     return 'Monthly Fee';
   };
 
+  const [cmsSettings, setCmsSettings] = useState(null);
+
+  useEffect(() => {
+    const handleCmsUpdated = () => {
+      axios.get(`${API_URL}/landing-settings`).then(res => {
+        if (res.data) setCmsSettings(res.data);
+      }).catch(() => {});
+    };
+    window.addEventListener('cms-updated', handleCmsUpdated);
+    return () => window.removeEventListener('cms-updated', handleCmsUpdated);
+  }, []);
+
   const sendReceiptWhatsApp = (p, student) => {
     const contact = student?.contact || p.studentContact || '';
     if (!contact) {
@@ -82,23 +94,31 @@ const Students = () => {
     const feeLabel = getPaymentFeeLabel(p);
     const dateStr = p.datePaid ? format(new Date(p.datePaid), 'yyyy-MM-dd hh:mm a') : p.month;
     
-    const message = `🧾 *OFFICIAL PAYMENT RECEIPT*
-───────────────────────────
-🏛 *Kingswood Connect*
+    const defaultReceiptTemplate = `🎓 *KINGSWOOD CONNECT OFFICIAL RECEIPT*
+Dear {student_name},
 
-Hello *${student?.name || 'Student'}*,
 Here is your official payment receipt details:
 
 📌 *PAYMENT DETAILS*
-> 🔢 *Receipt No:* *${p.receiptNo || 'REC-CONFIRMED'}*
-> 📚 *Class Name:* *${p.className || 'Class Fee'}*
-> 🗓️ *Fee Type:* *${feeLabel}*
-> 💰 *Amount Paid:* *Rs. ${p.amount}*
-> 📅 *Date:* *${dateStr}*
+> 🔢 *Receipt No:* *{receipt_no}*
+> 📚 *Class Name:* *{class_name}*
+> 🗓️ *Fee Type:* *{fee_type}*
+> 💰 *Amount Paid:* *Rs. {amount}*
+> 📅 *Date:* *{date}*
 
 Thank you for your payment!
 ───────────────────────────
 🏛 *Kingswood Connect Finance Team*`;
+
+    const template = cmsSettings?.paymentReceiptTemplate || defaultReceiptTemplate;
+
+    const message = template
+      .replaceAll('{student_name}', student?.name || 'Student')
+      .replaceAll('{receipt_no}', p.receiptNo || 'REC-CONFIRMED')
+      .replaceAll('{class_name}', p.className || 'Class Fee')
+      .replaceAll('{fee_type}', feeLabel)
+      .replaceAll('{amount}', p.amount)
+      .replaceAll('{date}', dateStr);
 
     const phoneFormatted = contact.replace(/^0/, '94');
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneFormatted}&text=${encodeURIComponent(message)}`;
@@ -131,12 +151,16 @@ Thank you for your payment!
 
   const fetchData = async () => {
     try {
-      const [studentsRes, classesRes] = await Promise.all([
+      const [studentsRes, classesRes, settingsRes] = await Promise.all([
         axios.get(`${API_URL}/students`),
-        axios.get(`${API_URL}/classes`)
+        axios.get(`${API_URL}/classes`),
+        axios.get(`${API_URL}/landing-settings`).catch(() => null)
       ]);
       setStudents(studentsRes.data);
       setClassesList(classesRes.data);
+      if (settingsRes?.data) {
+        setCmsSettings(settingsRes.data);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -192,23 +216,33 @@ Thank you for your payment!
         phone = '94' + phone.substring(1);
       }
 
-      const message = `🎓 *KINGSWOOD CONNECT STUDENT ADMISSION PASS*
-Dear ${student.name}, welcome to Kingswood Connect Education!
+      const defaultTemplate = `🎓 *KINGSWOOD CONNECT STUDENT ADMISSION PASS*
+Dear {student_name}, welcome to Kingswood Connect Education!
 
 🔐 *STUDENT PORTAL LOGIN DETAILS*
-> 🆔 *Student ID:* \`${student.studentId}\`
-> 📧 *Username:* \`${loginEmail}\`
-> 🔒 *Password:* \`${loginPassword}\`
+> 🆔 *Student ID:* \`{student_id}\`
+> 📧 *Username:* \`{username}\`
+> 🔒 *Password:* \`{password}\`
 
 🌐 *Direct One-Tap Login Portal:*
-${autoLoginLink}
+{login_link}
 
 📱 *YOUR ATTENDANCE QR CODE PASS*
-> 📌 *QR Link:* ${qrImageUrl}
+> 📌 *QR Link:* {qr_link}
 
 💡 _Note: Please save your QR Code pass to your photo gallery. Show this QR code to mark attendance at every class session._
 ───────────────────────────
 🏛 *Kingswood Connect Student Management System*`;
+
+      const template = cmsSettings?.admissionPassTemplate || defaultTemplate;
+
+      const message = template
+        .replaceAll('{student_name}', student.name || '')
+        .replaceAll('{student_id}', student.studentId || '')
+        .replaceAll('{username}', loginEmail)
+        .replaceAll('{password}', loginPassword)
+        .replaceAll('{login_link}', autoLoginLink)
+        .replaceAll('{qr_link}', qrImageUrl);
       
       const text = encodeURIComponent(message);
       window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${text}`, '_blank');

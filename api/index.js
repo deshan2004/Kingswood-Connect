@@ -2387,7 +2387,76 @@ const defaultLandingSettings = {
   instagramUrl: 'https://instagram.com',
   telegramUrl: 'https://t.me',
   tiktokUrl: 'https://tiktok.com',
-  googleMapsUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.514785461937!2d80.6288673147748!3d7.284698994742095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae3662bb1e2cfeb%3A0x6b87d55df2a9b36d!2sKingswood%20College%2C%20Peradeniya%20Rd%2C%20Kandy!5e0!3m2!1sen!2slk!4v1700000000000'
+  googleMapsUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.514785461937!2d80.6288673147748!3d7.284698994742095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae3662bb1e2cfeb%3A0x6b87d55df2a9b36d!2sKingswood%20College%2C%20Peradeniya%20Rd%2C%20Kandy!5e0!3m2!1sen!2slk!4v1700000000000',
+
+  // WhatsApp Message Templates
+  admissionPassTemplate: `🎓 *KINGSWOOD CONNECT STUDENT ADMISSION PASS*
+Dear {student_name}, welcome to Kingswood Connect Education!
+
+🔐 *STUDENT PORTAL LOGIN DETAILS*
+> 🆔 *Student ID:* \`{student_id}\`
+> 📧 *Username:* \`{username}\`
+> 🔒 *Password:* \`{password}\`
+
+🌐 *Direct One-Tap Login Portal:*
+{login_link}
+
+📱 *YOUR ATTENDANCE QR CODE PASS*
+> 📌 *QR Link:* {qr_link}
+
+💡 _Note: Please save your QR Code pass to your photo gallery. Show this QR code to mark attendance at every class session._
+───────────────────────────
+🏛 *Kingswood Connect Student Management System*`,
+
+  paymentReceiptTemplate: `🎓 *KINGSWOOD CONNECT OFFICIAL RECEIPT*
+Dear {student_name},
+
+Here is your official payment receipt details:
+
+📌 *PAYMENT DETAILS*
+> 🔢 *Receipt No:* *{receipt_no}*
+> 📚 *Class Name:* *{class_name}*
+> 🗓️ *Fee Type:* *{fee_type}*
+> 💰 *Amount Paid:* *Rs. {amount}*
+> 📅 *Date:* *{date}*
+
+Thank you for your payment!
+───────────────────────────
+🏛 *Kingswood Connect Finance Team*`,
+
+  paymentReminderTemplate: `📢 *FEE PAYMENT REMINDER*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+Hello *{student_name}*,
+
+This is a gentle reminder regarding your pending class fee.
+
+📌 *REMINDER DETAILS*
+> 📚 *Fee Month:* *{fee_month}*
+> ⚠️ *Status:* Pending Payment
+
+Please complete your payment during your next class session. If you have already completed the payment, kindly ignore this message.
+
+Thank you for your cooperation!
+───────────────────────────
+🏛 *Kingswood Connect Finance Team*`,
+
+  attendanceWarningTemplate: `📢 *ATTENDANCE WARNING NOTICE*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+📊 *ATTENDANCE REPORT*
+> 👤 *Student:* *{student_name}*
+> 📚 *Class:* *{class_name}*
+> 📅 *Month:* *{month}*
+> 📉 *Attendance Rate:* *{attendance_rate}%*
+
+⚠️ *Notice:* Attendance for this period is below the required attendance threshold. Please ensure regular attendance for upcoming sessions.
+
+If you have any questions, feel free to contact the institute administration.
+───────────────────────────
+🏛 *Kingswood Connect Student Support*`
 };
 
 app.get('/api/landing-settings', async (req, res) => {

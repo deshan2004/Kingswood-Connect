@@ -14,6 +14,76 @@ import ConfirmModal from '../components/ConfirmModal';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
+const DEFAULT_WA_TEMPLATES = {
+  admissionPassTemplate: `🎓 *KINGSWOOD CONNECT STUDENT ADMISSION PASS*
+Dear {student_name}, welcome to Kingswood Connect Education!
+
+🔐 *STUDENT PORTAL LOGIN DETAILS*
+> 🆔 *Student ID:* \`{student_id}\`
+> 📧 *Username:* \`{username}\`
+> 🔒 *Password:* \`{password}\`
+
+🌐 *Direct One-Tap Login Portal:*
+{login_link}
+
+📱 *YOUR ATTENDANCE QR CODE PASS*
+> 📌 *QR Link:* {qr_link}
+
+💡 _Note: Please save your QR Code pass to your photo gallery. Show this QR code to mark attendance at every class session._
+───────────────────────────
+🏛 *Kingswood Connect Student Management System*`,
+
+  paymentReceiptTemplate: `🎓 *KINGSWOOD CONNECT OFFICIAL RECEIPT*
+Dear {student_name},
+
+Here is your official payment receipt details:
+
+📌 *PAYMENT DETAILS*
+> 🔢 *Receipt No:* *{receipt_no}*
+> 📚 *Class Name:* *{class_name}*
+> 🗓️ *Fee Type:* *{fee_type}*
+> 💰 *Amount Paid:* *Rs. {amount}*
+> 📅 *Date:* *{date}*
+
+Thank you for your payment!
+───────────────────────────
+🏛 *Kingswood Connect Finance Team*`,
+
+  paymentReminderTemplate: `📢 *FEE PAYMENT REMINDER*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+Hello *{student_name}*,
+
+This is a gentle reminder regarding your pending class fee.
+
+📌 *REMINDER DETAILS*
+> 📚 *Fee Month:* *{fee_month}*
+> ⚠️ *Status:* Pending Payment
+
+Please complete your payment during your next class session. If you have already completed the payment, kindly ignore this message.
+
+Thank you for your cooperation!
+───────────────────────────
+🏛 *Kingswood Connect Finance Team*`,
+
+  attendanceWarningTemplate: `📢 *ATTENDANCE WARNING NOTICE*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+📊 *ATTENDANCE REPORT*
+> 👤 *Student:* *{student_name}*
+> 📚 *Class:* *{class_name}*
+> 📅 *Month:* *{month}*
+> 📉 *Attendance Rate:* *{attendance_rate}%*
+
+⚠️ *Notice:* Attendance for this period is below the required attendance threshold. Please ensure regular attendance for upcoming sessions.
+
+If you have any questions, feel free to contact the institute administration.
+───────────────────────────
+🏛 *Kingswood Connect Student Support*`
+};
+
 const getEmbedVideoUrl = (url) => {
   if (!url) return '';
   if (url.startsWith('data:video') || url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov')) {
@@ -538,12 +608,17 @@ const SettingsPage = () => {
       const res = await axios.get(`${API_URL}/landing-settings`);
       if (res.data) {
         setCmsData({
+          ...DEFAULT_WA_TEMPLATES,
           ...res.data,
           teachers: res.data.teachers || [],
           classes: res.data.classes || [],
           achievers: res.data.achievers || [],
           features: res.data.features || [],
-          testimonials: res.data.testimonials || []
+          testimonials: res.data.testimonials || [],
+          admissionPassTemplate: res.data.admissionPassTemplate || DEFAULT_WA_TEMPLATES.admissionPassTemplate,
+          paymentReceiptTemplate: res.data.paymentReceiptTemplate || DEFAULT_WA_TEMPLATES.paymentReceiptTemplate,
+          paymentReminderTemplate: res.data.paymentReminderTemplate || DEFAULT_WA_TEMPLATES.paymentReminderTemplate,
+          attendanceWarningTemplate: res.data.attendanceWarningTemplate || DEFAULT_WA_TEMPLATES.attendanceWarningTemplate
         });
       }
     } catch (err) {
@@ -719,6 +794,7 @@ const SettingsPage = () => {
         <div className="p-1.5 bg-slate-200/80 backdrop-blur-md rounded-2xl border border-slate-300/70 shadow-inner flex flex-wrap gap-2">
           {[
             { id: 'cms', label: '100% Landing Page CMS Editor', icon: Layout },
+            { id: 'templates', label: 'WhatsApp Message Templates', icon: MessageSquare },
             { id: 'admins', label: 'Manage Admin Accounts', icon: Shield },
             { id: 'trash', label: 'Trash & Recycle Bin', icon: Trash2 },
             { id: 'security', label: 'Password & Security', icon: Key }
@@ -1817,6 +1893,18 @@ const SettingsPage = () => {
         </div>
       )}
 
+      {/* TAB: WhatsApp Message Templates Editor */}
+      {isAdmin && activeTab === 'templates' && (
+        <WhatsAppTemplatesEditor 
+          cmsData={cmsData} 
+          setCmsData={setCmsData} 
+          handleSaveCms={handleSaveCms} 
+          savingCms={savingCms}
+          successMsg={successMsg}
+          errorMsg={errorMsg}
+        />
+      )}
+
       {/* TAB: Manage Admin Accounts */}
       {isAdmin && activeTab === 'admins' && (
         <div className="space-y-8 animate-in fade-in duration-200">
@@ -2093,6 +2181,338 @@ const SettingsPage = () => {
           <ChangePassword />
         </div>
       )}
+    </div>
+  );
+};
+
+const parseInlineStyles = (text) => {
+  if (!text) return null;
+  const regex = /(\*.*?\*|_.*?_|`.*?`|https?:\/\/[^\s]+)/g;
+  const parts = text.split(regex);
+
+  return parts.map((part, i) => {
+    if (!part) return null;
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+      return <strong key={i} className="font-extrabold text-white">{part.slice(1, -1)}</strong>;
+    }
+    if (part.startsWith('_') && part.endsWith('_') && part.length > 2) {
+      return <em key={i} className="italic text-emerald-200/90">{part.slice(1, -1)}</em>;
+    }
+    if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
+      return <code key={i} className="bg-emerald-950/70 text-emerald-300 px-1.5 py-0.5 rounded font-mono text-[11px] border border-emerald-700/50">{part.slice(1, -1)}</code>;
+    }
+    if (part.startsWith('http://') || part.startsWith('https://')) {
+      return <span key={i} className="text-sky-300 underline underline-offset-2 break-all">{part}</span>;
+    }
+    return <span key={i}>{part}</span>;
+  });
+};
+
+const formatWhatsAppLine = (line) => {
+  if (!line) return <br />;
+  const isQuote = line.startsWith('> ');
+  const content = isQuote ? line.slice(2) : line;
+
+  const renderedContent = parseInlineStyles(content);
+
+  if (isQuote) {
+    return (
+      <div className="border-l-4 border-emerald-400/80 pl-2.5 my-0.5 text-slate-200 font-medium bg-emerald-900/20 py-0.5 rounded-r">
+        {renderedContent}
+      </div>
+    );
+  }
+
+  return renderedContent;
+};
+
+const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms, successMsg, errorMsg }) => {
+  const [selectedKey, setSelectedKey] = useState('admissionPassTemplate');
+
+  const configs = [
+    {
+      key: 'admissionPassTemplate',
+      name: 'Student Admission Pass',
+      badge: '🎓 Admission Pass (Student Pass)',
+      description: 'Message sent via WhatsApp when registering a new student or clicking "Send Admission Pass" on student cards.',
+      tags: [
+        { tag: '{student_name}', label: 'Student Name' },
+        { tag: '{student_id}', label: 'Student ID' },
+        { tag: '{username}', label: 'Username' },
+        { tag: '{password}', label: 'Password' },
+        { tag: '{login_link}', label: 'One-Tap Login URL' },
+        { tag: '{qr_link}', label: 'QR Pass Link' }
+      ],
+      sampleReplacements: {
+        '{student_name}': 'deshan siriwardhana',
+        '{student_id}': 'KWS-15464',
+        '{username}': 'kws-15464@kingswood.edu',
+        '{password}': '0769776315',
+        '{login_link}': 'https://kingswood-connect.vercel.app/login?email=kws-15464%40kingswood.edu&password=0769776315',
+        '{qr_link}': 'https://kingswood-connect.vercel.app/images/QR-KWS-15464.png'
+      }
+    },
+    {
+      key: 'paymentReceiptTemplate',
+      name: 'Official Fee Receipt',
+      badge: '🧾 Fee Receipt',
+      description: 'Message sent when issuing digital receipts to students upon payment confirmation.',
+      tags: [
+        { tag: '{student_name}', label: 'Student Name' },
+        { tag: '{receipt_no}', label: 'Receipt No' },
+        { tag: '{class_name}', label: 'Class Name' },
+        { tag: '{fee_type}', label: 'Fee Type' },
+        { tag: '{amount}', label: 'Amount (Rs.)' },
+        { tag: '{date}', label: 'Payment Date' }
+      ],
+      sampleReplacements: {
+        '{student_name}': 'deshan siriwardhana',
+        '{receipt_no}': 'REC-2026-0042',
+        '{class_name}': 'Grade 13 Physics (Theory)',
+        '{fee_type}': 'Monthly Fee',
+        '{amount}': '3,500',
+        '{date}': '2026-08-22'
+      }
+    },
+    {
+      key: 'paymentReminderTemplate',
+      name: 'Fee Payment Reminder',
+      badge: '🔔 Fee Reminder',
+      description: 'Message sent when notifying students/parents of outstanding class fees.',
+      tags: [
+        { tag: '{student_name}', label: 'Student Name' },
+        { tag: '{fee_month}', label: 'Fee Month' }
+      ],
+      sampleReplacements: {
+        '{student_name}': 'deshan siriwardhana',
+        '{fee_month}': 'August 2026'
+      }
+    },
+    {
+      key: 'attendanceWarningTemplate',
+      name: 'Low Attendance Notice',
+      badge: '📊 Attendance Warning',
+      description: 'Message sent when a student\'s class attendance falls below the minimum required percentage.',
+      tags: [
+        { tag: '{student_name}', label: 'Student Name' },
+        { tag: '{class_name}', label: 'Class Name' },
+        { tag: '{month}', label: 'Report Month' },
+        { tag: '{attendance_rate}', label: 'Attendance %' }
+      ],
+      sampleReplacements: {
+        '{student_name}': 'deshan siriwardhana',
+        '{class_name}': 'Grade 13 Physics (Theory)',
+        '{month}': 'August 2026',
+        '{attendance_rate}': '45'
+      }
+    }
+  ];
+
+  const currentConfig = configs.find(c => c.key === selectedKey) || configs[0];
+  const templateValue = cmsData[selectedKey] || DEFAULT_WA_TEMPLATES[selectedKey] || '';
+
+  const handleTagClick = (tag) => {
+    setCmsData(prev => ({
+      ...prev,
+      [selectedKey]: (prev[selectedKey] || '') + ' ' + tag
+    }));
+  };
+
+  const handleResetCurrent = () => {
+    if (window.confirm(`Reset "${currentConfig.name}" template back to default system layout?`)) {
+      setCmsData(prev => ({
+        ...prev,
+        [selectedKey]: DEFAULT_WA_TEMPLATES[selectedKey]
+      }));
+    }
+  };
+
+  const renderPreviewText = () => {
+    let text = templateValue;
+    Object.entries(currentConfig.sampleReplacements).forEach(([tag, val]) => {
+      text = text.replaceAll(tag, val);
+    });
+    return text.split('\n').map((line, idx) => (
+      <div key={idx} className="min-h-[1.2rem]">
+        {formatWhatsAppLine(line)}
+      </div>
+    ));
+  };
+
+  return (
+    <div className="space-y-8 animate-in fade-in duration-200">
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-emerald-950 via-teal-950 to-slate-950 p-6 sm:p-8 rounded-3xl text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-emerald-800/40 relative overflow-hidden">
+        <div className="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="relative z-10">
+          <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black uppercase tracking-wider border border-emerald-500/30 inline-flex items-center gap-1.5 mb-2">
+            <MessageSquare size={13} /> WhatsApp Message Editor
+          </span>
+          <h3 className="text-xl sm:text-2xl font-black flex items-center gap-2.5 tracking-tight">
+            Customize WhatsApp Message Templates
+          </h3>
+          <p className="text-xs sm:text-sm text-emerald-200/80 font-medium mt-1 max-w-2xl">
+            Edit the exact text format, emojis, and placeholders sent to students & parents via WhatsApp for Admission Passes, Receipts, Reminders, and Warnings.
+          </p>
+        </div>
+        <button
+          onClick={handleSaveCms}
+          disabled={savingCms}
+          className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-900/40 transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+        >
+          <Save size={16} />
+          {savingCms ? 'Saving Templates...' : 'Save All Templates'}
+        </button>
+      </div>
+
+      {/* Success / Error Alerts */}
+      {successMsg && (
+        <div className="p-4 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-2xl flex items-center gap-3 font-semibold text-sm shadow-sm animate-in fade-in">
+          <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+          <span>{successMsg}</span>
+        </div>
+      )}
+      {errorMsg && (
+        <div className="p-4 bg-rose-50 text-rose-800 border border-rose-200 rounded-2xl flex items-center gap-3 font-semibold text-sm shadow-sm animate-in fade-in">
+          <AlertCircle size={18} className="text-rose-600 shrink-0" />
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
+      {/* Sub-Tabs Selector */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {configs.map((cfg) => {
+          const isActive = selectedKey === cfg.key;
+          return (
+            <button
+              key={cfg.key}
+              onClick={() => setSelectedKey(cfg.key)}
+              className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-2 cursor-pointer ${
+                isActive
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-lg scale-[1.02] ring-2 ring-emerald-500/50'
+                  : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+              }`}
+            >
+              <div className="text-xs font-black uppercase tracking-wide opacity-90">{cfg.badge}</div>
+              <div className="text-sm font-extrabold truncate">{cfg.name}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Editor & WhatsApp Preview Split Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* Left Column: Template Editor (7 cols) */}
+        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+          <div>
+            <div className="flex items-center justify-between gap-4">
+              <h4 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                {currentConfig.name}
+              </h4>
+              <button
+                type="button"
+                onClick={handleResetCurrent}
+                className="text-xs font-bold text-slate-500 hover:text-rose-600 underline cursor-pointer"
+              >
+                Reset to Default
+              </button>
+            </div>
+            <p className="text-xs text-slate-500 font-medium mt-1">
+              {currentConfig.description}
+            </p>
+          </div>
+
+          {/* Interactive Dynamic Tag Chips */}
+          <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <Zap size={13} className="text-amber-500" /> Click a placeholder tag to insert into message:
+            </span>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {currentConfig.tags.map((t) => (
+                <button
+                  key={t.tag}
+                  type="button"
+                  onClick={() => handleTagClick(t.tag)}
+                  className="px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-50 text-slate-800 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 font-mono text-xs font-bold shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+                  title={`Click to insert ${t.label}`}
+                >
+                  <span className="text-emerald-600 font-bold">+</span> {t.tag}
+                  <span className="text-[10px] text-slate-400 font-sans">({t.label})</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Multi-line Template Textarea */}
+          <div className="space-y-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">
+              Message Template Content (Supports WhatsApp *bold*, _italic_, `code`, and newlines):
+            </label>
+            <textarea
+              rows={14}
+              value={templateValue}
+              onChange={(e) => setCmsData({ ...cmsData, [selectedKey]: e.target.value })}
+              className="w-full p-4 rounded-2xl bg-slate-900 text-emerald-300 font-mono text-xs sm:text-sm border border-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all leading-relaxed"
+              placeholder="Type your custom WhatsApp message layout..."
+            />
+          </div>
+        </div>
+
+        {/* Right Column: Simulated WhatsApp Chat Screen (5 cols) */}
+        <div className="lg:col-span-5 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4">
+          <div className="flex items-center justify-between text-slate-300">
+            <span className="text-xs font-black uppercase tracking-wider flex items-center gap-2 text-emerald-400">
+              <MessageSquare size={14} /> Live WhatsApp Chat Preview
+            </span>
+            <span className="text-[10px] font-bold bg-emerald-900/40 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-700/40">
+              Real-time Format
+            </span>
+          </div>
+
+          {/* WhatsApp Phone Mockup Container */}
+          <div className="bg-[#0b141a] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+            
+            {/* Mock Header */}
+            <div className="bg-[#202c33] px-4 py-3 flex items-center gap-3 border-b border-slate-700/60">
+              <div className="w-8 h-8 rounded-full bg-emerald-600 text-white font-black flex items-center justify-center text-xs">
+                KC
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-100 flex items-center gap-1">
+                  Kingswood Connect <span className="text-emerald-400 text-[10px]">✓</span>
+                </div>
+                <div className="text-[10px] text-slate-400">Official Student Management System</div>
+              </div>
+            </div>
+
+            {/* Chat Screen Background */}
+            <div className="p-4 bg-[#0b141a] bg-[radial-gradient(#111b21_1px,transparent_1px)] [background-size:16px_16px] min-h-[380px] flex flex-col justify-end">
+              
+              {/* WhatsApp Message Bubble */}
+              <div className="bg-[#005c4b] text-slate-100 rounded-2xl rounded-tr-none p-4 shadow-md max-w-full space-y-2 border border-emerald-600/20 relative">
+                
+                {/* Formatted Message Content */}
+                <div className="space-y-1">
+                  {renderPreviewText()}
+                </div>
+
+                {/* Footer Timestamp */}
+                <div className="flex items-center justify-end gap-1 text-[10px] text-emerald-200/70 pt-1">
+                  <span>13:11</span>
+                  <span className="text-sky-300 font-bold">✓✓</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <p className="text-[11px] text-slate-400 text-center font-medium">
+            This preview simulates how WhatsApp renders bold, italics, links, and emojis on student devices.
+          </p>
+        </div>
+
+      </div>
     </div>
   );
 };
