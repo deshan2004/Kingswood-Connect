@@ -2226,6 +2226,187 @@ const formatWhatsAppLine = (line) => {
   return renderedContent;
 };
 
+const PRESET_TEMPLATES = {
+  admissionPassTemplate: [
+    {
+      id: 'en_default',
+      label: '🇬🇧 English Standard',
+      template: `🎓 *KINGSWOOD CONNECT STUDENT ADMISSION PASS*
+Dear {student_name}, welcome to Kingswood Connect Education!
+
+🔐 *STUDENT PORTAL LOGIN DETAILS*
+> 🆔 *Student ID:* \`{student_id}\`
+> 📧 *Username:* \`{username}\`
+> 🔒 *Password:* \`{password}\`
+
+🌐 *Direct One-Tap Login Portal:*
+{login_link}
+
+📱 *YOUR ATTENDANCE QR CODE PASS*
+> 📌 *QR Link:* {qr_link}
+
+💡 _Note: Please save your QR Code pass to your photo gallery. Show this QR code to mark attendance at every class session._
+───────────────────────────
+🏛 *Kingswood Connect Student Management System*`
+    },
+    {
+      id: 'si_default',
+      label: '🇱🇰 Sinhala Version (සිංහල)',
+      template: `🎓 *KINGSWOOD CONNECT ශිෂ්‍ය ඇතුළත් වීමේ පත*
+ආයුබෝවන් {student_name}, Kingswood Connect ආයතනය වෙත සාදරයෙන් පිළිගනිමු!
+
+🔐 *ශිෂ්‍ය ගිණුමේ තොරතුරු*
+> 🆔 *ශිෂ්‍ය අංකය:* \`{student_id}\`
+> 📧 *පරිශීලක නාමය:* \`{username}\`
+> 🔒 *මුරපදය:* \`{password}\`
+
+🌐 *ඍජුවම ගිණුමට පිවිසීමේ ලින්ක් එක:*
+{login_link}
+
+📱 *ඔබගේ පැමිණීමේ QR කේතය*
+> 📌 *QR ලින්ක් එක:* {qr_link}
+
+💡 _සැලකිය යුතුයි: කරුණාකර මෙම QR පත ඔබගේ ජංගම දුරකථනයට සුරක්ෂිතව තබා ගන්න. සෑම පන්තියකටම පැමිණීමේදී මෙම QR කේතය ඉදිරිපත් කරන්න._
+───────────────────────────
+🏛 *Kingswood Connect ශිෂ්‍ය කළමනාකරණ පද්ධතිය*`
+    },
+    {
+      id: 'short_simple',
+      label: '⚡ Short & Direct (කෙටි පණිවිඩය)',
+      template: `🎓 *KINGSWOOD CONNECT ADMISSION PASS*
+Hello {student_name}!
+
+🆔 Student ID: \`{student_id}\`
+🔒 Password: \`{password}\`
+🌐 Login: {login_link}
+📌 QR Pass Link: {qr_link}`
+    }
+  ],
+  paymentReceiptTemplate: [
+    {
+      id: 'en_receipt',
+      label: '🇬🇧 English Receipt',
+      template: `🎓 *KINGSWOOD CONNECT OFFICIAL RECEIPT*
+Dear {student_name},
+
+Here is your official payment receipt details:
+
+📌 *PAYMENT DETAILS*
+> 🔢 *Receipt No:* *{receipt_no}*
+> 📚 *Class Name:* *{class_name}*
+> 🗓️ *Fee Type:* *{fee_type}*
+> 💰 *Amount Paid:* *Rs. {amount}*
+> 📅 *Date:* *{date}*
+
+Thank you for your payment!
+───────────────────────────
+🏛 *Kingswood Connect Finance Team*`
+    },
+    {
+      id: 'si_receipt',
+      label: '🇱🇰 Sinhala Receipt (සිංහල)',
+      template: `🎓 *KINGSWOOD CONNECT නිල ගෙවීම් රිසිට්පත*
+ආයුබෝවන් {student_name},
+
+ඔබගේ පන්ති ගාස්තු ගෙවීම් විස්තර පහත පරිදි වේ:
+
+📌 *ගෙවීම් විස්තර*
+> 🔢 *රිසිට් අංකය:* *{receipt_no}*
+> 📚 *පන්තිය:* *{class_name}*
+> 🗓️ *ගාස්තු මාදිලිය:* *{fee_type}*
+> 💰 *ගෙවූ මුදල:* *රු. {amount}*
+> 📅 *දිනය:* *{date}*
+
+ඔබගේ ගෙවීමට ස්තූතියි!
+───────────────────────────
+🏛 *Kingswood Connect මුදල් අංශය*`
+    }
+  ],
+  paymentReminderTemplate: [
+    {
+      id: 'en_remind',
+      label: '🇬🇧 English Reminder',
+      template: `📢 *FEE PAYMENT REMINDER*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+Hello *{student_name}*,
+
+This is a gentle reminder regarding your pending class fee.
+
+📌 *REMINDER DETAILS*
+> 📚 *Fee Month:* *{fee_month}*
+> ⚠️ *Status:* Pending Payment
+
+Please complete your payment during your next class session. If you have already completed the payment, kindly ignore this message.
+
+Thank you for your cooperation!
+───────────────────────────
+🏛 *Kingswood Connect Finance Team*`
+    },
+    {
+      id: 'si_remind',
+      label: '🇱🇰 Sinhala Reminder (සිංහල)',
+      template: `📢 *පන්ති ගාස්තු මතක් කිරීම*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+ආයුබෝවන් *{student_name}*,
+
+ඔබගේ පන්ති ගාස්තු ගෙවීම සම්බන්ධයෙන් කරුණාවෙන් මතක් කර සිටිමු.
+
+📌 *විස්තර*
+> 📚 *අදාළ මාසය:* *{fee_month}*
+> ⚠️ *තත්ත්වය:* ගෙවීමට ඇත
+
+කරුණාකර ඉදිරි පන්ති වාරයේදී ගෙවීම් කටයුතු සම්පූර්ණ කරන්න. ගෙවා ඇත්නම් මෙය නොසලකා හරින්න.
+
+ස්තූතියි!
+───────────────────────────
+🏛 *Kingswood Connect මුදල් අංශය*`
+    }
+  ],
+  attendanceWarningTemplate: [
+    {
+      id: 'en_att',
+      label: '🇬🇧 English Warning',
+      template: `📢 *ATTENDANCE WARNING NOTICE*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+📊 *ATTENDANCE REPORT*
+> 👤 *Student:* *{student_name}*
+> 📚 *Class:* *{class_name}*
+> 📅 *Month:* *{month}*
+> 📉 *Attendance Rate:* *{attendance_rate}%*
+
+⚠️ *Notice:* Attendance for this period is below the required attendance threshold. Please ensure regular attendance for upcoming sessions.
+
+If you have any questions, feel free to contact the institute administration.
+───────────────────────────
+🏛 *Kingswood Connect Student Support*`
+    },
+    {
+      id: 'si_att',
+      label: '🇱🇰 Sinhala Warning (සිංහල)',
+      template: `📢 *පැමිණීමේ අවම වීම පිළිබඳ දැනුම්දීම*
+───────────────────────────
+🏛 *Kingswood Connect*
+
+📊 *පැමිණීමේ වාර්තාව*
+> 👤 *ශිෂ්‍යයා:* *{student_name}*
+> 📚 *පන්තිය:* *{class_name}*
+> 📅 *මාසය:* *{month}*
+> 📉 *පැමිණීමේ ප්‍රතිශතය:* *{attendance_rate}%*
+
+⚠️ *දැනුම්දීම:* මෙම කාලසීමාව තුළ පැමිණීම අවම මට්ටමක පවතී. ඉදිරි පන්ති සඳහා නිසි පරිදි සහභාගී වන ලෙස දන්වා සිටිමු.
+
+───────────────────────────
+🏛 *Kingswood Connect ශිෂ්‍ය සහායක අංශය*`
+    }
+  ]
+};
+
 const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms, successMsg, errorMsg }) => {
   const [selectedKey, setSelectedKey] = useState('admissionPassTemplate');
 
@@ -2310,11 +2491,19 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
 
   const currentConfig = configs.find(c => c.key === selectedKey) || configs[0];
   const templateValue = cmsData[selectedKey] || DEFAULT_WA_TEMPLATES[selectedKey] || '';
+  const currentPresets = PRESET_TEMPLATES[selectedKey] || [];
 
   const handleTagClick = (tag) => {
     setCmsData(prev => ({
       ...prev,
       [selectedKey]: (prev[selectedKey] || '') + ' ' + tag
+    }));
+  };
+
+  const handleApplyPreset = (presetTemplate) => {
+    setCmsData(prev => ({
+      ...prev,
+      [selectedKey]: presetTemplate
     }));
   };
 
@@ -2346,13 +2535,13 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
         <div className="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
         <div className="relative z-10">
           <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black uppercase tracking-wider border border-emerald-500/30 inline-flex items-center gap-1.5 mb-2">
-            <MessageSquare size={13} /> WhatsApp Message Editor
+            <MessageSquare size={13} /> Easy WhatsApp Message Editor
           </span>
           <h3 className="text-xl sm:text-2xl font-black flex items-center gap-2.5 tracking-tight">
             Customize WhatsApp Message Templates
           </h3>
           <p className="text-xs sm:text-sm text-emerald-200/80 font-medium mt-1 max-w-2xl">
-            Edit the exact text format, emojis, and placeholders sent to students & parents via WhatsApp for Admission Passes, Receipts, Reminders, and Warnings.
+            Change the text sent to students via WhatsApp. You can click 1-Click presets for Sinhala or English, or edit the text directly!
           </p>
         </div>
         <button
@@ -2423,10 +2612,29 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
             </p>
           </div>
 
+          {/* 1-Click Quick Presets for Non-Technical Users (සිංහල / English) */}
+          <div className="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200/80 space-y-2">
+            <span className="text-xs font-black uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+              <Sparkles size={14} className="text-emerald-600" /> 1-Click Easy Templates (තනි ක්ලික් ලෑස්තිකාර රටා):
+            </span>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {currentPresets.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => handleApplyPreset(p.template)}
+                  className="px-3.5 py-2 rounded-xl bg-white hover:bg-emerald-600 text-slate-800 hover:text-white border border-emerald-300 font-extrabold text-xs shadow-2xs transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <span>{p.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Interactive Dynamic Tag Chips */}
           <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
             <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <Zap size={13} className="text-amber-500" /> Click a placeholder tag to insert into message:
+              <Zap size={13} className="text-amber-500" /> Click any tag to add student info (නම / අංකය / මුරපදය ආදිය එකතු කිරීමට ක්ලික් කරන්න):
             </span>
             <div className="flex flex-wrap gap-2 pt-1">
               {currentConfig.tags.map((t) => (
@@ -2447,7 +2655,7 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
           {/* Multi-line Template Textarea */}
           <div className="space-y-2">
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">
-              Message Template Content (Supports WhatsApp *bold*, _italic_, `code`, and newlines):
+              Message Content (පණිවිඩයේ පෙළ වෙනස් කරන්න):
             </label>
             <textarea
               rows={14}
@@ -2508,7 +2716,7 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
           </div>
 
           <p className="text-[11px] text-slate-400 text-center font-medium">
-            This preview simulates how WhatsApp renders bold, italics, links, and emojis on student devices.
+            This preview shows how WhatsApp displays your message on mobile screens.
           </p>
         </div>
 
