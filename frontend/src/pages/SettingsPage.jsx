@@ -2251,7 +2251,7 @@ Dear {student_name}, welcome to Kingswood Connect Education!
     },
     {
       id: 'si_default',
-      label: '🇱🇰 Sinhala Version (සිංහල)',
+      label: '🇱🇰 Sinhala Version',
       template: `🎓 *KINGSWOOD CONNECT ශිෂ්‍ය ඇතුළත් වීමේ පත*
 ආයුබෝවන් {student_name}, Kingswood Connect ආයතනය වෙත සාදරයෙන් පිළිගනිමු!
 
@@ -2272,7 +2272,7 @@ Dear {student_name}, welcome to Kingswood Connect Education!
     },
     {
       id: 'short_simple',
-      label: '⚡ Short & Direct (කෙටි පණිවිඩය)',
+      label: '⚡ Short & Direct',
       template: `🎓 *KINGSWOOD CONNECT ADMISSION PASS*
 Hello {student_name}!
 
@@ -2304,7 +2304,7 @@ Thank you for your payment!
     },
     {
       id: 'si_receipt',
-      label: '🇱🇰 Sinhala Receipt (සිංහල)',
+      label: '🇱🇰 Sinhala Receipt',
       template: `🎓 *KINGSWOOD CONNECT නිල ගෙවීම් රිසිට්පත*
 ආයුබෝවන් {student_name},
 
@@ -2346,7 +2346,7 @@ Thank you for your cooperation!
     },
     {
       id: 'si_remind',
-      label: '🇱🇰 Sinhala Reminder (සිංහල)',
+      label: '🇱🇰 Sinhala Reminder',
       template: `📢 *පන්ති ගාස්තු මතක් කිරීම*
 ───────────────────────────
 🏛 *Kingswood Connect*
@@ -2388,7 +2388,7 @@ If you have any questions, feel free to contact the institute administration.
     },
     {
       id: 'si_att',
-      label: '🇱🇰 Sinhala Warning (සිංහල)',
+      label: '🇱🇰 Sinhala Warning',
       template: `📢 *පැමිණීමේ අවම වීම පිළිබඳ දැනුම්දීම*
 ───────────────────────────
 🏛 *Kingswood Connect*
@@ -2409,6 +2409,7 @@ If you have any questions, feel free to contact the institute administration.
 
 const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms, successMsg, errorMsg }) => {
   const [selectedKey, setSelectedKey] = useState('admissionPassTemplate');
+  const [editorMode, setEditorMode] = useState('simple'); // 'simple' or 'advanced'
 
   const configs = [
     {
@@ -2425,7 +2426,7 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
         { tag: '{qr_link}', label: 'QR Pass Link' }
       ],
       sampleReplacements: {
-        '{student_name}': 'deshan siriwardhana',
+        '{student_name}': 'Kasun Perera',
         '{student_id}': 'KWS-15464',
         '{username}': 'kws-15464@kingswood.edu',
         '{password}': '0769776315',
@@ -2447,7 +2448,7 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
         { tag: '{date}', label: 'Payment Date' }
       ],
       sampleReplacements: {
-        '{student_name}': 'deshan siriwardhana',
+        '{student_name}': 'Kasun Perera',
         '{receipt_no}': 'REC-2026-0042',
         '{class_name}': 'Grade 13 Physics (Theory)',
         '{fee_type}': 'Monthly Fee',
@@ -2465,7 +2466,7 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
         { tag: '{fee_month}', label: 'Fee Month' }
       ],
       sampleReplacements: {
-        '{student_name}': 'deshan siriwardhana',
+        '{student_name}': 'Kasun Perera',
         '{fee_month}': 'August 2026'
       }
     },
@@ -2481,7 +2482,7 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
         { tag: '{attendance_rate}', label: 'Attendance %' }
       ],
       sampleReplacements: {
-        '{student_name}': 'deshan siriwardhana',
+        '{student_name}': 'Kasun Perera',
         '{class_name}': 'Grade 13 Physics (Theory)',
         '{month}': 'August 2026',
         '{attendance_rate}': '45'
@@ -2516,6 +2517,121 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
     }
   };
 
+  // Extract simple input fields from current template string
+  const getSimpleFields = () => {
+    const lines = templateValue.split('\n').map(l => l.trim());
+    const headerTitle = lines[0] || '';
+    const greetingText = lines.find(l => l.toLowerCase().includes('dear') || l.toLowerCase().includes('hello') || l.toLowerCase().includes('ආයුබෝවන්')) || lines[1] || '';
+    
+    // Extract instruction note
+    let noteText = '';
+    const noteMatch = templateValue.match(/💡 _?([\s\S]*?)_?\n/);
+    if (noteMatch && noteMatch[1]) {
+      noteText = noteMatch[1].replace(/^_/, '').replace(/_$/, '').trim();
+    } else if (lines.length > 3) {
+      noteText = lines[lines.length - 3] || '';
+    }
+
+    // Extract footer sign-off
+    const footerLine = lines[lines.length - 1] || '';
+    const footerText = footerLine.replace(/^🏛\s*\**/, '').replace(/\**$/, '').trim();
+
+    return { headerTitle, greetingText, noteText, footerText };
+  };
+
+  const simpleFields = getSimpleFields();
+
+  const handleSimpleFieldChange = (fieldType, newValue) => {
+    let newTemplate = templateValue;
+
+    if (selectedKey === 'admissionPassTemplate') {
+      const title = fieldType === 'headerTitle' ? newValue : simpleFields.headerTitle;
+      const greeting = fieldType === 'greetingText' ? newValue : simpleFields.greetingText;
+      const note = fieldType === 'noteText' ? newValue : simpleFields.noteText;
+      const footer = fieldType === 'footerText' ? newValue : simpleFields.footerText;
+
+      newTemplate = `${title}
+${greeting}
+
+🔐 *STUDENT PORTAL LOGIN DETAILS*
+> 🆔 *Student ID:* \`{student_id}\`
+> 📧 *Username:* \`{username}\`
+> 🔒 *Password:* \`{password}\`
+
+🌐 *Direct One-Tap Login Portal:*
+{login_link}
+
+📱 *YOUR ATTENDANCE QR CODE PASS*
+> 📌 *QR Link:* {qr_link}
+
+💡 _${note}_
+───────────────────────────
+🏛 *${footer}*`;
+    } else if (selectedKey === 'paymentReceiptTemplate') {
+      const title = fieldType === 'headerTitle' ? newValue : simpleFields.headerTitle;
+      const greeting = fieldType === 'greetingText' ? newValue : simpleFields.greetingText;
+      const note = fieldType === 'noteText' ? newValue : simpleFields.noteText;
+      const footer = fieldType === 'footerText' ? newValue : simpleFields.footerText;
+
+      newTemplate = `${title}
+${greeting}
+
+📌 *PAYMENT DETAILS*
+> 🔢 *Receipt No:* *{receipt_no}*
+> 📚 *Class Name:* *{class_name}*
+> 🗓️ *Fee Type:* *{fee_type}*
+> 💰 *Amount Paid:* *Rs. {amount}*
+> 📅 *Date:* *{date}*
+
+${note || 'Thank you for your payment!'}
+───────────────────────────
+🏛 *${footer}*`;
+    } else if (selectedKey === 'paymentReminderTemplate') {
+      const title = fieldType === 'headerTitle' ? newValue : simpleFields.headerTitle;
+      const greeting = fieldType === 'greetingText' ? newValue : simpleFields.greetingText;
+      const note = fieldType === 'noteText' ? newValue : simpleFields.noteText;
+      const footer = fieldType === 'footerText' ? newValue : simpleFields.footerText;
+
+      newTemplate = `${title}
+───────────────────────────
+🏛 *Kingswood Connect*
+
+${greeting}
+
+${note || 'This is a gentle reminder regarding your pending class fee.'}
+
+📌 *REMINDER DETAILS*
+> 📚 *Fee Month:* *{fee_month}*
+> ⚠️ *Status:* Pending Payment
+
+Please complete your payment during your next class session.
+
+───────────────────────────
+🏛 *${footer}*`;
+    } else {
+      const title = fieldType === 'headerTitle' ? newValue : simpleFields.headerTitle;
+      const note = fieldType === 'noteText' ? newValue : simpleFields.noteText;
+      const footer = fieldType === 'footerText' ? newValue : simpleFields.footerText;
+
+      newTemplate = `${title}
+───────────────────────────
+🏛 *Kingswood Connect*
+
+📊 *ATTENDANCE REPORT*
+> 👤 *Student:* *{student_name}*
+> 📚 *Class:* *{class_name}*
+> 📅 *Month:* *{month}*
+> 📉 *Attendance Rate:* *{attendance_rate}%*
+
+⚠️ *Notice:* ${note || 'Attendance for this period is below the required attendance threshold.'}
+
+───────────────────────────
+🏛 *${footer}*`;
+    }
+
+    setCmsData(prev => ({ ...prev, [selectedKey]: newTemplate }));
+  };
+
   const renderPreviewText = () => {
     let text = templateValue;
     Object.entries(currentConfig.sampleReplacements).forEach(([tag, val]) => {
@@ -2535,13 +2651,13 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
         <div className="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
         <div className="relative z-10">
           <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black uppercase tracking-wider border border-emerald-500/30 inline-flex items-center gap-1.5 mb-2">
-            <MessageSquare size={13} /> Easy WhatsApp Message Editor
+            <MessageSquare size={13} /> WhatsApp Message Editor
           </span>
           <h3 className="text-xl sm:text-2xl font-black flex items-center gap-2.5 tracking-tight">
             Customize WhatsApp Message Templates
           </h3>
           <p className="text-xs sm:text-sm text-emerald-200/80 font-medium mt-1 max-w-2xl">
-            Change the text sent to students via WhatsApp. You can click 1-Click presets for Sinhala or English, or edit the text directly!
+            Easily update text sent to students via WhatsApp using simple form fields or 1-click presets.
           </p>
         </div>
         <button
@@ -2595,28 +2711,53 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
         {/* Left Column: Template Editor (7 cols) */}
         <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
           <div>
-            <div className="flex items-center justify-between gap-4">
-              <h4 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
-                {currentConfig.name}
-              </h4>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h4 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                  {currentConfig.name}
+                </h4>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  {currentConfig.description}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setEditorMode('simple')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    editorMode === 'simple' ? 'bg-white text-emerald-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  ⚡ Simple Mode
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditorMode('advanced')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    editorMode === 'advanced' ? 'bg-white text-indigo-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  🛠️ Advanced Code Mode
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 1-Click Quick Presets */}
+          <div className="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+                <Sparkles size={14} className="text-emerald-600" /> 1-Click Quick Templates:
+              </span>
               <button
                 type="button"
                 onClick={handleResetCurrent}
-                className="text-xs font-bold text-slate-500 hover:text-rose-600 underline cursor-pointer"
+                className="text-[11px] font-bold text-slate-500 hover:text-rose-600 underline cursor-pointer"
               >
                 Reset to Default
               </button>
             </div>
-            <p className="text-xs text-slate-500 font-medium mt-1">
-              {currentConfig.description}
-            </p>
-          </div>
-
-          {/* 1-Click Quick Presets for Non-Technical Users (සිංහල / English) */}
-          <div className="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200/80 space-y-2">
-            <span className="text-xs font-black uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
-              <Sparkles size={14} className="text-emerald-600" /> 1-Click Easy Templates (තනි ක්ලික් ලෑස්තිකාර රටා):
-            </span>
             <div className="flex flex-wrap gap-2 pt-1">
               {currentPresets.map((p) => (
                 <button
@@ -2631,40 +2772,102 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
             </div>
           </div>
 
-          {/* Interactive Dynamic Tag Chips */}
-          <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <Zap size={13} className="text-amber-500" /> Click any tag to add student info (නම / අංකය / මුරපදය ආදිය එකතු කිරීමට ක්ලික් කරන්න):
-            </span>
-            <div className="flex flex-wrap gap-2 pt-1">
-              {currentConfig.tags.map((t) => (
-                <button
-                  key={t.tag}
-                  type="button"
-                  onClick={() => handleTagClick(t.tag)}
-                  className="px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-50 text-slate-800 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 font-mono text-xs font-bold shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
-                  title={`Click to insert ${t.label}`}
-                >
-                  <span className="text-emerald-600 font-bold">+</span> {t.tag}
-                  <span className="text-[10px] text-slate-400 font-sans">({t.label})</span>
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* SIMPLE MODE FORM FIELDS (Default for Non-Technical Users) */}
+          {editorMode === 'simple' ? (
+            <div className="space-y-4 bg-slate-50 p-5 rounded-2xl border border-slate-200/80">
+              <div className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center justify-between pb-1 border-b border-slate-200">
+                <span className="flex items-center gap-1.5">
+                  <Zap size={14} className="text-amber-500" /> Easy Section Form Fields
+                </span>
+                <span className="text-[10px] text-slate-400 font-medium">Type text in any box to update message</span>
+              </div>
 
-          {/* Multi-line Template Textarea */}
-          <div className="space-y-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">
-              Message Content (පණිවිඩයේ පෙළ වෙනස් කරන්න):
-            </label>
-            <textarea
-              rows={14}
-              value={templateValue}
-              onChange={(e) => setCmsData({ ...cmsData, [selectedKey]: e.target.value })}
-              className="w-full p-4 rounded-2xl bg-slate-900 text-emerald-300 font-mono text-xs sm:text-sm border border-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all leading-relaxed"
-              placeholder="Type your custom WhatsApp message layout..."
-            />
-          </div>
+              <div className="space-y-1.5">
+                <label className="block text-xs font-extrabold text-slate-700">1. Header Title Text:</label>
+                <input
+                  type="text"
+                  value={simpleFields.headerTitle}
+                  onChange={(e) => handleSimpleFieldChange('headerTitle', e.target.value)}
+                  className="w-full p-3 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500"
+                  placeholder="Header Title Text"
+                />
+              </div>
+
+              {(selectedKey === 'admissionPassTemplate' || selectedKey === 'paymentReceiptTemplate' || selectedKey === 'paymentReminderTemplate') && (
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-extrabold text-slate-700">2. Greeting / Welcome Line:</label>
+                  <input
+                    type="text"
+                    value={simpleFields.greetingText}
+                    onChange={(e) => handleSimpleFieldChange('greetingText', e.target.value)}
+                    className="w-full p-3 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500"
+                    placeholder="Greeting line"
+                  />
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-extrabold text-slate-700">
+                  {selectedKey === 'admissionPassTemplate' ? '3. Note / Help Instruction Message:' : '3. Custom Message Text:'}
+                </label>
+                <textarea
+                  rows={3}
+                  value={simpleFields.noteText}
+                  onChange={(e) => handleSimpleFieldChange('noteText', e.target.value)}
+                  className="w-full p-3 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 leading-relaxed"
+                  placeholder="Note or additional instructions..."
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-extrabold text-slate-700">4. Footer System Name / Sign-off:</label>
+                <input
+                  type="text"
+                  value={simpleFields.footerText}
+                  onChange={(e) => handleSimpleFieldChange('footerText', e.target.value)}
+                  className="w-full p-3 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500"
+                  placeholder="Footer Sign-off"
+                />
+              </div>
+            </div>
+          ) : (
+            /* ADVANCED MODE (Raw Code Editor) */
+            <div className="space-y-4">
+              <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                  <Zap size={13} className="text-amber-500" /> Insert Student Info Tags:
+                </span>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {currentConfig.tags.map((t) => (
+                    <button
+                      key={t.tag}
+                      type="button"
+                      onClick={() => handleTagClick(t.tag)}
+                      className="px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-50 text-slate-800 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 font-mono text-xs font-bold shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+                      title={`Click to insert ${t.label}`}
+                    >
+                      <span className="text-emerald-600 font-bold">+</span> {t.tag}
+                      <span className="text-[10px] text-slate-400 font-sans">({t.label})</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                  Full Message Template Code (Supports WhatsApp *bold*, _italic_, `code`, and newlines):
+                </label>
+                <textarea
+                  rows={14}
+                  value={templateValue}
+                  onChange={(e) => setCmsData({ ...cmsData, [selectedKey]: e.target.value })}
+                  className="w-full p-4 rounded-2xl bg-slate-900 text-emerald-300 font-mono text-xs sm:text-sm border border-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all leading-relaxed"
+                  placeholder="Type your custom WhatsApp message layout..."
+                />
+              </div>
+            </div>
+          )}
+
         </div>
 
         {/* Right Column: Simulated WhatsApp Chat Screen (5 cols) */}
