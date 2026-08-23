@@ -2431,7 +2431,7 @@ const WhatsAppTemplatesEditor = ({ cmsData, setCmsData, handleSaveCms, savingCms
         '{username}': 'kws-15464@kingswood.edu',
         '{password}': '0769776315',
         '{login_link}': 'https://kingswood-connect.vercel.app/login?email=kws-15464%40kingswood.edu&password=0769776315',
-        '{qr_link}': 'https://kingswood-connect.vercel.app/images/QR-KWS-15464.png'
+        '{qr_link}': 'https://kingswood-connect.vercel.app/api/qr/KWS-15464.png'
       }
     },
     {

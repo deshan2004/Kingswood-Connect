@@ -208,7 +208,7 @@ Thank you for your payment!
     try {
       const loginEmail = student.email || `${student.studentId.toLowerCase()}@kingswood.edu`;
       const loginPassword = student.password || student.contact.replace(/\s+/g, '');
-      const qrImageUrl = `${window.location.origin}/images/QR-${student.studentId}.png`;
+      const qrImageUrl = `${window.location.origin}/api/qr/${student.studentId}.png`;
       const autoLoginLink = `${window.location.origin}/login?email=${encodeURIComponent(loginEmail)}&password=${encodeURIComponent(loginPassword)}`;
       
       let phone = student.contact.replace(/[^0-9]/g, '');

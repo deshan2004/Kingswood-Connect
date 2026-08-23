@@ -199,6 +199,37 @@ app.get('/api', (req, res) => {
   res.send('Kingswood Connect API is running with Firebase on Vercel!');
 });
 
+// Dynamic Student QR Code PNG Image Endpoint
+const handleQrCodeServe = async (req, res) => {
+  try {
+    const rawId = req.params.studentId || '';
+    const cleanId = rawId.replace(/\.png$/i, '').trim();
+    
+    if (!cleanId) {
+      return res.status(400).send('Student ID is required');
+    }
+
+    const qrBuffer = await qrcode.toBuffer(cleanId, {
+      width: 400,
+      margin: 2,
+      color: {
+        dark: '#1e1b4b',
+        light: '#ffffff'
+      }
+    });
+
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.send(qrBuffer);
+  } catch (err) {
+    console.error('QR code generation error:', err);
+    res.status(500).send('Failed to generate QR code image');
+  }
+};
+
+app.get('/api/qr/:studentId', handleQrCodeServe);
+app.get('/images/QR-:studentId', handleQrCodeServe);
+
 // Debug endpoint
 app.get('/api/debug', (req, res) => {
   const envKey = process.env.FIREBASE_SERVICE_ACCOUNT;
