@@ -113,6 +113,85 @@ const requireAdminAuth = async (req, res, next) => {
   }
 };
 
+// Helper: Send Email Verification link to User
+const sendEmailVerificationLink = async (email, name = 'User', role = 'User') => {
+  if (!email || typeof email !== 'string' || !email.includes('@') || email.endsWith('@kingswood.edu')) {
+    return false;
+  }
+  
+  try {
+    const clientUrl = process.env.ALLOWED_ORIGINS 
+      ? process.env.ALLOWED_ORIGINS.split(',')[0].trim() 
+      : 'https://kingswood-connect.vercel.app';
+
+    const actionCodeSettings = {
+      url: `${clientUrl}/login`,
+      handleCodeInApp: false
+    };
+    
+    let verificationLink = null;
+    try {
+      verificationLink = await getAuth().generateEmailVerificationLink(email, actionCodeSettings);
+    } catch (linkErr) {
+      console.warn('Could not generate Firebase verification link:', linkErr.message);
+    }
+
+    if (!verificationLink) return false;
+
+    let nodemailer = null;
+    try { nodemailer = require('nodemailer'); } catch(e) {}
+
+    if (nodemailer && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+          }
+        });
+
+        await transporter.sendMail({
+          from: `"Kingswood Connect Support" <${process.env.EMAIL_USER}>`,
+          to: email,
+          subject: `✉️ Kingswood Connect - Verify Your Email Address`,
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; max-width: 520px; margin: 0 auto; background-color: #ffffff;">
+              <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #4f46e5; font-size: 24px; font-weight: 800; margin: 0;">Kingswood Connect</h2>
+                <p style="color: #64748b; font-size: 13px; margin-top: 4px;">Official School Management System</p>
+              </div>
+
+              <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                <h3 style="color: #1e293b; font-size: 16px; font-weight: 700; margin-top: 0;">Hello ${name},</h3>
+                <p style="color: #475569; font-size: 14px; line-height: 1.6;">
+                  Welcome to Kingswood Connect! Your <strong>${role}</strong> account has been registered. Please verify your email address to activate your account.
+                </p>
+                <div style="text-align: center; margin: 24px 0;">
+                  <a href="${verificationLink}" style="background-color: #4f46e5; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 10px; font-weight: 700; font-size: 14px; display: inline-block;">Verify Email Address</a>
+                </div>
+                <p style="color: #94a3b8; font-size: 11px; text-align: center; word-break: break-all;">Or copy and paste this link into your browser:<br/><a href="${verificationLink}" style="color: #4f46e5;">${verificationLink}</a></p>
+              </div>
+              
+              <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">If you didn't request this email, you can safely ignore it.</p>
+            </div>
+          `
+        });
+        console.log(`Verification email sent via Nodemailer to ${email}`);
+      } catch (mailErr) {
+        console.error('Nodemailer verification email error:', mailErr.message);
+      }
+    } else {
+      console.log(`Generated Firebase verification link for ${email}: ${verificationLink}`);
+    }
+    return true;
+  } catch (err) {
+    console.error(`Failed to send verification link to ${email}:`, err.message);
+    return false;
+  }
+};
+
+
 // --- API Routes ---
 
 // Health check
@@ -546,6 +625,12 @@ app.put('/api/student/email', async (req, res) => {
         updatedAt: new Date().toISOString()
       });
     }
+
+    // 4. Send verification email to the new student personal email
+    const userDoc = await db.collection('users').doc(uid).get();
+    const studentName = userDoc.exists ? userDoc.data().name : 'Student';
+    sendEmailVerificationLink(formattedEmail, studentName, 'Student')
+      .catch(err => console.error('Error triggering student verification email:', err));
 
     res.json({ message: 'Email updated successfully', email: formattedEmail });
   } catch (error) {
@@ -1309,6 +1394,8 @@ app.put('/api/teachers/:id', async (req, res) => {
         linkedId: teacherId,
         createdAt: new Date().toISOString()
       });
+      sendEmailVerificationLink(email, name, 'Teacher')
+        .catch(err => console.error('Error triggering teacher verification email:', err));
     }
 
     const updateData = { 
@@ -1593,6 +1680,13 @@ app.post('/api/auth/signup', async (req, res) => {
     }
 
     await db.collection('users').doc(uid).set(userData);
+
+    // Send verification email link automatically for Admin & Teacher accounts
+    if (role === 'admin' || role === 'teacher') {
+      sendEmailVerificationLink(email, name, role === 'admin' ? 'Admin' : 'Teacher')
+        .catch(err => console.error('Error triggering verification email:', err));
+    }
+
     res.status(201).json({ message: 'User created successfully', user: { uid: userRecord.uid, email, role, name, contact: email } });
   } catch (error) {
     console.error('Signup error:', error);
