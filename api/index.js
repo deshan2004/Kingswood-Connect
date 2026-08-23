@@ -1643,8 +1643,8 @@ app.post('/api/auth/signup', async (req, res) => {
       const studentData = {
         studentId, 
         name, 
-        grade: 'Pending', 
-        contact: email, 
+        grade: req.body.grade || 'Pending', 
+        contact: req.body.contact || email, 
         qrCodeUrl,
         createdAt: new Date().toISOString()
       };
@@ -1657,7 +1657,7 @@ app.post('/api/auth/signup', async (req, res) => {
         teacherId,
         name,
         subject: req.body.subject || 'General',
-        contact: email,
+        contact: req.body.contact || email,
         commissionRate: commRate,
         createdAt: new Date().toISOString()
       };
