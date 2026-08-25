@@ -294,8 +294,9 @@ const LandingPage = () => {
   const getTeacherWhatsAppUrl = (teacher, customMsg) => {
     // Cross-reference with teachersList (registered teacher accounts from /api/teachers)
     const registeredTeacher = (teachersList || []).find(t => 
-      (t.teacherId && teacher?.teacherId && t.teacherId === teacher.teacherId) ||
-      (t.name && teacher?.name && t.name.toLowerCase().trim() === teacher.name.toLowerCase().trim())
+      t &&
+      ((t.teacherId && teacher?.teacherId && String(t.teacherId) === String(teacher.teacherId)) ||
+      (typeof t.name === 'string' && typeof teacher?.name === 'string' && t.name.toLowerCase().trim() === teacher.name.toLowerCase().trim()))
     );
 
     const rawNum = registeredTeacher?.contact || registeredTeacher?.phone || teacher?.contact || teacher?.phone || teacher?.whatsapp || cmsSettings?.whatsapp || '94771234567';
@@ -333,25 +334,25 @@ const LandingPage = () => {
   const defaultFeatures = [];
   const defaultTestimonials = [];
 
-  const activeClasses = (classesList && classesList.length > 0)
+  const activeClasses = ((classesList && classesList.length > 0)
     ? classesList
-    : (cmsSettings?.classes && cmsSettings.classes.length > 0 ? cmsSettings.classes : []);
+    : (cmsSettings?.classes && cmsSettings.classes.length > 0 ? cmsSettings.classes : [])).filter(Boolean);
 
-  const activeTeachers = (cmsSettings?.teachers && cmsSettings.teachers.length > 0)
+  const activeTeachers = ((cmsSettings?.teachers && cmsSettings.teachers.length > 0)
     ? cmsSettings.teachers
-    : (teachersList && teachersList.length > 0 ? teachersList : []);
+    : (teachersList && teachersList.length > 0 ? teachersList : [])).filter(Boolean);
 
-  const activeAchievers = (cmsSettings?.achievers && cmsSettings.achievers.length > 0)
+  const activeAchievers = ((cmsSettings?.achievers && cmsSettings.achievers.length > 0)
     ? cmsSettings.achievers
-    : [];
+    : []).filter(Boolean);
 
-  const activeFeatures = (cmsSettings?.features && cmsSettings.features.length > 0)
+  const activeFeatures = ((cmsSettings?.features && cmsSettings.features.length > 0)
     ? cmsSettings.features
-    : [];
+    : []).filter(Boolean);
 
-  const activeTestimonials = (cmsSettings?.testimonials && cmsSettings.testimonials.length > 0)
+  const activeTestimonials = ((cmsSettings?.testimonials && cmsSettings.testimonials.length > 0)
     ? cmsSettings.testimonials
-    : [];
+    : []).filter(Boolean);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-600 selection:text-white relative overflow-x-clip">
@@ -1487,21 +1488,21 @@ const LandingPage = () => {
 
             <div className="p-6 max-h-[65vh] overflow-y-auto space-y-4 bg-slate-50">
               {(() => {
-                const teacherNameLower = (selectedTeacherClasses.name || '').toLowerCase().trim();
-                const teacherSubjectLower = (selectedTeacherClasses.subject || '').toLowerCase().trim();
-                const teacherIdLower = (selectedTeacherClasses.teacherId || selectedTeacherClasses.id || '').toLowerCase().trim();
+                const teacherNameLower = (typeof selectedTeacherClasses?.name === 'string' ? selectedTeacherClasses.name : '').toLowerCase().trim();
+                const teacherSubjectLower = (typeof selectedTeacherClasses?.subject === 'string' ? selectedTeacherClasses.subject : '').toLowerCase().trim();
+                const teacherIdLower = (typeof (selectedTeacherClasses?.teacherId || selectedTeacherClasses?.id) === 'string' ? (selectedTeacherClasses.teacherId || selectedTeacherClasses.id) : '').toLowerCase().trim();
 
                 // Combine real database classes and CMS settings classes
                 const pool = [
                   ...(Array.isArray(classesList) ? classesList : []),
                   ...(cmsSettings?.classes && Array.isArray(cmsSettings.classes) ? cmsSettings.classes : [])
-                ];
+                ].filter(Boolean);
 
                 const matched = pool.filter(c => {
-                  const cTeacherName = (c.teacherName || c.teacher || '').toLowerCase().trim();
-                  const cName = (c.name || '').toLowerCase().trim();
-                  const cSubject = (c.subject || '').toLowerCase().trim();
-                  const cTeacherId = (c.teacherId || '').toLowerCase().trim();
+                  const cTeacherName = (typeof (c?.teacherName || c?.teacher) === 'string' ? (c.teacherName || c.teacher) : '').toLowerCase().trim();
+                  const cName = (typeof c?.name === 'string' ? c.name : '').toLowerCase().trim();
+                  const cSubject = (typeof c?.subject === 'string' ? c.subject : '').toLowerCase().trim();
+                  const cTeacherId = (typeof c?.teacherId === 'string' ? c.teacherId : '').toLowerCase().trim();
 
                   const nameMatch = teacherNameLower && (cTeacherName.includes(teacherNameLower) || teacherNameLower.includes(cTeacherName));
                   const idMatch = teacherIdLower && cTeacherId === teacherIdLower;
@@ -1511,7 +1512,7 @@ const LandingPage = () => {
                 });
 
                 // Deduplicate matched classes
-                const displayClasses = Array.from(new Map(matched.map(c => [c.classId || c.id || `${c.name}-${c.schedule}`, c])).values());
+                const displayClasses = Array.from(new Map(matched.map(c => [c?.classId || c?.id || `${c?.name}-${c?.schedule}`, c])).values()).filter(Boolean);
 
                 if (displayClasses.length === 0) {
                   return (
