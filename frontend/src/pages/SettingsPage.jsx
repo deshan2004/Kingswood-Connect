@@ -860,7 +860,7 @@ const SettingsPage = () => {
             {[
               { id: 'hero', label: '📌 Hero & Badges' },
               { id: 'stats', label: '📊 Stat Counters' },
-              { id: 'faculty', label: '👨‍🏫 Faculty (Sirs)' },
+              { id: 'faculty', label: '👨‍🏫 Our Teachers' },
               { id: 'classes', label: '📚 Classes & Schedule' },
               { id: 'results', label: '🏆 Exam Results & Ranks' },
               { id: 'vision', label: '🎯 Vision & Mission' },
@@ -943,7 +943,7 @@ const SettingsPage = () => {
                         type="text"
                         value={cmsData.heroBtn1Text}
                         onChange={(e) => setCmsData({ ...cmsData, heroBtn1Text: e.target.value })}
-                        placeholder="Meet Our Faculty (Sirs)"
+                        placeholder="Meet Our Teachers"
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium focus:outline-none focus:border-indigo-600 focus:bg-white"
                       />
                     </div>

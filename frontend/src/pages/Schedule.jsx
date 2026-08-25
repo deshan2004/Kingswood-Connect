@@ -289,7 +289,7 @@ const Schedule = () => {
               onChange={(e) => setSelectedTeacher(e.target.value)}
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all appearance-none cursor-pointer pr-10"
             >
-              <option value="ALL">👨‍🏫 All Teachers (Sirs)</option>
+              <option value="ALL">👨‍🏫 All Teachers</option>
               {teachers.map((t) => (
                 <option key={t.teacherId || t.id} value={t.teacherId || t.name}>
                   {t.name} {t.subject ? `(${t.subject})` : ''}
