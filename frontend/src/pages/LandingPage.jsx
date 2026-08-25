@@ -743,7 +743,7 @@ const LandingPage = () => {
 
                 ...activeTeachers.filter(t => t.videoUrl).map(t => ({
                   title: t.videoTitle || `${t.subject || 'Academic'} Class & Lecture Video`,
-                  author: t.name || 'Academic Panel',
+                  author: 'Kingswood Education Center',
                   category: t.subject || 'Subject Lecture',
                   teacherImg: t.image || t.photo,
                   videoUrl: t.videoUrl
@@ -817,7 +817,7 @@ const LandingPage = () => {
                       <div>
                         <h4 className="font-extrabold text-sm sm:text-base text-white">{currentVideo.title}</h4>
                         <p className="text-xs text-indigo-200 font-bold flex items-center gap-2 mt-0.5">
-                          <span>{currentVideo.author}</span> • <span className="bg-indigo-900/60 px-2 py-0.5 rounded-md text-[10px] uppercase border border-indigo-700/50">{currentVideo.category}</span>
+                          <span>Kingswood Education Center</span> • <span className="bg-indigo-900/60 px-2 py-0.5 rounded-md text-[10px] uppercase border border-indigo-700/50">{currentVideo.category}</span>
                         </p>
                       </div>
                     </div>
@@ -860,7 +860,7 @@ const LandingPage = () => {
                                   {vid.title}
                                 </h5>
                                 <p className="text-[11px] text-indigo-300 font-semibold truncate mt-0.5">
-                                  {vid.author}
+                                  {vid.category || 'Kingswood Education Center'}
                                 </p>
                               </div>
                             </div>
