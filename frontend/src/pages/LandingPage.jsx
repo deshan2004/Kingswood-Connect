@@ -198,8 +198,36 @@ const LandingPage = () => {
     }
   };
 
+  const [activeSection, setActiveSection] = useState('home');
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const navItems = [
+    { id: 'home', label: 'Home', icon: Sparkles },
+    { id: 'about-sir', label: 'Our Teachers', icon: Users },
+    { id: 'videos', label: 'Video Demos', icon: Play },
+    { id: 'vision-mission', label: 'Vision & Mission', icon: Target },
+    { id: 'results', label: 'Exam Results', icon: Trophy },
+    { id: 'features', label: 'Key Features', icon: ShieldCheck },
+    { id: 'contact', label: 'Contact Us', icon: Phone },
+  ];
+
   useEffect(() => {
     fetchAdminData();
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+
+      const sections = ['home', 'about-sir', 'videos', 'vision-mission', 'results', 'features', 'contact'];
+      const scrollPosition = window.scrollY + 140;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i]);
+        if (el && el.offsetTop <= scrollPosition) {
+          setActiveSection(sections[i]);
+          break;
+        }
+      }
+    };
 
     const handleFocus = () => fetchAdminData();
     const handleCmsUpdate = () => fetchAdminData();
@@ -209,11 +237,15 @@ const LandingPage = () => {
       }
     };
 
+    window.addEventListener('scroll', handleScroll);
     window.addEventListener('focus', handleFocus);
     window.addEventListener('cms-updated', handleCmsUpdate);
     window.addEventListener('storage', handleStorage);
 
+    handleScroll();
+
     return () => {
+      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('focus', handleFocus);
       window.removeEventListener('cms-updated', handleCmsUpdate);
       window.removeEventListener('storage', handleStorage);
@@ -330,56 +362,74 @@ const LandingPage = () => {
       <div className="absolute top-[400px] right-10 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-3xl pointer-events-none -z-0" />
       <div className="absolute top-[1800px] left-10 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-3xl pointer-events-none -z-0" />
 
-      {/* Navigation Bar - Sticky Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/95 border-b border-slate-200/80 shadow-md shadow-slate-900/5 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      {/* Navigation Bar - Dynamic Interactive Header */}
+      <header className={`sticky top-0 z-50 transition-all duration-500 ${
+        isScrolled 
+          ? 'py-2 px-3 sm:px-6 lg:px-8 backdrop-blur-none bg-transparent' 
+          : 'py-0 border-b border-slate-200/80 bg-white/95 backdrop-blur-xl shadow-sm shadow-slate-900/5'
+      }`}>
+        <div className={`max-w-7xl mx-auto transition-all duration-500 ${
+          isScrolled 
+            ? 'bg-white/90 backdrop-blur-2xl border border-white/80 shadow-xl shadow-indigo-950/10 rounded-2xl px-4 sm:px-6 h-16' 
+            : 'h-20 px-2 sm:px-4 lg:px-8'
+        } flex items-center justify-between`}>
 
-          {/* Brand Logo */}
+          {/* Brand Logo with Interactive Hover & Live Status */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <img src="/IMG_4244.png" alt="Kingswood Education Center Logo" className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shadow-md shadow-indigo-950/20 border border-indigo-700/30 group-hover:scale-105 transition-transform duration-300 shrink-0" />
+            <div className="relative">
+              <img
+                src="/IMG_4244.png"
+                alt="Kingswood Education Center Logo"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl object-contain bg-white p-1 shadow-md shadow-indigo-950/20 border border-indigo-700/30 group-hover:scale-105 group-hover:border-indigo-500 transition-all duration-300 shrink-0"
+              />
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white animate-pulse" title="Admissions Open" />
+            </div>
             <div>
-              <span className="text-xl font-extrabold text-indigo-950 tracking-tight block">
+              <span className="text-base sm:text-lg xl:text-xl font-extrabold text-indigo-950 tracking-tight block group-hover:text-indigo-600 transition-colors">
                 Kingswood Education Center
               </span>
-              <span className="block text-[11px] font-bold text-indigo-600 tracking-wider uppercase">
+              <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-indigo-600 tracking-wider uppercase">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping inline-block" />
                 Premier Educational Institute
               </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-3">
-            <button onClick={() => scrollToSection('home')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
-              Home
-            </button>
-            <button onClick={() => scrollToSection('about-sir')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
-              Our Teachers
-            </button>
-            <button onClick={() => scrollToSection('videos')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
-              Video Demos
-            </button>
-            <button onClick={() => scrollToSection('vision-mission')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
-              Vision & Mission
-            </button>
-            <button onClick={() => scrollToSection('results')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
-              Exam Results
-            </button>
-            <button onClick={() => scrollToSection('features')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
-              Key Features
-            </button>
-            <button onClick={() => scrollToSection('contact')} className="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/60 transition-all">
-              Contact Us
-            </button>
+          {/* Desktop Navigation Links with ScrollSpy & Hover Micro-Interactions */}
+          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`relative px-3 py-2 rounded-xl text-xs xl:text-sm font-bold transition-all duration-300 flex items-center space-x-1.5 group ${
+                    isActive
+                      ? 'text-indigo-600 bg-indigo-50/80 shadow-xs border border-indigo-200/60'
+                      : 'text-slate-700 hover:text-indigo-600 hover:bg-indigo-50/50'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-500'}`} />
+                  <span>{item.label}</span>
+                  {isActive && (
+                    <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-gradient-to-r from-indigo-600 to-blue-600 rounded-full animate-pulse" />
+                  )}
+                </button>
+              );
+            })}
           </nav>
 
-          {/* Student Portal Action Button */}
+          {/* Student Portal Action Button with Glow & Shimmer */}
           <div className="hidden md:flex items-center space-x-4">
             <Link
               to="/login"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs xl:text-sm font-extrabold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/25 border border-indigo-400/20 transition-all duration-200 transform hover:-translate-y-0.5"
+              className="relative group overflow-hidden inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs xl:text-sm font-extrabold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/25 border border-indigo-400/20 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-xl hover:shadow-indigo-600/35"
             >
-              <LogIn className="w-4 h-4 mr-2 text-indigo-100" />
-              Student Portal
+              <span className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-out pointer-events-none" />
+              <LogIn className="w-4 h-4 mr-2 text-indigo-100 group-hover:rotate-12 transition-transform duration-300" />
+              <span>Student Portal</span>
+              <ChevronRight className="w-3.5 h-3.5 ml-1 text-indigo-200 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </div>
 
@@ -387,7 +437,7 @@ const LandingPage = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-slate-700 hover:text-indigo-600 hover:bg-slate-100 focus:outline-none"
+              className="p-2 rounded-xl text-slate-700 hover:text-indigo-600 hover:bg-slate-100 focus:outline-none transition-colors"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -396,49 +446,31 @@ const LandingPage = () => {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white/95 border-b border-slate-200 px-4 pt-3 pb-6 space-y-3 backdrop-blur-2xl">
-            <button
-              onClick={() => scrollToSection('home')}
-              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
-            >
-              Home
-            </button>
-            <button
-              onClick={() => scrollToSection('about-sir')}
-              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
-            >
-              Our Teachers
-            </button>
-            <button
-              onClick={() => scrollToSection('vision-mission')}
-              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
-            >
-              Vision & Mission
-            </button>
-            <button
-              onClick={() => scrollToSection('results')}
-              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
-            >
-              Exam Results
-            </button>
-            <button
-              onClick={() => scrollToSection('features')}
-              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
-            >
-              Key Features
-            </button>
-            <button
-              onClick={() => scrollToSection('contact')}
-              className="block w-full text-left py-2 px-3 text-base font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
-            >
-              Contact Us
-            </button>
-            <div className="pt-2">
+          <div className="md:hidden bg-white/95 border-b border-slate-200 px-4 pt-3 pb-6 space-y-2 backdrop-blur-2xl mt-2 rounded-b-2xl shadow-xl">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`w-full flex items-center space-x-3 py-2.5 px-3 text-sm font-bold rounded-xl transition-all ${
+                    isActive
+                      ? 'bg-indigo-50 text-indigo-600 border border-indigo-200/60'
+                      : 'text-slate-700 hover:bg-slate-50 hover:text-indigo-600'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+            <div className="pt-3">
               <Link
                 to="/login"
-                className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30"
+                className="w-full flex items-center justify-center py-3 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-md shadow-indigo-600/30"
               >
-                <LogIn className="w-5 h-5 mr-2 text-indigo-100" />
+                <LogIn className="w-4 h-4 mr-2 text-indigo-100" />
                 Portal Log In
               </Link>
             </div>
