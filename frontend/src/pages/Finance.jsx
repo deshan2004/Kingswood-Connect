@@ -202,7 +202,7 @@ const Finance = () => {
     if (window.confirm(`Are you sure you want to send reminders to ${unpaidStudents.length} students?\n\nPlease make sure to ALLOW POPUPS in your browser for this to work.`)) {
       const defaultTemplate = `📢 *FEE PAYMENT REMINDER*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 Hello *{student_name}*,
 
@@ -216,7 +216,7 @@ Please complete your payment during your next class session. If you have already
 
 Thank you for your cooperation!
 ───────────────────────────
-🏛 *Kingswood Connect Finance Team*`;
+🏛 *Kingswood Education Center Finance Team*`;
 
       const template = cmsSettings?.paymentReminderTemplate || defaultTemplate;
 
@@ -543,7 +543,7 @@ Thank you for your cooperation!
                         }
                         const message = `🧾 *OFFICIAL PAYMENT RECEIPT*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 Hello *${receipt.studentName}*,
 We have successfully received your class fee payment. Details are below:
@@ -559,7 +559,7 @@ We have successfully received your class fee payment. Details are below:
 
 Thank you for your prompt payment!
 ───────────────────────────
-🏛 *Kingswood Connect Finance Team*`;
+🏛 *Kingswood Education Center Finance Team*`;
                         const whatsappUrl = `https://api.whatsapp.com/send?phone=${contact.replace(/^0/, '94')}&text=${encodeURIComponent(message)}`;
                         window.open(whatsappUrl, '_blank');
                       }}
@@ -909,7 +909,7 @@ Thank you for your prompt payment!
                                   onClick={() => {
                                     const message = `📢 *FEE PAYMENT REMINDER*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 Hello *${student.name}*,
 
@@ -923,7 +923,7 @@ Please complete your payment during your next class session. If you have already
 
 Thank you for your cooperation!
 ───────────────────────────
-🏛 *Kingswood Connect Finance Team*`;
+🏛 *Kingswood Education Center Finance Team*`;
                                     const whatsappUrl = `https://api.whatsapp.com/send?phone=${student.contact.replace(/^0/, '94')}&text=${encodeURIComponent(message)}`;
                                     window.open(whatsappUrl, '_blank');
                                   }}

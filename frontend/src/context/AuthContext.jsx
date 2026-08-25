@@ -212,7 +212,7 @@ export const AuthProvider = ({ children }) => {
       {loading && !user ? (
         <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 space-y-4">
           <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
-          <p className="text-sm font-bold text-slate-300">Loading Kingswood Connect...</p>
+          <p className="text-sm font-bold text-slate-300">Loading Kingswood Education Center...</p>
         </div>
       ) : children}
     </AuthContext.Provider>

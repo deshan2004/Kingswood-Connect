@@ -152,20 +152,20 @@ const sendEmailVerificationLink = async (email, name = 'User', role = 'User') =>
         });
 
         await transporter.sendMail({
-          from: `"Kingswood Connect Support" <${process.env.EMAIL_USER}>`,
+          from: `"Kingswood Education Center Support" <${process.env.EMAIL_USER}>`,
           to: email,
-          subject: `✉️ Kingswood Connect - Verify Your Email Address`,
+          subject: `✉️ Kingswood Education Center - Verify Your Email Address`,
           html: `
             <div style="font-family: Arial, sans-serif; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; max-width: 520px; margin: 0 auto; background-color: #ffffff;">
               <div style="text-align: center; margin-bottom: 20px;">
-                <h2 style="color: #4f46e5; font-size: 24px; font-weight: 800; margin: 0;">Kingswood Connect</h2>
+                <h2 style="color: #4f46e5; font-size: 24px; font-weight: 800; margin: 0;">Kingswood Education Center</h2>
                 <p style="color: #64748b; font-size: 13px; margin-top: 4px;">Official School Management System</p>
               </div>
 
               <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
                 <h3 style="color: #1e293b; font-size: 16px; font-weight: 700; margin-top: 0;">Hello ${name},</h3>
                 <p style="color: #475569; font-size: 14px; line-height: 1.6;">
-                  Welcome to Kingswood Connect! Your <strong>${role}</strong> account has been registered. Please verify your email address to activate your account.
+                  Welcome to Kingswood Education Center! Your <strong>${role}</strong> account has been registered. Please verify your email address to activate your account.
                 </p>
                 <div style="text-align: center; margin: 24px 0;">
                   <a href="${verificationLink}" style="background-color: #4f46e5; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 10px; font-weight: 700; font-size: 14px; display: inline-block;">Verify Email Address</a>
@@ -196,7 +196,7 @@ const sendEmailVerificationLink = async (email, name = 'User', role = 'User') =>
 
 // Health check
 app.get('/api', (req, res) => {
-  res.send('Kingswood Connect API is running with Firebase on Vercel!');
+  res.send('Kingswood Education Center API is running with Firebase on Vercel!');
 });
 
 // Dynamic Student QR Code PNG Image Endpoint
@@ -1764,12 +1764,12 @@ app.post('/api/auth/send-2fa-otp', async (req, res) => {
         });
 
         await transporter.sendMail({
-          from: `"Kingswood Connect Security" <${process.env.EMAIL_USER}>`,
+          from: `"Kingswood Education Center Security" <${process.env.EMAIL_USER}>`,
           to: recipientEmail,
-          subject: '🔒 Kingswood Connect - Your 2FA Verification Code',
+          subject: '🔒 Kingswood Education Center - Your 2FA Verification Code',
           html: `
             <div style="font-family: Arial, sans-serif; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; max-width: 500px; margin: 0 auto; background-color: #ffffff;">
-              <h2 style="color: #1e293b; font-size: 20px; font-weight: 800; margin-bottom: 8px;">Kingswood Connect</h2>
+              <h2 style="color: #1e293b; font-size: 20px; font-weight: 800; margin-bottom: 8px;">Kingswood Education Center</h2>
               <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Two-Factor Authentication (2FA) Code</p>
               
               <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
@@ -2466,13 +2466,13 @@ const defaultLandingSettings = {
   resultsTitle: 'Celebrating Our Top Achievers',
   resultsSub: 'True success is measured by consistent results. Highlighting our outstanding performers across Grade 1 to Grade 13 examinations.',
   resultsCtaTitle: 'Be the Next Academic Success Story!',
-  resultsCtaSub: 'Enroll today and gain instant access to Kingswood Connect student portal, tutes, and exam schedules.',
+  resultsCtaSub: 'Enroll today and gain instant access to Kingswood Education Center student portal, tutes, and exam schedules.',
   achievers: [],
 
   // Vision & Mission
   visionBadge: 'OUR CORE PURPOSE',
   visionTitle: 'Vision & Mission',
-  visionSub: 'Every initiative at Kingswood Connect is guided by an unyielding commitment to student transformation and academic integrity.',
+  visionSub: 'Every initiative at Kingswood Education Center is guided by an unyielding commitment to student transformation and academic integrity.',
   visionText: 'To become Sri Lanka\'s benchmark educational institute, empowering students from Grade 1 to Grade 13 with analytical thinking, problem-solving skills, and academic excellence across all subjects and streams.',
   missionText: 'To unlock every student\'s highest potential from Grade 1 through Grade 13 by combining modern digital technology, structured paper series, clear concept delivery, and individual mentorship.',
 
@@ -2515,8 +2515,8 @@ const defaultLandingSettings = {
   googleMapsUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.514785461937!2d80.6288673147748!3d7.284698994742095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae3662bb1e2cfeb%3A0x6b87d55df2a9b36d!2sKingswood%20College%2C%20Peradeniya%20Rd%2C%20Kandy!5e0!3m2!1sen!2slk!4v1700000000000',
 
   // WhatsApp Message Templates
-  admissionPassTemplate: `🎓 *KINGSWOOD CONNECT STUDENT ADMISSION PASS*
-Dear {student_name}, welcome to Kingswood Connect Education!
+  admissionPassTemplate: `🎓 *KINGSWOOD EDUCATION CENTER STUDENT ADMISSION PASS*
+Dear {student_name}, welcome to Kingswood Education Center Education!
 
 🔐 *STUDENT PORTAL LOGIN DETAILS*
 > 🆔 *Student ID:* \`{student_id}\`
@@ -2531,9 +2531,9 @@ Dear {student_name}, welcome to Kingswood Connect Education!
 
 💡 _Note: Please save your QR Code pass to your photo gallery. Show this QR code to mark attendance at every class session._
 ───────────────────────────
-🏛 *Kingswood Connect Student Management System*`,
+🏛 *Kingswood Education Center Student Management System*`,
 
-  paymentReceiptTemplate: `🎓 *KINGSWOOD CONNECT OFFICIAL RECEIPT*
+  paymentReceiptTemplate: `🎓 *KINGSWOOD EDUCATION CENTER OFFICIAL RECEIPT*
 Dear {student_name},
 
 Here is your official payment receipt details:
@@ -2547,11 +2547,11 @@ Here is your official payment receipt details:
 
 Thank you for your payment!
 ───────────────────────────
-🏛 *Kingswood Connect Finance Team*`,
+🏛 *Kingswood Education Center Finance Team*`,
 
   paymentReminderTemplate: `📢 *FEE PAYMENT REMINDER*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 Hello *{student_name}*,
 
@@ -2565,11 +2565,11 @@ Please complete your payment during your next class session. If you have already
 
 Thank you for your cooperation!
 ───────────────────────────
-🏛 *Kingswood Connect Finance Team*`,
+🏛 *Kingswood Education Center Finance Team*`,
 
   attendanceWarningTemplate: `📢 *ATTENDANCE WARNING NOTICE*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 📊 *ATTENDANCE REPORT*
 > 👤 *Student:* *{student_name}*
@@ -2581,7 +2581,7 @@ Thank you for your cooperation!
 
 If you have any questions, feel free to contact the institute administration.
 ───────────────────────────
-🏛 *Kingswood Connect Student Support*`
+🏛 *Kingswood Education Center Student Support*`
 };
 
 app.get('/api/landing-settings', async (req, res) => {

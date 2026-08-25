@@ -86,7 +86,7 @@ const AttendanceReports = () => {
     
     const defaultTemplate = `📢 *ATTENDANCE WARNING NOTICE*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 📊 *ATTENDANCE REPORT*
 > 👤 *Student:* *{student_name}*
@@ -98,7 +98,7 @@ const AttendanceReports = () => {
 
 If you have any questions, feel free to contact the institute administration.
 ───────────────────────────
-🏛 *Kingswood Connect Student Support*`;
+🏛 *Kingswood Education Center Student Support*`;
 
     const template = cmsSettings?.attendanceWarningTemplate || defaultTemplate;
 

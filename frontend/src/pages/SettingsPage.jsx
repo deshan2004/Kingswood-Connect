@@ -15,8 +15,8 @@ import ConfirmModal from '../components/ConfirmModal';
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const DEFAULT_WA_TEMPLATES = {
-  admissionPassTemplate: `🎓 *KINGSWOOD CONNECT STUDENT ADMISSION PASS*
-Dear {student_name}, welcome to Kingswood Connect Education!
+  admissionPassTemplate: `🎓 *KINGSWOOD EDUCATION CENTER STUDENT ADMISSION PASS*
+Dear {student_name}, welcome to Kingswood Education Center Education!
 
 🔐 *STUDENT PORTAL LOGIN DETAILS*
 > 🆔 *Student ID:* \`{student_id}\`
@@ -31,9 +31,9 @@ Dear {student_name}, welcome to Kingswood Connect Education!
 
 💡 _Note: Please save your QR Code pass to your photo gallery. Show this QR code to mark attendance at every class session._
 ───────────────────────────
-🏛 *Kingswood Connect Student Management System*`,
+🏛 *Kingswood Education Center Student Management System*`,
 
-  paymentReceiptTemplate: `🎓 *KINGSWOOD CONNECT OFFICIAL RECEIPT*
+  paymentReceiptTemplate: `🎓 *KINGSWOOD EDUCATION CENTER OFFICIAL RECEIPT*
 Dear {student_name},
 
 Here is your official payment receipt details:
@@ -47,11 +47,11 @@ Here is your official payment receipt details:
 
 Thank you for your payment!
 ───────────────────────────
-🏛 *Kingswood Connect Finance Team*`,
+🏛 *Kingswood Education Center Finance Team*`,
 
   paymentReminderTemplate: `📢 *FEE PAYMENT REMINDER*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 Hello *{student_name}*,
 
@@ -65,11 +65,11 @@ Please complete your payment during your next class session. If you have already
 
 Thank you for your cooperation!
 ───────────────────────────
-🏛 *Kingswood Connect Finance Team*`,
+🏛 *Kingswood Education Center Finance Team*`,
 
   attendanceWarningTemplate: `📢 *ATTENDANCE WARNING NOTICE*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 📊 *ATTENDANCE REPORT*
 > 👤 *Student:* *{student_name}*
@@ -81,7 +81,7 @@ Thank you for your cooperation!
 
 If you have any questions, feel free to contact the institute administration.
 ───────────────────────────
-🏛 *Kingswood Connect Student Support*`
+🏛 *Kingswood Education Center Student Support*`
 };
 
 const getEmbedVideoUrl = (url) => {
@@ -2231,8 +2231,8 @@ const PRESET_TEMPLATES = {
     {
       id: 'en_default',
       label: '🇬🇧 English Standard',
-      template: `🎓 *KINGSWOOD CONNECT STUDENT ADMISSION PASS*
-Dear {student_name}, welcome to Kingswood Connect Education!
+      template: `🎓 *KINGSWOOD EDUCATION CENTER STUDENT ADMISSION PASS*
+Dear {student_name}, welcome to Kingswood Education Center Education!
 
 🔐 *STUDENT PORTAL LOGIN DETAILS*
 > 🆔 *Student ID:* \`{student_id}\`
@@ -2247,13 +2247,13 @@ Dear {student_name}, welcome to Kingswood Connect Education!
 
 💡 _Note: Please save your QR Code pass to your photo gallery. Show this QR code to mark attendance at every class session._
 ───────────────────────────
-🏛 *Kingswood Connect Student Management System*`
+🏛 *Kingswood Education Center Student Management System*`
     },
     {
       id: 'si_default',
       label: '🇱🇰 Sinhala Version',
-      template: `🎓 *KINGSWOOD CONNECT ශිෂ්‍ය ඇතුළත් වීමේ පත*
-ආයුබෝවන් {student_name}, Kingswood Connect ආයතනය වෙත සාදරයෙන් පිළිගනිමු!
+      template: `🎓 *KINGSWOOD EDUCATION CENTER ශිෂ්‍ය ඇතුළත් වීමේ පත*
+ආයුබෝවන් {student_name}, Kingswood Education Center ආයතනය වෙත සාදරයෙන් පිළිගනිමු!
 
 🔐 *ශිෂ්‍ය ගිණුමේ තොරතුරු*
 > 🆔 *ශිෂ්‍ය අංකය:* \`{student_id}\`
@@ -2268,12 +2268,12 @@ Dear {student_name}, welcome to Kingswood Connect Education!
 
 💡 _සැලකිය යුතුයි: කරුණාකර මෙම QR පත ඔබගේ ජංගම දුරකථනයට සුරක්ෂිතව තබා ගන්න. සෑම පන්තියකටම පැමිණීමේදී මෙම QR කේතය ඉදිරිපත් කරන්න._
 ───────────────────────────
-🏛 *Kingswood Connect ශිෂ්‍ය කළමනාකරණ පද්ධතිය*`
+🏛 *Kingswood Education Center ශිෂ්‍ය කළමනාකරණ පද්ධතිය*`
     },
     {
       id: 'short_simple',
       label: '⚡ Short & Direct',
-      template: `🎓 *KINGSWOOD CONNECT ADMISSION PASS*
+      template: `🎓 *KINGSWOOD EDUCATION CENTER ADMISSION PASS*
 Hello {student_name}!
 
 🆔 Student ID: \`{student_id}\`
@@ -2286,7 +2286,7 @@ Hello {student_name}!
     {
       id: 'en_receipt',
       label: '🇬🇧 English Receipt',
-      template: `🎓 *KINGSWOOD CONNECT OFFICIAL RECEIPT*
+      template: `🎓 *KINGSWOOD EDUCATION CENTER OFFICIAL RECEIPT*
 Dear {student_name},
 
 Here is your official payment receipt details:
@@ -2300,12 +2300,12 @@ Here is your official payment receipt details:
 
 Thank you for your payment!
 ───────────────────────────
-🏛 *Kingswood Connect Finance Team*`
+🏛 *Kingswood Education Center Finance Team*`
     },
     {
       id: 'si_receipt',
       label: '🇱🇰 Sinhala Receipt',
-      template: `🎓 *KINGSWOOD CONNECT නිල ගෙවීම් රිසිට්පත*
+      template: `🎓 *KINGSWOOD EDUCATION CENTER නිල ගෙවීම් රිසිට්පත*
 ආයුබෝවන් {student_name},
 
 ඔබගේ පන්ති ගාස්තු ගෙවීම් විස්තර පහත පරිදි වේ:
@@ -2319,7 +2319,7 @@ Thank you for your payment!
 
 ඔබගේ ගෙවීමට ස්තූතියි!
 ───────────────────────────
-🏛 *Kingswood Connect මුදල් අංශය*`
+🏛 *Kingswood Education Center මුදල් අංශය*`
     }
   ],
   paymentReminderTemplate: [
@@ -2328,7 +2328,7 @@ Thank you for your payment!
       label: '🇬🇧 English Reminder',
       template: `📢 *FEE PAYMENT REMINDER*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 Hello *{student_name}*,
 
@@ -2342,14 +2342,14 @@ Please complete your payment during your next class session. If you have already
 
 Thank you for your cooperation!
 ───────────────────────────
-🏛 *Kingswood Connect Finance Team*`
+🏛 *Kingswood Education Center Finance Team*`
     },
     {
       id: 'si_remind',
       label: '🇱🇰 Sinhala Reminder',
       template: `📢 *පන්ති ගාස්තු මතක් කිරීම*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 ආයුබෝවන් *{student_name}*,
 
@@ -2363,7 +2363,7 @@ Thank you for your cooperation!
 
 ස්තූතියි!
 ───────────────────────────
-🏛 *Kingswood Connect මුදල් අංශය*`
+🏛 *Kingswood Education Center මුදල් අංශය*`
     }
   ],
   attendanceWarningTemplate: [
@@ -2372,7 +2372,7 @@ Thank you for your cooperation!
       label: '🇬🇧 English Warning',
       template: `📢 *ATTENDANCE WARNING NOTICE*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 📊 *ATTENDANCE REPORT*
 > 👤 *Student:* *{student_name}*
@@ -2384,14 +2384,14 @@ Thank you for your cooperation!
 
 If you have any questions, feel free to contact the institute administration.
 ───────────────────────────
-🏛 *Kingswood Connect Student Support*`
+🏛 *Kingswood Education Center Student Support*`
     },
     {
       id: 'si_att',
       label: '🇱🇰 Sinhala Warning',
       template: `📢 *පැමිණීමේ අවම වීම පිළිබඳ දැනුම්දීම*
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 📊 *පැමිණීමේ වාර්තාව*
 > 👤 *ශිෂ්‍යයා:* *{student_name}*
@@ -2402,7 +2402,7 @@ If you have any questions, feel free to contact the institute administration.
 ⚠️ *දැනුම්දීම:* මෙම කාලසීමාව තුළ පැමිණීම අවම මට්ටමක පවතී. ඉදිරි පන්ති සඳහා නිසි පරිදි සහභාගී වන ලෙස දන්වා සිටිමු.
 
 ───────────────────────────
-🏛 *Kingswood Connect ශිෂ්‍ය සහායක අංශය*`
+🏛 *Kingswood Education Center ශිෂ්‍ය සහායක අංශය*`
     }
   ]
 };
@@ -2594,7 +2594,7 @@ ${note || 'Thank you for your payment!'}
 
       newTemplate = `${title}
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 ${greeting}
 
@@ -2615,7 +2615,7 @@ Please complete your payment during your next class session.
 
       newTemplate = `${title}
 ───────────────────────────
-🏛 *Kingswood Connect*
+🏛 *Kingswood Education Center*
 
 📊 *ATTENDANCE REPORT*
 > 👤 *Student:* *{student_name}*
@@ -2891,7 +2891,7 @@ Please complete your payment during your next class session.
               </div>
               <div>
                 <div className="text-xs font-bold text-slate-100 flex items-center gap-1">
-                  Kingswood Connect <span className="text-emerald-400 text-[10px]">✓</span>
+                  Kingswood Education Center <span className="text-emerald-400 text-[10px]">✓</span>
                 </div>
                 <div className="text-[10px] text-slate-400">Official Student Management System</div>
               </div>

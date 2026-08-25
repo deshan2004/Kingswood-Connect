@@ -246,7 +246,7 @@ const LandingPage = () => {
     const subject = formData.subject || '';
     const msg = formData.message || '';
 
-    const text = `Hello Kingswood Connect! 👋\n\nI would like to inquire / join tuition classes:\n• *Name:* ${name}\n• *Phone:* ${phone}\n• *Grade/Batch:* ${batch}\n• *Subject:* ${subject}${msg ? `\n• *Message:* ${msg}` : ''}`;
+    const text = `Hello Kingswood Education Center! 👋\n\nI would like to inquire / join tuition classes:\n• *Name:* ${name}\n• *Phone:* ${phone}\n• *Grade/Batch:* ${batch}\n• *Subject:* ${subject}${msg ? `\n• *Message:* ${msg}` : ''}`;
 
     const waUrl = `https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}`;
     window.open(waUrl, '_blank');
@@ -273,7 +273,7 @@ const LandingPage = () => {
       cleanNum = normalNum.startsWith('0') ? '94' + normalNum.substring(1) : normalNum;
     }
 
-    const defaultMsg = `Hello ${teacher?.name || 'Sir'}! 👋\n\nI would like to inquire / join your (${teacher?.subject || 'Tuition'}) classes at Kingswood Connect.`;
+    const defaultMsg = `Hello ${teacher?.name || 'Sir'}! 👋\n\nI would like to inquire / join your (${teacher?.subject || 'Tuition'}) classes at Kingswood Education Center.`;
     const text = customMsg || defaultMsg;
 
     return `https://wa.me/${cleanNum}?text=${encodeURIComponent(text)}`;
@@ -336,10 +336,10 @@ const LandingPage = () => {
 
           {/* Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <img src="/IMG_4244.png" alt="Kingswood Connect Logo" className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shadow-md shadow-indigo-950/20 border border-indigo-700/30 group-hover:scale-105 transition-transform duration-300 shrink-0" />
+            <img src="/IMG_4244.png" alt="Kingswood Education Center Logo" className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shadow-md shadow-indigo-950/20 border border-indigo-700/30 group-hover:scale-105 transition-transform duration-300 shrink-0" />
             <div>
               <span className="text-xl font-extrabold text-indigo-950 tracking-tight block">
-                Kingswood Connect
+                Kingswood Education Center
               </span>
               <span className="block text-[11px] font-bold text-indigo-600 tracking-wider uppercase">
                 Premier Educational Institute
@@ -531,7 +531,7 @@ const LandingPage = () => {
                     {/* Clean Seamless Logo Image */}
                     <img
                       src={cmsSettings?.heroImage || '/kc-logo.png'}
-                      alt="Kingswood Connect Learning Environment"
+                      alt="Kingswood Education Center Learning Environment"
                       onError={(e) => { e.target.onerror = null; e.target.src = '/kc-logo.png'; }}
                       className="w-full max-w-[340px] sm:max-w-[380px] h-[340px] sm:h-[380px] object-contain drop-shadow-[0_20px_35px_rgba(79,70,229,0.22)] group-hover:drop-shadow-[0_30px_55px_rgba(79,70,229,0.38)] transform group-hover:scale-105 transition-all duration-700 ease-out z-10 relative"
                     />
@@ -690,7 +690,7 @@ const LandingPage = () => {
               // Build comprehensive video list
               const videoGallery = [
                 ...(cmsSettings?.demoVideoUrl && !cmsSettings.demoVideoUrl.includes('dQw4w9WgXcQ') ? [{
-                  title: 'Kingswood Connect Institute & Learning Environment',
+                  title: 'Kingswood Education Center Institute & Learning Environment',
                   author: 'Main Campus',
                   category: 'Institute Overview',
                   videoUrl: cmsSettings.demoVideoUrl
@@ -715,7 +715,7 @@ const LandingPage = () => {
               // Default fallback if array is empty
               if (videoGallery.length === 0 && cmsSettings?.demoVideoUrl) {
                 videoGallery.push({
-                  title: 'Kingswood Connect Institute & Learning Environment',
+                  title: 'Kingswood Education Center Institute & Learning Environment',
                   author: 'Main Campus',
                   category: 'Institute Overview',
                   videoUrl: cmsSettings.demoVideoUrl
@@ -725,7 +725,7 @@ const LandingPage = () => {
               if (videoGallery.length === 0) {
                 return (
                   <div className="w-full h-56 rounded-3xl bg-slate-950/80 border border-slate-800 flex flex-col items-center justify-center p-6 text-center">
-                    <img src="/kc-logo.png" alt="Kingswood Connect" className="w-36 h-auto object-contain mb-3 opacity-60" />
+                    <img src="/kc-logo.png" alt="Kingswood Education Center" className="w-36 h-auto object-contain mb-3 opacity-60" />
                     <p className="text-xs font-bold text-slate-400">Class videos and lectures will appear here once published in Settings.</p>
                   </div>
                 );
@@ -852,7 +852,7 @@ const LandingPage = () => {
               {cmsSettings?.visionTitle || 'Vision & Mission'}
             </h2>
             <p className="text-slate-600 text-base sm:text-lg">
-              {cmsSettings?.visionSub || 'Every initiative at Kingswood Connect is guided by an unyielding commitment to student transformation and academic integrity.'}
+              {cmsSettings?.visionSub || 'Every initiative at Kingswood Education Center is guided by an unyielding commitment to student transformation and academic integrity.'}
             </p>
           </div>
 
@@ -972,7 +972,7 @@ const LandingPage = () => {
             <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-indigo-950 via-indigo-900 to-slate-900 border border-indigo-800/50 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
               <div className="space-y-2 text-center md:text-left">
                 <h3 className="text-xl font-extrabold text-white">{cmsSettings?.resultsCtaTitle || 'Be the Next A/L Success Story!'}</h3>
-                <p className="text-sm text-indigo-100">{cmsSettings?.resultsCtaSub || 'Enroll today and gain instant access to Kingswood Connect student portal, tutes, and exam schedules.'}</p>
+                <p className="text-sm text-indigo-100">{cmsSettings?.resultsCtaSub || 'Enroll today and gain instant access to Kingswood Education Center student portal, tutes, and exam schedules.'}</p>
               </div>
               <Link
                 to="/login"
@@ -1333,7 +1333,7 @@ const LandingPage = () => {
                 <div className="p-2 bg-slate-100">
                   <iframe
                     src={finalMapsUrl}
-                    title="Kingswood Connect Location"
+                    title="Kingswood Education Center Location"
                     className="w-full h-64 sm:h-72 rounded-2xl border-0"
                     loading="lazy"
                     allowFullScreen
@@ -1366,8 +1366,8 @@ const LandingPage = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
 
             <div className="flex items-center space-x-3">
-              <img src="/IMG_4244.png" alt="Kingswood Connect Logo" className="h-9 w-9 rounded-xl object-contain bg-white p-0.5 shadow-lg border border-indigo-400/20 shrink-0" />
-              <span className="text-base font-extrabold text-white">Kingswood Connect</span>
+              <img src="/IMG_4244.png" alt="Kingswood Education Center Logo" className="h-9 w-9 rounded-xl object-contain bg-white p-0.5 shadow-lg border border-indigo-400/20 shrink-0" />
+              <span className="text-base font-extrabold text-white">Kingswood Education Center</span>
             </div>
 
             {/* Social Media Links */}
@@ -1410,7 +1410,7 @@ const LandingPage = () => {
           </div>
 
           <div className="pt-6 border-t border-indigo-900/60 text-center text-indigo-300/80 text-[11px]">
-            © {new Date().getFullYear()} Kingswood Connect Educational Institute. All Rights Reserved.
+            © {new Date().getFullYear()} Kingswood Education Center Educational Institute. All Rights Reserved.
           </div>
         </div>
       </footer>
@@ -1456,7 +1456,7 @@ const LandingPage = () => {
               )}
             </div>
             <div className="p-4 bg-slate-50 flex items-center justify-between border-t border-slate-200">
-              <span className="text-xs font-bold text-slate-600">Kingswood Connect Faculty Video Demo</span>
+              <span className="text-xs font-bold text-slate-600">Kingswood Education Center Faculty Video Demo</span>
               <button
                 onClick={() => setSelectedTeacherVideo(null)}
                 className="px-5 py-2 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs transition-colors shadow-xs"
@@ -1532,7 +1532,7 @@ const LandingPage = () => {
                       <button
                         type="button"
                         onClick={() => {
-                          const msg = `Hello ${selectedTeacherClasses.name}! 👋\n\nI would like to inquire about your (${selectedTeacherClasses.subject || 'All'}) class timetable & enrollment at Kingswood Connect.`;
+                          const msg = `Hello ${selectedTeacherClasses.name}! 👋\n\nI would like to inquire about your (${selectedTeacherClasses.subject || 'All'}) class timetable & enrollment at Kingswood Education Center.`;
                           window.open(getTeacherWhatsAppUrl(selectedTeacherClasses, msg), '_blank');
                         }}
                         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-sm"

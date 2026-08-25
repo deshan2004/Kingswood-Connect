@@ -1,6 +1,6 @@
-# Kingswood Connect
+# Kingswood Education Center
 
-Kingswood Connect is a modern, real-time student attendance and management system designed for seamless administration. It features a robust desktop dashboard alongside an innovative "Mobile Scanner" capability that turns any smartphone into a remote, real-time ID scanner.
+Kingswood Education Center is a modern, real-time student attendance and management system designed for seamless administration. It features a robust desktop dashboard alongside an innovative "Mobile Scanner" capability that turns any smartphone into a remote, real-time ID scanner.
 
 ## ✨ Features
 

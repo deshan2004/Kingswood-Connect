@@ -29,7 +29,7 @@ const ProtectedRoute = ({ children, allowedRole }) => {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white font-sans">
         <div className="w-12 h-12 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin mb-4"></div>
-        <p className="text-xs font-extrabold text-slate-400 tracking-wider uppercase">Loading Kingswood Connect...</p>
+        <p className="text-xs font-extrabold text-slate-400 tracking-wider uppercase">Loading Kingswood Education Center...</p>
       </div>
     );
   }

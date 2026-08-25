@@ -44,7 +44,7 @@ const Layout = () => {
       <aside className={`fixed inset-y-0 left-0 w-64 bg-indigo-950 text-white flex flex-col shadow-2xl z-50 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out`}>
         <div className="p-6 border-b border-indigo-900/50 bg-indigo-950/50 backdrop-blur-md flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <img src="/IMG_4244.png" alt="Kingswood Connect Logo" className="h-10 w-10 rounded-xl object-contain bg-white p-0.5 shadow-lg border border-indigo-400/20 shrink-0" />
+            <img src="/IMG_4244.png" alt="Kingswood Education Center Logo" className="h-10 w-10 rounded-xl object-contain bg-white p-0.5 shadow-lg border border-indigo-400/20 shrink-0" />
             <div>
               <h1 className="font-black text-white text-lg tracking-tight leading-none">Kingswood</h1>
               <span className="text-xs font-bold text-indigo-300 uppercase tracking-widest">Connect</span>
@@ -105,8 +105,8 @@ const Layout = () => {
         {/* Mobile Header */}
         <header className="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between z-10 relative shadow-sm shrink-0">
           <div className="flex items-center gap-2.5">
-            <img src="/IMG_4244.png" alt="Kingswood Connect Logo" className="h-8 w-8 rounded-lg object-contain bg-white p-0.5 shadow-md border border-slate-200 shrink-0" />
-            <span className="font-black text-slate-800 text-lg tracking-tight">Kingswood Connect</span>
+            <img src="/IMG_4244.png" alt="Kingswood Education Center Logo" className="h-8 w-8 rounded-lg object-contain bg-white p-0.5 shadow-md border border-slate-200 shrink-0" />
+            <span className="font-black text-slate-800 text-lg tracking-tight">Kingswood Education Center</span>
           </div>
           <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -mr-2 text-slate-600 hover:text-indigo-600 transition-colors">
             <Menu size={24} />

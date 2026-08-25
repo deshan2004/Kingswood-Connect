@@ -209,14 +209,14 @@ const Login = () => {
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-3">
         <div className="flex justify-center">
-          <Link to="/" title="Go to Kingswood Connect Home">
-            <img src="/IMG_4244.png" alt="Kingswood Connect Logo" className="w-16 h-16 rounded-2xl object-contain bg-white p-1 shadow-lg shadow-indigo-950/20 border border-indigo-700/30 transform hover:scale-105 transition-transform duration-300" />
+          <Link to="/" title="Go to Kingswood Education Center Home">
+            <img src="/IMG_4244.png" alt="Kingswood Education Center Logo" className="w-16 h-16 rounded-2xl object-contain bg-white p-1 shadow-lg shadow-indigo-950/20 border border-indigo-700/30 transform hover:scale-105 transition-transform duration-300" />
           </Link>
         </div>
         <div>
           <Link to="/" className="block group">
             <h2 className="text-3xl font-black text-slate-900 tracking-tight group-hover:text-indigo-600 transition-colors">
-              Kingswood Connect
+              Kingswood Education Center
             </h2>
           </Link>
           <p className="mt-1 text-xs sm:text-sm font-semibold text-indigo-700 uppercase tracking-wider">

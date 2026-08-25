@@ -94,7 +94,7 @@ const Students = () => {
     const feeLabel = getPaymentFeeLabel(p);
     const dateStr = p.datePaid ? format(new Date(p.datePaid), 'yyyy-MM-dd hh:mm a') : p.month;
     
-    const defaultReceiptTemplate = `🎓 *KINGSWOOD CONNECT OFFICIAL RECEIPT*
+    const defaultReceiptTemplate = `🎓 *KINGSWOOD EDUCATION CENTER OFFICIAL RECEIPT*
 Dear {student_name},
 
 Here is your official payment receipt details:
@@ -108,7 +108,7 @@ Here is your official payment receipt details:
 
 Thank you for your payment!
 ───────────────────────────
-🏛 *Kingswood Connect Finance Team*`;
+🏛 *Kingswood Education Center Finance Team*`;
 
     const template = cmsSettings?.paymentReceiptTemplate || defaultReceiptTemplate;
 
@@ -216,8 +216,8 @@ Thank you for your payment!
         phone = '94' + phone.substring(1);
       }
 
-      const defaultTemplate = `🎓 *KINGSWOOD CONNECT STUDENT ADMISSION PASS*
-Dear {student_name}, welcome to Kingswood Connect Education!
+      const defaultTemplate = `🎓 *KINGSWOOD EDUCATION CENTER STUDENT ADMISSION PASS*
+Dear {student_name}, welcome to Kingswood Education Center Education!
 
 🔐 *STUDENT PORTAL LOGIN DETAILS*
 > 🆔 *Student ID:* \`{student_id}\`
@@ -232,7 +232,7 @@ Dear {student_name}, welcome to Kingswood Connect Education!
 
 💡 _Note: Please save your QR Code pass to your photo gallery. Show this QR code to mark attendance at every class session._
 ───────────────────────────
-🏛 *Kingswood Connect Student Management System*`;
+🏛 *Kingswood Education Center Student Management System*`;
 
       const template = cmsSettings?.admissionPassTemplate || defaultTemplate;
 
