@@ -19,6 +19,7 @@ import {
   Clock,
   Target,
   Compass,
+  ChevronLeft,
   ChevronRight,
   ChevronDown,
   ChevronUp,
