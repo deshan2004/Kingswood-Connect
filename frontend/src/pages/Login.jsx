@@ -8,7 +8,6 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const Login = () => {
   const [searchParams] = useSearchParams();
-  const [activePortalTab, setActivePortalTab] = useState('student'); // 'student', 'teacher', 'admin'
   const [identifier, setIdentifier] = useState(''); // Email or Student ID
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -232,49 +231,10 @@ const Login = () => {
         <p className="text-xs sm:text-sm font-medium text-slate-600">
           {isResetMode ? 'Reset your account password' : 'Enter your credentials to access student, teacher, or admin portals'}
         </p>
-
-        {/* Interactive Portal Preset Role Chips */}
-        {!isResetMode && !showOtpStep && (
-          <div className="pt-2 flex items-center justify-center gap-2">
-            <button
-              type="button"
-              onClick={() => setActivePortalTab('student')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 ${
-                activePortalTab === 'student'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25 scale-105'
-                  : 'bg-white/80 hover:bg-white text-slate-600 border border-slate-200 shadow-xs'
-              }`}
-            >
-              🎓 Student
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivePortalTab('teacher')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 ${
-                activePortalTab === 'teacher'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25 scale-105'
-                  : 'bg-white/80 hover:bg-white text-slate-600 border border-slate-200 shadow-xs'
-              }`}
-            >
-              👨‍🏫 Teacher
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivePortalTab('admin')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 ${
-                activePortalTab === 'admin'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25 scale-105'
-                  : 'bg-white/80 hover:bg-white text-slate-600 border border-slate-200 shadow-xs'
-              }`}
-            >
-              ⚙️ Admin
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Form Card Container */}
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
         <div className="bg-white/90 backdrop-blur-2xl py-8 px-6 sm:px-10 shadow-2xl shadow-indigo-950/10 rounded-3xl border border-white/80 relative overflow-hidden group/card">
           {isResetMode ? (
             /* Forgot Password Reset Form */
@@ -434,13 +394,8 @@ const Login = () => {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center justify-between">
-                  <span>
-                    {activePortalTab === 'student' && '🎓 Student ID or Email'}
-                    {activePortalTab === 'teacher' && '👨‍🏫 Teacher Email / Account'}
-                    {activePortalTab === 'admin' && '⚙️ Admin Username / Email'}
-                  </span>
-                  <span className="text-[10px] text-indigo-600 font-semibold uppercase">Required</span>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  Email Address or Student ID
                 </label>
                 <div className="relative group">
                   <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 group-focus-within:text-indigo-600 transition-colors">
@@ -452,13 +407,7 @@ const Login = () => {
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     className="w-full pl-11 pr-4 py-3 bg-slate-50/80 border border-slate-300/90 rounded-2xl text-slate-900 font-semibold text-sm placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/15 transition-all shadow-inner/5"
-                    placeholder={
-                      activePortalTab === 'student'
-                        ? 'e.g. KWS-1002 or student@example.com'
-                        : activePortalTab === 'teacher'
-                        ? 'e.g. teacher@kingswood.edu'
-                        : 'e.g. admin@kingswood.edu'
-                    }
+                    placeholder="e.g. user@example.com or KWS-1002"
                   />
                 </div>
               </div>
