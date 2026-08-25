@@ -229,7 +229,7 @@ const Login = () => {
           </div>
         </div>
         <p className="text-xs sm:text-sm font-medium text-slate-600">
-          {isResetMode ? 'Reset your account password' : 'Enter your credentials to access student, teacher, or admin portals'}
+          {isResetMode ? 'Reset your account password' : 'Sign in to access your digital learning portal'}
         </p>
       </div>
 
