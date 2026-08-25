@@ -172,27 +172,27 @@ const LandingPage = () => {
       if (Array.isArray(teachersRes.data) && teachersRes.data.length > 0) {
         setTeachersList(teachersRes.data);
       }
-      if (cmsRes.data) {
+      if (cmsRes.data && typeof cmsRes.data === 'object') {
         const cms = { ...cmsRes.data };
-        if (!cms.heroBtn1Text || cms.heroBtn1Text.includes('Faculty') || cms.heroBtn1Text.includes('Sirs')) {
+        if (!cms.heroBtn1Text || typeof cms.heroBtn1Text !== 'string' || cms.heroBtn1Text.includes('Faculty') || cms.heroBtn1Text.includes('Sirs')) {
           cms.heroBtn1Text = 'Meet Our Teachers';
         }
-        if (!cms.facultyBadge || cms.facultyBadge.includes('SIRS')) {
+        if (!cms.facultyBadge || typeof cms.facultyBadge !== 'string' || cms.facultyBadge.includes('SIRS')) {
           cms.facultyBadge = 'EXPERT PANEL OF TEACHERS';
         }
-        if (cms.heroTagline && cms.heroTagline.includes('Physics & Combined')) {
+        if (typeof cms.heroTagline === 'string' && cms.heroTagline.includes('Physics & Combined')) {
           cms.heroTagline = '🏆 Premier Educational Institute | Grade 1 to Grade 13 (All Subjects)';
         }
-        if (cms.heroSubtitle && (cms.heroSubtitle.includes('Physics & Combined') || cms.heroSubtitle.includes('Master G.C.E. Advanced Level Physics'))) {
+        if (typeof cms.heroSubtitle === 'string' && (cms.heroSubtitle.includes('Physics & Combined') || cms.heroSubtitle.includes('Master G.C.E. Advanced Level Physics'))) {
           cms.heroSubtitle = 'Comprehensive tuition classes & digital learning portal for Grade 1 to Grade 13 across all subjects. Interactive learning, real-time attendance tracking, and expert academic guidance.';
         }
-        if (cms.facultySub && cms.facultySub.includes('A/L Science & Mathematics')) {
+        if (typeof cms.facultySub === 'string' && cms.facultySub.includes('A/L Science & Mathematics')) {
           cms.facultySub = 'Our institute brings together top Sri Lankan educators dedicated to guiding students from Grade 1 to Grade 13 across all core subjects and academic streams.';
         }
-        if (cms.visionText && cms.visionText.includes('engineering, medicine, and technology')) {
+        if (typeof cms.visionText === 'string' && cms.visionText.includes('engineering, medicine, and technology')) {
           cms.visionText = 'To become Sri Lanka\'s benchmark educational institute, empowering students from Grade 1 to Grade 13 with analytical thinking, problem-solving skills, and academic excellence across all subjects and streams.';
         }
-        if (cms.missionText && cms.missionText.includes('Z-Scores and Island Ranks')) {
+        if (typeof cms.missionText === 'string' && cms.missionText.includes('Z-Scores and Island Ranks')) {
           cms.missionText = 'To unlock every student\'s highest potential from Grade 1 through Grade 13 by combining modern digital technology, structured paper series, clear concept delivery, and individual mentorship.';
         }
         setCmsSettings(cms);
@@ -753,13 +753,25 @@ const LandingPage = () => {
                 );
               }
 
-              const currentVideo = videoGallery[activeVideoIndex % videoGallery.length] || videoGallery[0];
-              const isDirectVideo = currentVideo.videoUrl.startsWith('data:video') ||
-                currentVideo.videoUrl.includes('/api/media/') ||
-                currentVideo.videoUrl.includes('/uploads/') ||
-                currentVideo.videoUrl.endsWith('.mp4') ||
-                currentVideo.videoUrl.endsWith('.webm') ||
-                currentVideo.videoUrl.endsWith('.mov');
+              const safeIndex = (typeof activeVideoIndex === 'number' && !isNaN(activeVideoIndex) && activeVideoIndex >= 0) ? activeVideoIndex : 0;
+              const currentVideo = videoGallery[safeIndex % videoGallery.length] || videoGallery[0] || {};
+              const rawVideoUrl = (currentVideo && typeof currentVideo.videoUrl === 'string') ? currentVideo.videoUrl.trim() : '';
+
+              if (!rawVideoUrl) {
+                return (
+                  <div className="w-full h-56 rounded-3xl bg-slate-950/80 border border-slate-800 flex flex-col items-center justify-center p-6 text-center">
+                    <img src="/kc-logo.png" alt="Kingswood Education Center" className="w-36 h-auto object-contain mb-3 opacity-60" />
+                    <p className="text-xs font-bold text-slate-400">Class videos will appear here once published in Settings.</p>
+                  </div>
+                );
+              }
+
+              const isDirectVideo = rawVideoUrl.startsWith('data:video') ||
+                rawVideoUrl.includes('/api/media/') ||
+                rawVideoUrl.includes('/uploads/') ||
+                rawVideoUrl.endsWith('.mp4') ||
+                rawVideoUrl.endsWith('.webm') ||
+                rawVideoUrl.endsWith('.mov');
 
               return (
                 <div className="space-y-4">
@@ -768,8 +780,8 @@ const LandingPage = () => {
                     <div className="rounded-2xl overflow-hidden bg-slate-950 relative aspect-video flex items-center justify-center">
                       {isDirectVideo ? (
                         <video
-                          key={currentVideo.videoUrl}
-                          src={currentVideo.videoUrl}
+                          key={rawVideoUrl}
+                          src={rawVideoUrl}
                           autoPlay
                           loop
                           muted
@@ -779,8 +791,8 @@ const LandingPage = () => {
                         />
                       ) : (
                         <iframe
-                          key={currentVideo.videoUrl}
-                          src={getEmbedVideoUrl(currentVideo.videoUrl, true)}
+                          key={rawVideoUrl}
+                          src={getEmbedVideoUrl(rawVideoUrl, true)}
                           title="Class Video"
                           className="w-full h-full border-0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

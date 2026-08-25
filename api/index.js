@@ -2591,27 +2591,27 @@ app.get('/api/landing-settings', async (req, res) => {
       const data = docSnap.data() || {};
       let needsDbUpdate = false;
 
-      if (!data.heroBtn1Text || data.heroBtn1Text.includes('Faculty') || data.heroBtn1Text.includes('Sirs')) {
+      if (!data.heroBtn1Text || typeof data.heroBtn1Text !== 'string' || data.heroBtn1Text.includes('Faculty') || data.heroBtn1Text.includes('Sirs')) {
         data.heroBtn1Text = defaultLandingSettings.heroBtn1Text;
         needsDbUpdate = true;
       }
-      if (!data.facultyBadge || data.facultyBadge.includes('SIRS')) {
+      if (!data.facultyBadge || typeof data.facultyBadge !== 'string' || data.facultyBadge.includes('SIRS')) {
         data.facultyBadge = defaultLandingSettings.facultyBadge;
         needsDbUpdate = true;
       }
-      if (!data.heroTagline || data.heroTagline.includes('Physics & Combined')) {
+      if (!data.heroTagline || typeof data.heroTagline !== 'string' || data.heroTagline.includes('Physics & Combined')) {
         data.heroTagline = defaultLandingSettings.heroTagline;
         needsDbUpdate = true;
       }
-      if (!data.heroSubtitle || data.heroSubtitle.includes('Physics & Combined') || data.heroSubtitle.includes('Master G.C.E. Advanced Level Physics')) {
+      if (!data.heroSubtitle || typeof data.heroSubtitle !== 'string' || data.heroSubtitle.includes('Physics & Combined') || data.heroSubtitle.includes('Master G.C.E. Advanced Level Physics')) {
         data.heroSubtitle = defaultLandingSettings.heroSubtitle;
         needsDbUpdate = true;
       }
-      if (!data.facultySub || data.facultySub.includes('A/L Science & Mathematics')) {
+      if (!data.facultySub || typeof data.facultySub !== 'string' || data.facultySub.includes('A/L Science & Mathematics')) {
         data.facultySub = defaultLandingSettings.facultySub;
         needsDbUpdate = true;
       }
-      if (!data.visionText || data.visionText.includes('engineering, medicine, and technology')) {
+      if (!data.visionText || typeof data.visionText !== 'string' || data.visionText.includes('engineering, medicine, and technology')) {
         data.visionText = defaultLandingSettings.visionText;
         needsDbUpdate = true;
       }
