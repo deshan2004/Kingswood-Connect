@@ -510,7 +510,7 @@ const LandingPage = () => {
                   className="w-full sm:w-auto px-8 py-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/40 transition-all transform hover:-translate-y-0.5 flex items-center justify-center"
                 >
                   <Users className="w-5 h-5 mr-2 text-indigo-100" />
-                  {cmsSettings?.heroBtn1Text || 'Meet Our Teachers (Sirs)'}
+                  {cmsSettings?.heroBtn1Text || 'Meet Our Teachers'}
                 </button>
 
                 <button
@@ -579,7 +579,7 @@ const LandingPage = () => {
       </section>
 
 
-      {/* Section 2: Faculty Panel & Teachers' Profiles (Meet Our Sirs) */}
+      {/* Section 2: Teachers' Profiles (Meet Our Teachers) */}
       {activeTeachers.length > 0 && (
         <section id="about-sir" className="py-20 bg-slate-100/70 border-y border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -587,7 +587,7 @@ const LandingPage = () => {
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs font-bold uppercase tracking-wider shadow-xs">
               <School className="w-4 h-4 mr-1 text-indigo-600" />
-              {cmsSettings?.facultyBadge || 'MEET OUR PANEL OF EXPERT SIRS'}
+              {cmsSettings?.facultyBadge || 'EXPERT PANEL OF TEACHERS'}
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900">
               {cmsSettings?.facultyTitle || 'Distinguished Teachers & Subject Specialists'}
@@ -699,7 +699,7 @@ const LandingPage = () => {
       )}
 
 
-      {/* Dedicated Section: Sirs' Teaching Methodology & Multi-Video Showcase */}
+      {/* Dedicated Section: Teaching Methodology & Multi-Video Showcase */}
       <section id="videos" className="py-20 bg-slate-900 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -709,10 +709,10 @@ const LandingPage = () => {
               TEACHING METHODOLOGY & CLASS VIDEOS
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-white">
-              Experience Our Sirs' Class & Lecture Videos
+              Experience Our Class & Lecture Videos
             </h2>
             <p className="text-indigo-200 text-base sm:text-lg">
-              Watch sample lectures, conceptual explanations, and introduction videos conducted by our expert sirs. Select any video below to play directly.
+              Watch sample lectures, conceptual explanations, and introduction videos conducted by our expert teachers. Select any video below to play directly.
             </p>
           </div>
 

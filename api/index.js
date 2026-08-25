@@ -2431,7 +2431,7 @@ const defaultLandingSettings = {
   heroTitleLine1: 'Empowering Academic Excellence &',
   heroTitleGradient: 'Future Leaders',
   heroSubtitle: 'Comprehensive tuition classes & digital learning portal for Grade 1 to Grade 13 across all subjects. Interactive learning, real-time attendance tracking, and expert academic guidance.',
-  heroBtn1Text: 'Meet Our Faculty (Sirs)',
+  heroBtn1Text: 'Meet Our Teachers',
   heroBtn2Text: 'View Exam Results',
   heroBadge1Title: '#1 Rated Institute',
   heroBadge1Sub: 'Auditorium & Live Stream',
@@ -2449,8 +2449,8 @@ const defaultLandingSettings = {
   statsExperience: '12+ Years',
   statsExperienceLabel: 'Academic Mastery',
 
-  // Faculty (Sirs) Section
-  facultyBadge: 'MEET OUR PANEL OF EXPERT SIRS',
+  // Teachers Section
+  facultyBadge: 'EXPERT PANEL OF TEACHERS',
   facultyTitle: 'Distinguished Teachers & Subject Specialists',
   facultySub: 'Our institute brings together top Sri Lankan educators dedicated to guiding students from Grade 1 to Grade 13 across all core subjects and academic streams.',
   teachers: [],
