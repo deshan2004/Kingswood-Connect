@@ -81,6 +81,14 @@
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
+
+  .animate-float-delayed {
+    animation: float 6s ease-in-out 3s infinite;
+  }
+
+  .animate-glow-pulse {
+    animation: glowPulse 4s ease-in-out infinite alternate;
+  }
 }
 
 @keyframes float {
@@ -94,3 +102,15 @@
     transform: translateY(0px);
   }
 }
+
+@keyframes glowPulse {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 0.85;
+    transform: scale(1.04);
+  }
+}
+

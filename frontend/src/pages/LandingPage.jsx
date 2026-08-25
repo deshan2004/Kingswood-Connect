@@ -516,50 +516,68 @@ const LandingPage = () => {
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-md lg:max-w-none">
 
-                {/* Main Graphic Container with Glow */}
-                <div className="relative rounded-3xl overflow-hidden p-2.5 bg-gradient-to-tr from-indigo-950 via-indigo-600 to-blue-500 shadow-2xl shadow-indigo-950/20">
-                  <div className="rounded-2xl overflow-hidden bg-slate-900 relative">
+                {/* Ambient Soft Glow Behind Container */}
+                <div className="absolute -top-10 -right-10 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+                <div className="absolute -bottom-10 -left-10 w-72 h-72 bg-blue-500/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-amber-400/10 via-indigo-500/10 to-blue-500/10 rounded-3xl blur-2xl pointer-events-none" />
+
+                {/* Main Graphic Container - Sleek Modern Floating Stage */}
+                <div className="relative rounded-3xl p-1 bg-gradient-to-tr from-indigo-500/20 via-blue-500/15 to-amber-500/20 shadow-2xl shadow-indigo-900/10">
+                  <div className="rounded-[22px] backdrop-blur-2xl bg-gradient-to-b from-white/95 via-white/85 to-indigo-50/50 border border-white/90 relative overflow-hidden group p-6 sm:p-10 flex flex-col items-center justify-center min-h-[460px]">
+                    
+                    {/* Glowing Halo Aura directly under logo */}
+                    <div className="absolute w-72 h-72 bg-gradient-to-tr from-indigo-600/15 via-blue-600/15 to-emerald-500/15 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
+                    
+                    {/* Floating Seamless Logo Image */}
                     <img
                       src={cmsSettings?.heroImage || '/kc-logo.png'}
                       alt="Kingswood Connect Learning Environment"
                       onError={(e) => { e.target.onerror = null; e.target.src = '/kc-logo.png'; }}
-                      className="w-full h-[420px] object-contain p-6 bg-indigo-950 object-center transform hover:scale-105 transition-transform duration-700"
+                      className="w-full max-w-[320px] sm:max-w-[340px] h-[320px] sm:h-[340px] object-contain drop-shadow-[0_20px_35px_rgba(79,70,229,0.20)] group-hover:drop-shadow-[0_25px_45px_rgba(79,70,229,0.35)] transform group-hover:scale-105 transition-all duration-700 ease-out z-10 relative"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
 
-                    <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl backdrop-blur-md bg-white/90 border border-white/60 shadow-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs text-indigo-700 font-bold uppercase tracking-wider">Advanced Learning Environment</p>
-                          <p className="text-sm font-extrabold text-slate-900 mt-0.5">Conceptual Understanding & Digital Pedagogy</p>
+                    {/* Bottom Floating Overlay Card */}
+                    <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 z-20 backdrop-blur-2xl bg-white/90 border border-indigo-100/90 p-4 rounded-2xl shadow-xl shadow-indigo-950/5 flex items-center justify-between gap-3 group/banner hover:bg-white hover:shadow-2xl transition-all duration-300">
+                      <div className="flex-1 min-w-0">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-200/60 text-[10px] sm:text-xs font-bold text-indigo-700 uppercase tracking-wider mb-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse" />
+                          Advanced Learning Environment
                         </div>
-                        <div className="w-10 h-10 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center shrink-0">
-                          <Zap className="w-5 h-5 text-amber-500" />
-                        </div>
+                        <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">Conceptual Understanding & Digital Pedagogy</p>
                       </div>
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/20 shrink-0 group-hover/banner:scale-110 transition-transform">
+                        <Zap className="w-5 h-5 text-amber-300" />
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* Floating Badge 1 - Top Left */}
+                <div className="hidden sm:flex absolute -top-6 -left-6 z-30 backdrop-blur-xl bg-white/95 border border-amber-200/80 p-3.5 sm:p-4 rounded-2xl shadow-xl shadow-amber-500/10 items-center space-x-3 transition-all duration-300 hover:scale-105 hover:-translate-y-1 animate-float">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center shadow-md shadow-amber-500/30 shrink-0">
+                    <Award className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-xs sm:text-sm font-extrabold text-slate-900">{cmsSettings?.heroBadge1Title || '#1 Rated Institute'}</div>
+                    <div className="text-[11px] text-slate-600 font-semibold flex items-center gap-1.5 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      {cmsSettings?.heroBadge1Sub || 'Auditorium & Live Stream'}
                     </div>
                   </div>
                 </div>
 
-                {/* Floating Badge 1 */}
-                <div className="hidden sm:flex absolute -top-6 -left-6 bg-white/95 backdrop-blur-xl border border-slate-200 p-4 rounded-2xl shadow-xl items-center space-x-3">
-                  <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center">
-                    <Award className="w-6 h-6 text-amber-600" />
+                {/* Floating Badge 2 - Bottom Right */}
+                <div className="hidden sm:flex absolute -bottom-6 -right-6 z-30 backdrop-blur-xl bg-white/95 border border-emerald-200/80 p-3.5 sm:p-4 rounded-2xl shadow-xl shadow-emerald-500/10 items-center space-x-3 transition-all duration-300 hover:scale-105 hover:-translate-y-1 animate-float-delayed">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/30 shrink-0">
+                    <ShieldCheck className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <div className="text-sm font-extrabold text-slate-900">{cmsSettings?.heroBadge1Title || '#1 Rated Institute'}</div>
-                    <div className="text-xs text-slate-600 font-medium">{cmsSettings?.heroBadge1Sub || 'Auditorium & Live Stream'}</div>
-                  </div>
-                </div>
-
-                {/* Floating Badge 2 */}
-                <div className="hidden sm:flex absolute -bottom-6 -right-6 bg-white/95 backdrop-blur-xl border border-slate-200 p-4 rounded-2xl shadow-xl items-center space-x-3">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center">
-                    <ShieldCheck className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-extrabold text-slate-900">{cmsSettings?.heroBadge2Title || 'Smart QR Attendance'}</div>
-                    <div className="text-xs text-slate-600 font-medium">{cmsSettings?.heroBadge2Sub || 'Instant Parent SMS Alerts'}</div>
+                    <div className="text-xs sm:text-sm font-extrabold text-slate-900">{cmsSettings?.heroBadge2Title || 'Smart QR Attendance'}</div>
+                    <div className="text-[11px] text-slate-600 font-semibold flex items-center gap-1.5 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                      {cmsSettings?.heroBadge2Sub || 'Instant Parent SMS Alerts'}
+                    </div>
                   </div>
                 </div>
 
