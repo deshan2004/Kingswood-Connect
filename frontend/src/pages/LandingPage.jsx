@@ -161,19 +161,20 @@ const LandingPage = () => {
 
   const fetchAdminData = async () => {
     try {
-      const [classesRes, teachersRes, cmsRes] = await Promise.all([
+      const [classesRes, teachersRes, cmsRes] = await Promise.allSettled([
         axios.get(`${API_URL}/classes`),
         axios.get(`${API_URL}/teachers`),
         axios.get(`${API_URL}/landing-settings`)
       ]);
-      if (Array.isArray(classesRes.data) && classesRes.data.length > 0) {
-        setClassesList(classesRes.data);
+
+      if (classesRes.status === 'fulfilled' && Array.isArray(classesRes.value?.data) && classesRes.value.data.length > 0) {
+        setClassesList(classesRes.value.data);
       }
-      if (Array.isArray(teachersRes.data) && teachersRes.data.length > 0) {
-        setTeachersList(teachersRes.data);
+      if (teachersRes.status === 'fulfilled' && Array.isArray(teachersRes.value?.data) && teachersRes.value.data.length > 0) {
+        setTeachersList(teachersRes.value.data);
       }
-      if (cmsRes.data && typeof cmsRes.data === 'object') {
-        const cms = { ...cmsRes.data };
+      if (cmsRes.status === 'fulfilled' && cmsRes.value?.data && typeof cmsRes.value.data === 'object') {
+        const cms = { ...cmsRes.value.data };
         if (!cms.heroBtn1Text || typeof cms.heroBtn1Text !== 'string' || cms.heroBtn1Text.includes('Faculty') || cms.heroBtn1Text.includes('Sirs')) {
           cms.heroBtn1Text = 'Meet Our Teachers';
         }
