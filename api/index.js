@@ -2591,6 +2591,14 @@ app.get('/api/landing-settings', async (req, res) => {
       const data = docSnap.data() || {};
       let needsDbUpdate = false;
 
+      if (!data.heroBtn1Text || data.heroBtn1Text.includes('Faculty') || data.heroBtn1Text.includes('Sirs')) {
+        data.heroBtn1Text = defaultLandingSettings.heroBtn1Text;
+        needsDbUpdate = true;
+      }
+      if (!data.facultyBadge || data.facultyBadge.includes('SIRS')) {
+        data.facultyBadge = defaultLandingSettings.facultyBadge;
+        needsDbUpdate = true;
+      }
       if (!data.heroTagline || data.heroTagline.includes('Physics & Combined')) {
         data.heroTagline = defaultLandingSettings.heroTagline;
         needsDbUpdate = true;

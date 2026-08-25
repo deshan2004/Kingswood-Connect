@@ -174,6 +174,12 @@ const LandingPage = () => {
       }
       if (cmsRes.data) {
         const cms = { ...cmsRes.data };
+        if (!cms.heroBtn1Text || cms.heroBtn1Text.includes('Faculty') || cms.heroBtn1Text.includes('Sirs')) {
+          cms.heroBtn1Text = 'Meet Our Teachers';
+        }
+        if (!cms.facultyBadge || cms.facultyBadge.includes('SIRS')) {
+          cms.facultyBadge = 'EXPERT PANEL OF TEACHERS';
+        }
         if (cms.heroTagline && cms.heroTagline.includes('Physics & Combined')) {
           cms.heroTagline = '🏆 Premier Educational Institute | Grade 1 to Grade 13 (All Subjects)';
         }
