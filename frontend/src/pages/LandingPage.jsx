@@ -553,32 +553,20 @@ const LandingPage = () => {
                 <div className="absolute -bottom-12 -left-12 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
                 <div className="absolute inset-0 bg-gradient-to-tr from-emerald-400/15 via-indigo-500/15 to-amber-400/15 rounded-3xl blur-2xl pointer-events-none" />
 
-                {/* Main Graphic Container - Sleek Modern 3D Floating Stage */}
-                <div className="relative rounded-3xl p-[1.5px] bg-gradient-to-tr from-emerald-500/30 via-indigo-500/25 to-amber-500/30 shadow-2xl shadow-indigo-950/10 hover:shadow-emerald-500/20 transition-all duration-700">
-                  <div className="rounded-[22px] backdrop-blur-2xl bg-gradient-to-b from-white/95 via-white/85 to-indigo-50/40 border border-white/90 relative overflow-hidden group p-8 sm:p-12 flex flex-col items-center justify-center min-h-[460px] sm:min-h-[500px]">
+                {/* Main Graphic Container - Full Container Emblem Stage */}
+                <div className="relative rounded-3xl p-[1.5px] bg-gradient-to-tr from-emerald-500/30 via-indigo-500/25 to-amber-500/30 shadow-2xl shadow-indigo-950/15 hover:shadow-emerald-500/20 transition-all duration-700">
+                  <div className="rounded-[22px] backdrop-blur-2xl bg-gradient-to-b from-white via-white/95 to-indigo-50/40 border border-white/90 relative overflow-hidden group p-2 sm:p-4 flex items-center justify-center h-[460px] sm:h-[520px]">
                     
-                    {/* Top Right Mini Heritage Badge */}
-                    <div className="absolute top-4 right-4 z-20 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-emerald-200/80 shadow-sm text-[10px] sm:text-xs font-bold text-emerald-800 backdrop-blur-md">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      KANDY, SRI LANKA
-                    </div>
-
                     {/* Glowing Halo Aura directly under logo */}
-                    <div className="absolute w-80 h-80 bg-gradient-to-tr from-emerald-500/20 via-indigo-600/20 to-teal-400/20 rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
+                    <div className="absolute w-96 h-96 bg-gradient-to-tr from-emerald-500/20 via-indigo-600/20 to-teal-400/20 rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
                     
-                    {/* Floating Clean 3D Emblem Image */}
+                    {/* Full Container Clean 3D Emblem Image */}
                     <img
-                      src={cmsSettings?.heroImage || '/kc-logo.png'}
+                      src="/kc-logo.png"
                       alt="Kingswood Education Center Emblem"
                       onError={(e) => { e.target.onerror = null; e.target.src = '/kc-logo.png'; }}
-                      className="w-full max-w-[350px] sm:max-w-[400px] h-[350px] sm:h-[400px] object-contain drop-shadow-[0_25px_45px_rgba(16,185,129,0.28)] group-hover:drop-shadow-[0_35px_65px_rgba(79,70,229,0.42)] transform group-hover:scale-105 transition-all duration-700 ease-out z-10 relative animate-float"
+                      className="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(16,185,129,0.25)] group-hover:drop-shadow-[0_30px_60px_rgba(79,70,229,0.38)] transform scale-105 sm:scale-110 group-hover:scale-115 transition-all duration-700 ease-out z-10 relative animate-float"
                     />
-
-                    {/* Bottom Center Modern Glass Status Pill */}
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 border border-indigo-100/90 shadow-md shadow-indigo-950/5 text-xs font-extrabold text-indigo-900 backdrop-blur-md whitespace-nowrap">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-                      <span>Premier Educational Institute</span>
-                    </div>
 
                   </div>
                 </div>
