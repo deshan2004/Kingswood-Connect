@@ -336,9 +336,7 @@ const LandingPage = () => {
 
           {/* Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-800 flex items-center justify-center shadow-md shadow-indigo-950/20 border border-indigo-700/30 group-hover:scale-105 transition-transform duration-300">
-              <span className="text-white font-black text-xl tracking-tighter">KC</span>
-            </div>
+            <img src="/kc-logo.png" alt="Kingswood Connect Logo" className="w-12 h-12 rounded-2xl object-contain bg-white p-1 shadow-md shadow-indigo-950/20 border border-indigo-700/30 group-hover:scale-105 transition-transform duration-300 shrink-0" />
             <div>
               <span className="text-xl font-extrabold text-indigo-950 tracking-tight block">
                 Kingswood Connect
@@ -1392,9 +1390,7 @@ const LandingPage = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
 
             <div className="flex items-center space-x-3">
-              <div className="h-9 w-9 bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-900/60 border border-indigo-400/20">
-                <span className="text-white font-black text-sm tracking-tighter">KC</span>
-              </div>
+              <img src="/kc-logo.png" alt="Kingswood Connect Logo" className="h-9 w-9 rounded-xl object-contain bg-white p-0.5 shadow-lg border border-indigo-400/20 shrink-0" />
               <span className="text-base font-extrabold text-white">Kingswood Connect</span>
             </div>
 

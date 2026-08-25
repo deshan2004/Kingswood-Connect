@@ -32,9 +32,7 @@ const TeacherLayout = () => {
       <aside className={`fixed inset-y-0 left-0 w-64 bg-indigo-950 text-white flex flex-col shadow-2xl z-50 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0`}>
         <div className="p-6 border-b border-indigo-900/50 bg-indigo-950/50 backdrop-blur-md flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-900/60 border border-indigo-400/20 shrink-0">
-              <span className="text-white font-black tracking-tighter text-lg">KC</span>
-            </div>
+            <img src="/kc-logo.png" alt="Kingswood Connect Logo" className="h-10 w-10 rounded-xl object-contain bg-white p-0.5 shadow-lg border border-indigo-400/20 shrink-0" />
             <div>
               <h1 className="font-black text-white text-lg tracking-tight leading-none">Kingswood</h1>
               <span className="text-xs font-bold text-indigo-300 uppercase tracking-widest">Teachers</span>
@@ -168,9 +166,7 @@ const TeacherLayout = () => {
         {/* Mobile Header */}
         <header className="md:hidden bg-indigo-950 border-b border-indigo-900/50 px-4 py-3 flex items-center justify-between z-10 relative shadow-sm shrink-0 text-white">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 rounded-lg flex items-center justify-center shadow-md shrink-0">
-              <span className="text-white font-black tracking-tighter text-xs">KC</span>
-            </div>
+            <img src="/kc-logo.png" alt="Kingswood Connect Logo" className="h-8 w-8 rounded-lg object-contain bg-white p-0.5 shadow-md border border-indigo-400/20 shrink-0" />
             <span className="font-black text-white text-lg tracking-tight">Kingswood Faculty</span>
           </div>
           <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -mr-2 text-indigo-300 hover:text-white transition-colors">
