@@ -8,6 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const Login = () => {
   const [searchParams] = useSearchParams();
+  const [activePortalTab, setActivePortalTab] = useState('student'); // 'student', 'teacher', 'admin'
   const [identifier, setIdentifier] = useState(''); // Email or Student ID
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -181,17 +182,18 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden text-slate-800 font-sans selection:bg-indigo-600 selection:text-white">
       
-      {/* Decorative Background Glow Filters */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-3xl pointer-events-none -z-0" />
-      <div className="absolute bottom-0 right-10 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-3xl pointer-events-none -z-0" />
+      {/* Decorative Background Glowing Halos */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-tr from-amber-400/5 via-indigo-500/5 to-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Floating Back to Home & Close Buttons */}
       <div className="absolute top-6 left-6 z-20">
         <Link 
           to="/" 
-          className="inline-flex items-center px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 shadow-xs text-xs font-bold text-slate-700 hover:text-indigo-600 transition-all group"
+          className="inline-flex items-center px-4 py-2.5 rounded-xl bg-white/90 hover:bg-white border border-slate-200/90 shadow-sm text-xs font-bold text-slate-700 hover:text-indigo-600 transition-all duration-300 group hover:shadow-md"
         >
-          <ArrowLeft className="w-4 h-4 mr-2 text-slate-500 group-hover:-translate-x-0.5 transition-transform" />
+          <ArrowLeft className="w-4 h-4 mr-2 text-slate-500 group-hover:-translate-x-1 transition-transform" />
           Back to Home
         </Link>
       </div>
@@ -199,7 +201,7 @@ const Login = () => {
       <div className="absolute top-6 right-6 z-20">
         <Link 
           to="/" 
-          className="inline-flex items-center justify-center p-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 shadow-xs text-slate-500 hover:text-indigo-600 transition-all"
+          className="inline-flex items-center justify-center p-2.5 rounded-xl bg-white/90 hover:bg-white border border-slate-200/90 shadow-sm text-slate-500 hover:text-indigo-600 transition-all duration-300 hover:shadow-md"
           title="Return to Landing Page"
         >
           <X className="w-5 h-5" />
@@ -209,8 +211,9 @@ const Login = () => {
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-3">
         <div className="flex justify-center">
-          <Link to="/" title="Go to Kingswood Education Center Home">
-            <img src="/IMG_4244.png" alt="Kingswood Education Center Logo" className="w-16 h-16 rounded-2xl object-contain bg-white p-1 shadow-lg shadow-indigo-950/20 border border-indigo-700/30 transform hover:scale-105 transition-transform duration-300" />
+          <Link to="/" title="Go to Kingswood Education Center Home" className="group relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-blue-600 rounded-3xl blur-md opacity-25 group-hover:opacity-60 transition duration-500" />
+            <img src="/IMG_4244.png" alt="Kingswood Education Center Logo" className="relative w-16 h-16 rounded-2xl object-contain bg-white p-1 shadow-xl shadow-indigo-950/20 border border-indigo-700/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500" />
           </Link>
         </div>
         <div>
@@ -219,18 +222,60 @@ const Login = () => {
               Kingswood Education Center
             </h2>
           </Link>
-          <p className="mt-1 text-xs sm:text-sm font-semibold text-indigo-700 uppercase tracking-wider">
-            Premier Educational Institute
-          </p>
+          <div className="mt-1 flex items-center justify-center gap-2">
+            <span className="px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-[10px] sm:text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Premier Educational Institute
+            </span>
+          </div>
         </div>
         <p className="text-xs sm:text-sm font-medium text-slate-600">
           {isResetMode ? 'Reset your account password' : 'Enter your credentials to access student, teacher, or admin portals'}
         </p>
+
+        {/* Interactive Portal Preset Role Chips */}
+        {!isResetMode && !showOtpStep && (
+          <div className="pt-2 flex items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => setActivePortalTab('student')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 ${
+                activePortalTab === 'student'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25 scale-105'
+                  : 'bg-white/80 hover:bg-white text-slate-600 border border-slate-200 shadow-xs'
+              }`}
+            >
+              🎓 Student
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePortalTab('teacher')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 ${
+                activePortalTab === 'teacher'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25 scale-105'
+                  : 'bg-white/80 hover:bg-white text-slate-600 border border-slate-200 shadow-xs'
+              }`}
+            >
+              👨‍🏫 Teacher
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePortalTab('admin')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 ${
+                activePortalTab === 'admin'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25 scale-105'
+                  : 'bg-white/80 hover:bg-white text-slate-600 border border-slate-200 shadow-xs'
+              }`}
+            >
+              ⚙️ Admin
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Form Card Container */}
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
-        <div className="bg-white/95 backdrop-blur-2xl py-8 px-6 sm:px-10 shadow-xl rounded-3xl border border-slate-200/90">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
+        <div className="bg-white/90 backdrop-blur-2xl py-8 px-6 sm:px-10 shadow-2xl shadow-indigo-950/10 rounded-3xl border border-white/80 relative overflow-hidden group/card">
           {isResetMode ? (
             /* Forgot Password Reset Form */
             <form className="space-y-6" onSubmit={handlePasswordReset}>
@@ -374,26 +419,31 @@ const Login = () => {
             </form>
           ) : (
             /* Standard Login Form */
-            <form className="space-y-6" onSubmit={handleLogin}>
+            <form className="space-y-5" onSubmit={handleLogin}>
               {autoFilled && (
-                <div className="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-xs">
+                <div className="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-xs animate-fadeIn">
                   <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
                   <span>Your credentials have been automatically filled from your login link!</span>
                 </div>
               )}
 
               {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl border border-red-200">
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl border border-red-200 animate-fadeIn">
                   <p className="text-xs font-bold text-red-700">{error}</p>
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Email Address or Student ID
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center justify-between">
+                  <span>
+                    {activePortalTab === 'student' && '🎓 Student ID or Email'}
+                    {activePortalTab === 'teacher' && '👨‍🏫 Teacher Email / Account'}
+                    {activePortalTab === 'admin' && '⚙️ Admin Username / Email'}
+                  </span>
+                  <span className="text-[10px] text-indigo-600 font-semibold uppercase">Required</span>
                 </label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                <div className="relative group">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 group-focus-within:text-indigo-600 transition-colors">
                     <User size={18} />
                   </span>
                   <input
@@ -401,8 +451,14 @@ const Login = () => {
                     required
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/10 transition-all"
-                    placeholder="e.g. user@example.com or KWS-1002"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50/80 border border-slate-300/90 rounded-2xl text-slate-900 font-semibold text-sm placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/15 transition-all shadow-inner/5"
+                    placeholder={
+                      activePortalTab === 'student'
+                        ? 'e.g. KWS-1002 or student@example.com'
+                        : activePortalTab === 'teacher'
+                        ? 'e.g. teacher@kingswood.edu'
+                        : 'e.g. admin@kingswood.edu'
+                    }
                   />
                 </div>
               </div>
@@ -425,8 +481,8 @@ const Login = () => {
                     Forgot Password?
                   </button>
                 </div>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                <div className="relative group">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 group-focus-within:text-indigo-600 transition-colors">
                     <Key size={18} />
                   </span>
                   <input
@@ -434,15 +490,16 @@ const Login = () => {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-12 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium text-sm placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/10 transition-all"
+                    className="w-full pl-11 pr-12 py-3 bg-slate-50/80 border border-slate-300/90 rounded-2xl text-slate-900 font-semibold text-sm placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-600/15 transition-all shadow-inner/5"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-indigo-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-indigo-600 transition-colors p-1"
+                    title={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <EyeOff size={18} className="transform scale-110" /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
@@ -450,13 +507,14 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-sm py-3.5 rounded-xl shadow-md shadow-indigo-600/25 transition-all flex items-center justify-center gap-2"
+                className="relative group overflow-hidden w-full bg-gradient-to-r from-indigo-600 via-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-extrabold text-sm py-3.5 rounded-2xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/40 transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] border border-indigo-400/20"
               >
+                <span className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-12 -translate-x-full group-hover:translate-x-[300%] transition-transform duration-1000 ease-out pointer-events-none" />
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   <>
-                    <LogIn size={18} /> Sign In to Portal
+                    <LogIn size={18} className="group-hover:rotate-12 transition-transform duration-300" /> Sign In to Portal
                   </>
                 )}
               </button>
