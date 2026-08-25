@@ -54,12 +54,12 @@ const getEmbedVideoUrl = (url, autoplay = false) => {
   }
 
   if (videoId) {
-    return `https://www.youtube.com/embed/${videoId}?autoplay=${autoplay ? 1 : 0}&mute=${autoplay ? 1 : 0}&loop=1&playlist=${videoId}&controls=1&rel=0`;
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=1&rel=0&enablejsapi=1`;
   }
   
   if (url.includes('vimeo.com/')) {
     const vId = url.split('vimeo.com/')[1]?.split('?')[0];
-    return `https://player.vimeo.com/video/${vId}?autoplay=${autoplay ? 1 : 0}&muted=${autoplay ? 1 : 0}&loop=1`;
+    return `https://player.vimeo.com/video/${vId}?autoplay=1&muted=1&loop=1`;
   }
 
   return url;
@@ -742,8 +742,8 @@ const LandingPage = () => {
                 })) : []),
 
                 ...activeTeachers.filter(t => t.videoUrl).map(t => ({
-                  title: `${t.name} - ${t.subject}`,
-                  author: t.name,
+                  title: t.videoTitle || `${t.subject || 'Academic'} Class & Lecture Video`,
+                  author: t.name || 'Academic Panel',
                   category: t.subject || 'Subject Lecture',
                   teacherImg: t.image || t.photo,
                   videoUrl: t.videoUrl
@@ -777,7 +777,7 @@ const LandingPage = () => {
                 currentVideo.videoUrl.endsWith('.webm') ||
                 currentVideo.videoUrl.endsWith('.mov');
 
-              const shouldAutoplay = cmsSettings?.enableVideoAutoplay === true;
+              const shouldAutoplay = true;
 
               return (
                 <div className="space-y-6">
