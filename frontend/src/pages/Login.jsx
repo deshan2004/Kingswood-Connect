@@ -210,7 +210,7 @@ const Login = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-3">
         <div className="flex justify-center">
           <Link to="/" title="Go to Kingswood Connect Home">
-            <img src="/kc-logo.png" alt="Kingswood Connect Logo" className="w-16 h-16 rounded-2xl object-contain bg-white p-1 shadow-lg shadow-indigo-950/20 border border-indigo-700/30 transform hover:scale-105 transition-transform duration-300" />
+            <img src="/IMG_4244.png" alt="Kingswood Connect Logo" className="w-16 h-16 rounded-2xl object-contain bg-white p-1 shadow-lg shadow-indigo-950/20 border border-indigo-700/30 transform hover:scale-105 transition-transform duration-300" />
           </Link>
         </div>
         <div>

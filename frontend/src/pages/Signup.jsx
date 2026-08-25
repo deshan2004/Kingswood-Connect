@@ -75,7 +75,7 @@ const Signup = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center mb-6">
           <Link to="/" title="Go to Kingswood Connect Home">
-            <img src="/kc-logo.png" alt="Kingswood Connect Logo" className="h-16 w-16 rounded-2xl object-contain bg-white p-1 shadow-lg shadow-indigo-900/60 border border-indigo-400/30 transform hover:scale-105 transition-transform duration-300" />
+            <img src="/IMG_4244.png" alt="Kingswood Connect Logo" className="h-16 w-16 rounded-2xl object-contain bg-white p-1 shadow-lg shadow-indigo-900/60 border border-indigo-400/30 transform hover:scale-105 transition-transform duration-300" />
           </Link>
         </div>
         <h2 className="text-center text-3xl font-black text-white tracking-tight">Create Account</h2>
